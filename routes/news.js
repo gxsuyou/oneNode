@@ -48,23 +48,18 @@ router.get('/getNewsByPage',function (req,res,next) {
 
 router.get("/updateNewsBrowse",function(req,res){
   if(req.query.id){
-    // news.updateNewsBrowse(req.query.id,req.query.browseNum,function(result){
-    //     //result.affectedRows?res.json({state:1}):res.json({state:0});
-    //     if(result.affectedRows){
-    //         news.getNewsBrowseNum(req.query.id,function(result_1){
-    //           // console.log(result_1[0].browse);
-    //            res.json({state:1,browse:result_1[0].browse});
-    //         });
-    //     }else{
-    //       res.json({state:0});
-    //     }
-    // });
-    // console.log(req.query.id);
     news.getNewsBrowseNum(req.query.id,function(result){
-       // console.log(result.length);
-       if(result.length){
-
-       }
+      if(result.length){
+        var browseNum=result[0]["browse"];
+        browseNum++;
+        news.updateNewsBrowse(req.query.id,browseNum,function(result_1){
+          if(result_1.affectedRows){
+            res.json({state:1,browse:browseNum});
+          }
+        });
+      }else{
+        res.json({state:0});
+      }
     });
   }else{
     res.json({state:0});
