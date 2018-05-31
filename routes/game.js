@@ -1,5 +1,6 @@
 var router=require('express').Router();
 var game =require("../DAO/game");
+var bodyParser = require('body-parser');
 var socketio=require('./socketio');
 
 router.get('/getGameById', function(req, res, next) {
@@ -255,6 +256,7 @@ router.get('/getSubjectById',function (req,res) {
         res.json({state:0})
     }
 });
+// 获取活动标签
 router.get('/getActiveTag',function (req,res) {
     var data = req.query;
     if (data.sys){
@@ -295,11 +297,13 @@ router.get('/addMyGame',function (req,res) {
         res.json({state:0})
     }
 });
+// 获取推荐位(2个)
 router.get('/getActiveLenOfTow',function (req,res) {
         game.getActiveLenOfTow(function (result) {
             res.json({state:1,game:result})
         })
 });
+// 获取推荐位(10个)
 router.get('/getActiveLenOfTen',function (req,res) {
     game.getActiveLenOfTen(function (result) {
         res.json({state:1,game:result})
