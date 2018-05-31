@@ -74,6 +74,6 @@ app.use(timeout('5s'));
 app.use(haltOnTimedout);
 function haltOnTimedout (req, res, next) {
     if (!req.timedout) next()
-}
+};;
 app.listen(3000,"192.168.2.131");
 module.exports = app;
