@@ -42,12 +42,13 @@ router.get('/addStrategyMsg',function (req,res) {
 // 添加攻略图片
 router.get('/addStrategyImg',function (req,res) {
     var data=req.query;
-    if(data.strategyId && data.img){
-        // 获取字符串的长度  截取到字符串最后一个元素
-        var len = data.img.length;
-        var lastNum = data.img.substring(len-1,len);
-        // 拼接排序id  sort_id
-        var sort_id = data.strategyid+lastNum;
+    // 获取字符串的长度  截取到字符串最后一个元素
+    var len = data.img.length;
+    var lastNum = data.img.substring(len-1,len);
+    // 拼接排序id  sort_id
+    var sort_id = data.strategyid+lastNum;
+    console.log(sort_id);
+    if(data.strategyId && data.img && sort_id){
         strategy.addStartegyImg(data.strategyId,data.img,sort_id,function (result) {
             result.insertId ? res.json({state:1}) : res.json({state:0})
         })
@@ -236,6 +237,7 @@ router.get('/unLikeComment',function (req,res) {
         res.json({state:0})
     }
 });
+// 根据关游戏名字获取攻略
 router.get('/getStrategyByGameName',function (req,res) {
     var data =req.query;
     if(data.msg && data.page && data.sort){

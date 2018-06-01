@@ -33,7 +33,7 @@ app.all('*', function(req, res, next) {
 // app.engine('.html',require('html').__express);
 
 // uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+// app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -75,5 +75,5 @@ app.use(haltOnTimedout);
 function haltOnTimedout (req, res, next) {
     if (!req.timedout) next()
 }
-app.listen(3000,"192.168.2.131");
+app.listen(6655,"192.168.2.108");
 module.exports = app;

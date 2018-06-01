@@ -1,12 +1,13 @@
 var query = require('../config/config');
-var startegy={
+var strategy={
     addStartegy:function (userId,title,detail,gameName,addTime,callback) {
         var sql='insert into t_strategy (user_id,title,detail,game_name,add_time) values (?,?,?,?,?)';
         query(sql,[userId,title,detail,gameName,addTime],function (result) {
             return callback(result)
         })
     },
-    addStrategyImg:function (strategyId,img,callback) {
+    // 添加攻略图片
+    addStrategyImg:function (strategyId,img,sort_id,callback) {
         // var val = '';
         // for(var i=0;i<arr.length;i++){
         //     val+='('+strategyId+','+arr[i]+')'
@@ -131,6 +132,7 @@ var startegy={
             return callback(result)
         })
     },
+    // 根据关游戏名字获取攻略
     getStrategyByGameName:function (gameName,sort,page,callback) {
         var sql = "select t_strategy.*,t_strategy_img.src,t_user.`nick_name`,t_user.portrait from t_strategy left join t_strategy_img on t_strategy_img.strategy_id= t_strategy.id LEFT JOIN t_user ON t_user.id=t_strategy.`user_id` where t_strategy.game_name  =? group by t_strategy.id  order by "+sort+" desc limit ?,10";
         query(sql,[gameName,(page-1)*10],function (result) {
@@ -157,4 +159,4 @@ var startegy={
         })
     }
 };
-module.exports=startegy;
+module.exports=strategy;
