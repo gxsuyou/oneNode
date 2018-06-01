@@ -293,8 +293,8 @@ var game ={
     },
     // 根据游戏名字获取相关攻略
     getStrategyByGameName:function (gameName,page,callback) {
-        var sql = "select t_strategy.*,t_strategy_img.src,t_user.`nick_name`,t_user.portrait from t_strategy left join t_strategy_img on t_strategy_img.strategy_id= t_strategy.id LEFT JOIN t_user ON t_user.id=t_strategy.`user_id` where t_strategy.game_name  =? group by t_strategy.id  order by comment_num  desc limit ?,10";
-        query(sql,[gameName,(page-1)*10],function (result) {
+        var sql = "select t_strategy.*,t_strategy_img.src,t_user.`nick_name`,t_user.portrait from t_strategy left join t_strategy_img on t_strategy_img.strategy_id= t_strategy.id LEFT JOIN t_user ON t_user.id=t_strategy.`user_id` where t_strategy.game_name  =? group by t_strategy.id  order by comment_num  desc limit ?,5";
+        query(sql,[gameName,(page-1)*5],function (result) {
             return callback(result)
         })
     }
