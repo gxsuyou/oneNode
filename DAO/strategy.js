@@ -6,14 +6,14 @@ var startegy={
             return callback(result)
         })
     },
-    addStartegyImg:function (strategyId,img,callback) {
+    addStrategyImg:function (strategyId,img,callback) {
         // var val = '';
         // for(var i=0;i<arr.length;i++){
         //     val+='('+strategyId+','+arr[i]+')'
         // }
         // val = val.substring(0,val.length-1);
         // var sql = 'insert into t_strategy (strategy_id,src) values '+val;
-        var sql = 'insert into t_strategy_img (strategy_id,src) values (?,?)';
+        var sql = 'insert into t_strategy_img (strategy_id,src,sort_id) values (?,?,?)';
         query(sql,[strategyId,img],function (result) {
             return callback(result)
         })
@@ -149,6 +149,7 @@ var startegy={
 
         })
     },
+    // 添加攻略评论图片
     updateCommentImg:function (commentId,img,callback) {
         var sql = 'update t_strategy_comment set img = ? where id =?';
         query(sql,[img,commentId],function (result) {

@@ -39,10 +39,16 @@ router.get('/addStrategyMsg',function (req,res) {
         res.json({state:0})
     }
 });
+// 添加攻略图片
 router.get('/addStrategyImg',function (req,res) {
     var data=req.query;
     if(data.strategyId && data.img){
-        strategy.addStartegyImg(data.strategyId,data.img,function (result) {
+        // 获取字符串的长度  截取到字符串最后一个元素
+        var len = data.img.length;
+        var lastNum = data.img.substring(len-1,len);
+        // 拼接排序id  sort_id
+        var sort_id = data.strategyid+lastNum;
+        strategy.addStartegyImg(data.strategyId,data.img,sort_id,function (result) {
             result.insertId ? res.json({state:1}) : res.json({state:0})
         })
     }else {
@@ -258,6 +264,7 @@ router.get('/getStrategyGameNameByMsg',function (req,res) {
         res.json({state:0})
     }
 });
+// 添加攻略评论图片
 router.get('/updateCommentImg',function (req,res) {
     var data =req.query;
     if(data.commentId && data.img){
