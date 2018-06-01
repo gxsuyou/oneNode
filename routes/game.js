@@ -259,6 +259,8 @@ router.get('/getSubjectById',function (req,res) {
 // 获取活动标签
 router.get('/getActiveTag',function (req,res) {
     var data = req.query;
+    var num = data.img.substr(-1);
+    console.log(num);
     if (data.sys){
         game.getActiveTag(data.sys,function (result) {
             res.json({state:1,activeTagGame:result})
@@ -308,5 +310,16 @@ router.get('/getActiveLenOfTen',function (req,res) {
     game.getActiveLenOfTen(function (result) {
         res.json({state:1,game:result})
     })
+});
+// 根据游戏名字获取相关攻略
+router.get('/getStrategyByGameName',function(req,res){
+    var data = req.query;
+    if(data.ganmeName && data.page){
+        game.getStrategyByGameName(data.gameName,data.page,function(result){
+            res.json({state:1,strategy:result})
+        });
+    }else{
+        res.json({state:0})
+    }
 });
 module.exports = router;
