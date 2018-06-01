@@ -75,5 +75,5 @@ app.use(haltOnTimedout);
 function haltOnTimedout (req, res, next) {
     if (!req.timedout) next()
 }
-app.listen(8877,"http://oneyouxi.com.cn");
+app.listen(8877,"http://www.oneyouxi.com.cn");
 module.exports = app;
