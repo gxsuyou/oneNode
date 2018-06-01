@@ -259,8 +259,6 @@ router.get('/getSubjectById',function (req,res) {
 // 获取活动标签
 router.get('/getActiveTag',function (req,res) {
     var data = req.query;
-    var num = data.img.substr(-1);
-    console.log(num);
     if (data.sys){
         game.getActiveTag(data.sys,function (result) {
             res.json({state:1,activeTagGame:result})
