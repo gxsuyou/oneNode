@@ -1,5 +1,6 @@
 var query = require('../config/config');
 var strategy={
+    // 添加攻略信息
     addStartegy:function (userId,title,detail,gameName,addTime,callback) {
         var sql='insert into t_strategy (user_id,title,detail,game_name,add_time) values (?,?,?,?,?)';
         query(sql,[userId,title,detail,gameName,addTime],function (result) {
@@ -15,7 +16,7 @@ var strategy={
         // val = val.substring(0,val.length-1);
         // var sql = 'insert into t_strategy (strategy_id,src) values '+val;
         var sql = 'insert into t_strategy_img (strategy_id,src,sort_id) values (?,?,?)';
-        query(sql,[strategyId,img],function (result) {
+        query(sql,[strategyId,img,sort_id],function (result) {
             return callback(result)
         })
     },

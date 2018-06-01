@@ -314,7 +314,7 @@ router.get('/getActiveLenOfTen',function (req,res) {
 // 根据游戏名字获取相关攻略
 router.get('/getStrategyByGameName',function(req,res){
     var data = req.query;
-    if(data.ganmeName && data.page){
+    if(data.gameName && data.page){
         game.getStrategyByGameName(data.gameName,data.page,function(result){
             res.json({state:1,strategy:result})
         });

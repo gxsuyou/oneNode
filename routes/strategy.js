@@ -28,11 +28,12 @@ Date.prototype.Format = function(formatStr)
 
     return str;
 };
+// 添加攻略信息
 router.get('/addStrategyMsg',function (req,res) {
     var data=req.query;
     if(data.userId && data.title && data.detail && data.gameName){
         var date=new Date();
-        strategy.addStartegy(data.userId,data.title,data.detail,data.gameName,date.Format('yyyy-MM-dd-hh-mm-ss'),function (result) {
+        strategy.addStartegy(data.userId,data.title,data.detail,data.gameName,date.Format('yyyy-MM-dd hh:mm:ss'),function (result) {
             result.insertId ? res.json({state:1,strategyId:result.insertId}) : res.json({state:0})
         })
     }else {
@@ -46,8 +47,7 @@ router.get('/addStrategyImg',function (req,res) {
     var len = data.img.length;
     var lastNum = data.img.substring(len-1,len);
     // 拼接排序id  sort_id
-    var sort_id = data.strategyid+lastNum;
-    console.log(sort_id);
+    var sort_id = data.strategyId+lastNum;
     if(data.strategyId && data.img && sort_id){
         strategy.addStartegyImg(data.strategyId,data.img,sort_id,function (result) {
             result.insertId ? res.json({state:1}) : res.json({state:0})
