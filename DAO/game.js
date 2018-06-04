@@ -222,6 +222,7 @@ var game ={
                 query(sql,[sys],function (result) {
                     if(result.length){
                         data[result[0].name]=result;
+                        console.log(data);
                         return callback(data)
                     }else {
                         return callback(data)
