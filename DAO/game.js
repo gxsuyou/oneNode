@@ -167,15 +167,18 @@ var game ={
             return callback(result)
         })
     },
+    // 获取游戏评分数据
     getGameCommentScore:function (gameId,callback) {
         var sql="SELECT score,COUNT(*) AS num FROM t_game_comment WHERE game_id=? and score >0 GROUP BY score order by score desc";
         query(sql,[gameId],function (result) {
             return callback(result)
         })
     },
+    // 评论游戏接口
     gameComment:function (userId,gameId,score,content,addTime,parentId,series,targetUserId,callback) {
         parentId=parentId||0;
-        score=score||null;
+        // 如果没有评分 默认为8分
+        score=score||8;
         var sql="INSERT into t_game_comment (user_id,game_id,score,content,add_time,parent_id,series,target_user_id) values (?,?,?,?,?,?,?,?)";
         query(sql,[userId,gameId,score,content,addTime,parentId,series,targetUserId],function (result) {
             return callback(result)
@@ -199,6 +202,7 @@ var game ={
             return callback(result)
         })
     },
+    // 获取专题
     getSubject:function (sys,callback) {
         var sql = 'select id,img,title,detail from t_subject where active = 1 and sys = 2 limit 0,2';
         query(sql,[sys],function (result) {
@@ -245,6 +249,7 @@ var game ={
             return callback(result)
         })
     },
+    // 根据标签获取游戏
     getGameByTag:function (tagId,sys,page,callback) {
         var sql = 'SELECT t_game.id,t_game.game_name,t_game.icon,t_game.game_title_img,t_game.grade,t_game.game_recommend,GROUP_CONCAT(t_tag.name) AS tagList,GROUP_CONCAT(t_tag.id) AS tagId  FROM t_game \n' +
             'LEFT JOIN t_tag_relation ON t_tag_relation.`game_id`=t_game.id\n' +
@@ -266,6 +271,7 @@ var game ={
             return callback(result)
         })
     },
+    // 根据分类获取游戏
     getGameByCls:function (clsId,page,callback) {
         var sql = 'SELECT a.id,a.icon,a.game_name,a.grade,GROUP_CONCAT(t_tag.`name`) as tagNameList,GROUP_CONCAT(t_tag.`id`) as tagIdList FROM (t_game_cls_relation LEFT JOIN t_game AS a ON a.id = t_game_cls_relation.game_id) LEFT JOIN t_tag_relation ON a.id = t_tag_relation.`game_id` LEFT JOIN t_tag ON t_tag.`id`=t_tag_relation.`tag_id`\n' +
             ' WHERE t_game_cls_relation.cls_id=? GROUP BY a.`id` limit ?,20';

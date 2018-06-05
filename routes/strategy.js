@@ -86,6 +86,7 @@ router.get('/getSearchGame',function (req,res) {
         res.json({state:0})
     }
 });
+// 获取攻略列表
 router.get('/getStrategyByMsg',function (req,res) {
     var data = req.query;
     if(data.sort && data.page){
@@ -276,6 +277,20 @@ router.get('/updateCommentImg',function (req,res) {
     } else {
         res.json({state:0})
     }
+});
+// 只看楼主
+router.get('/getStrategyCommentByPageUser',function(req,res){
+   var targetId = req.query.targetId;
+   var page = req.query.page;
+   // var userId = req.query.userId;
+   if(targetId && page){
+        strategy.getStrategyCommentByPageUser(targetId,page,function(result){
+            console.log(result);
+          res.json({state:0,comment:result})
+        });
+   }else{
+        res.json({state:0})
+   }
 });
 function subdate(str) {
     return str.substring(0,10);

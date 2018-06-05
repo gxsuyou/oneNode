@@ -42,6 +42,7 @@ var user = {
             return callback(result)
         })
     },
+    // 注册
     reg:function (tel,password,timeLogon,callback) {
         var sqlUser="select * from t_user where tel =?";
         var sql ="INSERT INTO t_user (nick_name,password,portrait,coin,integral,achievement_point,sign,time_unlock,time_logon,tel) values (?,?,0,0,500,0,0,0,?,?)";
@@ -211,7 +212,8 @@ var user = {
             return callback(result)
         })
     },
-    updatePassword:function (tel,password,callback) {
+    // 修改密码
+    upDatePassword:function (tel,password,callback) {
         var sql = "update t_user set password=? where tel=?";
         query(sql,[password,tel],function (result) {
             return callback(result)

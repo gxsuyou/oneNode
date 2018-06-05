@@ -158,16 +158,20 @@ router.get('/getNewsByGameId',function (req,res) {
         res.json({state:0})
     }
 });
+// 获取游戏评分数据
 router.get('/getGameCommentScore',function (req,res) {
     var data = req.query;
     if(data.gameId){
         game.getGameCommentScore(data.gameId,function (result) {
+            console.log(result);
             res.json({state:1,scoreList:result})
         })
     }else {
+        console.log(result);
         res.json({state:0})
     }
 });
+// 评论游戏接口
 router.get('/comment',function (req,res,next) {
     var data=req.query;
     if(data.userId && data.gameId && data.content){
@@ -205,6 +209,7 @@ router.get('/getAppCls',function (req,res) {
         res.json({state:1,cls:result})
     })
 });
+// 根据分类获取游戏
 router.get('/getGameByCls',function (req,res) {
     var data =req.query;
     if(data.clsId && data.page){
@@ -235,7 +240,7 @@ router.get("/addDownloadNum",function (req,res,next) {
        })
    }
 });
-
+// 获取专题
 router.get('/getSubject',function (req,res) {
     var data = req.query;
     if(data.sys){
@@ -277,6 +282,7 @@ router.get('/getGameBySubject',function (req,res) {
         res.json({state:0})
     }
 });
+// 根据标签获取游戏
 router.get('/getGameByTag',function (req,res) {
     var data = req.query;
     if(data.tagId && data.sys && data.page){

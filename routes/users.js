@@ -358,6 +358,7 @@ router.get('/game/comment',function (req,res,next) {
     });
 
 });
+// 注册
 router.post('/reg',function (req,res,next) {
     var ver=req.body.verify;
     var tel=req.body.tel;
@@ -760,19 +761,21 @@ router.get('/addFeedbackImg',function (req,res) {
         res.json({state:0})
     }
 });
-
+// 修改密码
 router.post('/upDatePassword',function (req,res,next) {
     // console.log(req.body);
     var ver=req.body.verify;
     var tel=req.body.tel;
     var password=req.body.password;
+
     var md5 = crypto.createHash('md5');
-    md5.update(password);
     var sign = md5.digest('hex');
+    console.log(sign);
     sign=isReverse(sign);
     if(ver && tel && sign){
         if(ver==verify[tel]){
-            user.upDatePassword(tel,sign,function (result) {
+            user.updatePassword(sign,tel,function (result) {
+                console.log(result);
                 result.affectedRows ? res.json({state:1}) : res.json({state:0})
             })
         }else {

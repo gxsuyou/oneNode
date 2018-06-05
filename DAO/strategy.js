@@ -46,6 +46,7 @@ var strategy={
             return callback(result)
         })
     },
+    // 获取攻略列表                                          
     getStrategyByMsg:function (sort,page,callback) {
         var sql = 'select t_strategy.*,t_strategy_img.src,t_user.`nick_name`,t_user.portrait from t_strategy left join t_strategy_img on t_strategy_img.strategy_id= t_strategy.id LEFT JOIN t_user ON t_user.id=t_strategy.`user_id` group by t_strategy.id order by '+sort+' desc  limit ?,10';
         query(sql,[(page-1)*10],function (result) {
@@ -115,6 +116,7 @@ var strategy={
             return callback(result)
         })
     },
+    // 点赞
     likeComment:function (commentId,userId,callback) {
         var sql = 'insert into t_strategy_like (strategy_id,user_id) values (?,?)';
         query(sql,[commentId,userId],function (result) {
@@ -155,9 +157,16 @@ var strategy={
     // 添加攻略评论图片
     updateCommentImg:function (commentId,img,callback) {
         var sql = 'update t_strategy_comment set img = ? where id =?';
-        query(sql,[img,commentId],function (result) {
+        query(sql,[img,commentId],function (result) { 
             return callback(result)
         })
-    }
+    },
+    // 只看楼主
+    getStrategyCommentByPageUser:function (targetId,page,callback) {
+       var sql = "select t_strategy_comment.id,t_strategy_comment.content,t_strategy_comment.img,t_strategy_comment.add_time,t_user.nick_name,t_user.portrait from t_strategy_comment left join t_user on t_strategy_comment.target_user_id=t_user.id where t_strategy_comment.target_user_id=? order by t_strategy_comment.id desc limit ?,5";
+       query(sql,[targetId,(page-1)*5],function(result){
+            return callback(result);
+       });
+    },
 };
 module.exports=strategy;
