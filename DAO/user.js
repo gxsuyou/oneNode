@@ -232,12 +232,14 @@ var user = {
             return callback(result)
         })
     },
+    // 获取用户攻略收藏
     getStrategyCollect:function (userId,page,callback) {
-        var sql = 'select t_strategy.*,t_strategy_img.src,t_user.`nick_name`,t_user.portrait from t_collect  left join t_strategy on t_strategy.id=t_collect.target_id left join t_strategy_img on t_strategy_img.strategy_id= t_strategy.id LEFT JOIN t_user ON t_user.id=t_strategy.`user_id` where t_strategy.`user_id`=? and t_collect.target_type=2 group by t_strategy.id order by add_time desc  limit ?,10';
+        var sql = 'select t_strategy.*,t_strategy_img.src,t_user.`nick_name`,t_user.portrait from t_collect  left join t_strategy on t_strategy.id=t_collect.target_id left join t_strategy_img on t_strategy_img.strategy_id= t_strategy.id LEFT JOIN t_user ON t_user.id=t_strategy.`user_id` where t_collect.`user_id`=? and t_collect.target_type=2 group by t_strategy.id order by add_time desc  limit ?,10';
         query(sql,[userId,(page-1)*10],function (result) {
             return callback(result)
         })
     },
+    // 获取用户资讯收藏
     getNewsCollect:function (userId,page,callback) {
         var sql="SELECT a.id,a.title,a.img,a.add_time,a.agree,a.game_id,a.browse,b.game_name,b.icon,b.game_recommend FROM t_collect as c left join t_news AS a on a.id= c.target_id and c.user_id=?\n" +
             "LEFT JOIN t_game AS b ON a.`game_id`=b.`id` where c.target_type=1  order by a.up desc,a.add_time desc limit ?,10";
@@ -261,17 +263,32 @@ var user = {
         })
     },
     newMessage:function (userId,page,callback) {
-        var sql ='call pro_newMessage(?,?)';
-        query(sql,[userId,(page-1)*10],function (result) {
-            var arr=[];
-            for (var i=0;i<result.length-1;i++){
-                arr=arr.concat(result[i])
-            }
+        // var sql ='call pro_newMessage(?,?)';
+        // var arr=[];
+            // for (var i=0;i<result.length-1;i++){
+            //     arr=arr.concat(result[i])
+            // }
             // result.forEach(function (t) {
             //
             // });
-            return callback(arr)
-        })
+        var sql = "select t_strategy_comment.id,t_strategy_comment.content,t_strategy_comment.series,t_strategy_comment.target_comment_id as parentId,t_strategy_comment.add_time,t_tip.type,t_tip.state,t_user.nick_name,t_user.portrait from t_strategy_comment \n"+
+                  "left join t_user on t_strategy_comment.user_id=t_user.id \n"+
+                  "left join t_tip on t_strategy_comment.target_user_id=t_tip.user_id \n"+
+                  "where t_strategy_comment.target_user_id=?group by t_strategy_comment.add_time desc limit ?,5";
+        query(sql,[userId,(page-1)*10],function(result){
+            return callback(result)
+        }) 
+            
+    },
+    newsMessage:function (userId,page,callback) {
+        var sql = "select t_news_comment.id,t_news_comment.content,t_news_comment.series,t_news_comment.target_comment_id as parentId,t_news_comment.add_time,t_tip.type,t_tip.state,t_user.nick_name from t_news_comment \n"+
+                  "left join t_user on t_news_comment.user_id=t_user.id \n"+
+                  "left join t_tip on t_news_comment.target_user_id=t_tip.user_id \n"+
+                  "where t_news_comment.target_user_id=?group by t_news_comment.add_time  desc limit ?,5";
+        query(sql,[userId,(page-1)*10],function(result){
+            return callback(result)
+        }) 
+            
     },
     addFeedbackMsg:function (userId,content,callback) {
         var sql = 'insert into t_feedback (detail,user_id) values (?,?)';
@@ -285,8 +302,9 @@ var user = {
             return callbcak(result)
         })
     },
+    // 找回密码
     upDatePassword:function (tel,password,callback) {
-        var sql = 'update t_user set password = ? where tel';
+        var sql = 'update t_user set password = ? where tel=?';
         query(sql,[password,tel],function (result) {
             return callback(result)
         })

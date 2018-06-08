@@ -14,6 +14,7 @@ var news = {
             return callback(result)
         })
     },
+    // 根据id获取资讯详情
     getNewsById:function (id,userId,callback) {
         var sql="SELECT a.id,a.title,a.add_time,a.add_user,a.agree,a.browse,a.comment,a.detail_addr,a.game_id,a.sys,b.icon,b.game_name,c.state,d.id AS collect FROM t_news AS a\n" +
             "            LEFT JOIN t_game AS b ON  (a.`game_id`=b.`id`)\n" +
@@ -48,18 +49,20 @@ var news = {
             return callback(result)
         })
     },
+    // 添加资讯浏览量
     addNewsBrowse:function (id,callback) {
         var sql="update t_news set browse=browse+1 where id =?";
         query(sql,[id],function (result) {
             return callback(result)
         })
     },
+    // 添加资讯点赞量
     addNewsAgree:function (id,callback) {
         var sql="update t_news set agree=agree+1 where id =?";
         query(sql,[id],function (result) {
             return callback(result)
         })
-    },
+    },// 添加资讯评论量
     addNewsComment:function (id,callback) {
         var sql="update t_news set comment=comment+1 where id =?";
         query(sql,[id],function (result) {
@@ -183,12 +186,6 @@ var news = {
 
         })
     },
-    readMessage:function (userId,callback) {
-        var sql = 'update t_tip set state=1 where user_id=?';
-        query(sql,[userId],function (result) {
-            return callback(result)
-        })
-    }
-};
 
+};
 module.exports = news;

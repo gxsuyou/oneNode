@@ -56,10 +56,12 @@ router.get('/addStrategyImg',function (req,res) {
         res.json({state:0})
     }
 });
+// 添加收藏
 router.get('/collect',function (req,res) {
     var data = req.query;
     if(data.targetId && data.userId && data.sys && data.type){
         strategy.collect(data.targetId,data.userId,data.sys,data.type,function (result) {
+            console.log(result);
             res.json({state:1})
         })
     }else {
@@ -113,39 +115,72 @@ router.get('/getStrategyByEssence',function (req,res) {
         res.json({state:0})
     }
 });
+ // 获取攻略详情
 router.get('/getStrategyById',function (req,res) {
     var data = req.query;
     if(data.strategyId && data.userId){
         strategy.getStrategyById(data.userId,data.strategyId,function (result) {
+            console.log(result[0].browse_num);
             res.json({state:1,strategy:result[0]})
         })
     }else {
         res.json({state:0})
     }
 });
+ // 添加攻略（浏览 || 点赞 || 评论）数
 router.get('/addNum',function (req,res) {
     var data = req.query;
-    if(data.strategyId && data.numType){
-        strategy.addNum(data.strategyId,data.numType,function (result) {
-            res.json({state:1})
-        })
-    }else {
-        res.json({state:0})
+    if(data.num && data.strategyId && data.numType){
+        // 添加评论数
+        if(data.numType=="comment_num"){
+            function num(){
+                strategy.countComment(data.strategyId,function(result){
+                    var num = result[0].num;
+                    // console.log(num);
+                    strategy.addNum(num,data.strategyId,data.numType,function(result){
+                        res.json({state:1})
+                    });
+                });
+            }
+            num();
+        }else if(data.numType=="browse_num"){//添加浏览量
+            function bnum(){
+                strategy.getBrowseNum(data.strategyId,function(result){
+                    var bnum = result[0].bnum+1;
+                    
+                    strategy.addNum(bnum,data.strategyId,data.numType,function(result){
+                        res.json({state:2})
+                    });
+                });
+            }
+            bnum();
+        }else if(data.numType=="agree_num"){// 添加点赞数
+            function anum(){
+                strategy.getCountLikeComment(data.strategyId,function(result){
+                    var anum = result[0].lnum;
+                    console.log(anum);
+                    strategy.addNum(anum,data.strategyId,data.numType,function(result){
+                        res.json({state:3})
+                    });
+                });
+            }
+            anum();
+        }else{
+            res.json({state:0})
+        }
+        
     }
+   
 });
-router.get('/strategyComment',function (req,res) {
+// 统计评论条数
+router.get('/countComment',function (req,res) {
     var data = req.query;
-    if(data.content && data.targetCommentId && data.targetUserId && data.userId && data.series){
-        var date=new Date();
-        strategy.strategyComment(data.content,data.userId,data.targetCommentId,data.targetUserId,data.series,date.Format('yyyy-MM-dd-hh-mm-ss'),function (result) {
-            result.insertId && strategy.addUserTip(result.insertId,data.targetUserId) ;
-            socketio.senMsg(data.targetUserId);
-            result.insertId ? res.json({state:1,commentId:result.insertId}) : res.json({state:0})
-        })
-    }else {
-        res.json({state:0})
-    }
+    strategy.countComment(data.strategyId,function(result){
+        // console.log(result[0].num);
+        res.json({state:1,num:result});
+    });
 });
+// 更换攻略评论图片
 router.get('/updateStrategyCommentImg',function (req,res) {
     var data= req.query;
     if(data.strategyId && data.img){
@@ -156,6 +191,40 @@ router.get('/updateStrategyCommentImg',function (req,res) {
         res.json({state:0})
     }
 });
+// 获取攻略点赞数
+router.get('/getCountLikeComment',function (req,res) {
+    var data= req.query;
+    if(data.strategyId){
+        strategy.getCountLikeComment(data.strategyId,function(result){
+            res.json({state:1,lnum:result});
+        });
+    }else{
+        res.json({state:0})
+    }
+});
+// 获取攻略的浏览量
+router.get('/getBrowseNum',function(req,res){
+    var data = req.query;
+    strategy.getBrowseNum(data.strategyId,function(result){
+        res.json({state:1,bnum:result});
+    });
+});
+// 添加评论
+router.get('/strategyComment',function (req,res) {
+    var data = req.query;
+    if(data.content && data.targetCommentId && data.targetUserId && data.userId && data.series){
+        var date=new Date();
+        strategy.strategyComment(data.content,data.userId,data.targetCommentId,data.targetUserId,data.series,date.Format('yyyy-MM-dd-hh-mm-ss'),function (result) {
+            result.insertId && strategy.addUserTip(result.insertId,data.targetUserId) ;
+            socketio.senMsg(data.targetUserId);
+            result.insertId ? res.json({state:1,commentId:result.insertId}) : res.json({state:0})
+        });
+    }else {
+        res.json({state:0})
+    } 
+});
+
+// 获取攻略详情页评论接口
 router.get('/getStrategyCommentByPage',function (req,res) {
     var data = req.query;
     if(data.strategyId && data.page && data.userId && data.sort){
@@ -207,13 +276,19 @@ router.get('/getStrategyCommentTowByPage',function (req,res) {
         res.json({state:0})
     }
 });
+// 根据ID获取一级评论
 router.get('/getCommentById',function (req,res) {
     var data = req.query;
     if(data.commentId){
-        strategy.getCommentById(req.query.commentId,function (result) {
-            result.length && (result[0].add_time=subdate(result[0].add_time));
-            result.length?res.json({state:1,comment:result[0]}):res.json({state:0});
-        })
+        function ready(){
+            strategy.readMessage(data.commentId,function(result){
+                 strategy.getCommentById(req.query.commentId,function (result) {
+                    result.length && (result[0].add_time=subdate(result[0].add_time));
+                    result.length?res.json({state:1,comment:result[0]}):res.json({state:0});
+                })
+            });
+        }
+        ready();
     }else {
         res.json({state:0})
     }
@@ -282,11 +357,12 @@ router.get('/updateCommentImg',function (req,res) {
 router.get('/getStrategyCommentByPageUser',function(req,res){
    var targetId = req.query.targetId;
    var page = req.query.page;
+   var userId= req.query.userId;
    // var userId = req.query.userId;
-   if(targetId && page){
-        strategy.getStrategyCommentByPageUser(targetId,page,function(result){
+   if(userId && targetId && page){
+        strategy.getStrategyCommentByPageUser(userId,targetId,page,function(result){
             console.log(result);
-          res.json({state:0,comment:result})
+          res.json({state:1,comment:result})
         });
    }else{
         res.json({state:0})

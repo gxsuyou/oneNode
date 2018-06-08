@@ -66,7 +66,7 @@ router.get("/updateNewsBrowse",function(req,res){
   }
 })
 
-
+ // 根据id获取资讯详情
 router.get("/getNewsById",function (req,res,next) {
     if(req.query.id){
         news.getNewsById(req.query.id,req.query.userId,function (result) {
@@ -282,11 +282,12 @@ router.get('/unCollect',function (req,res) {
         res.json({state:0})
     }
 });
+// 阅读新通知  改变通知阅读状态
 router.get('/cancelMessage',function (req,res) {
     var data = req.query;
-    if(data.userId){
-        news.readMessage(data.userId,function (result) {
-            socketio.cancelMsg(data.userId);
+    if(data.commentId){
+        news.readMessage(data.commentId,function (result) {
+            socketio.cancelMsg(data.commentId);
             result.affectedRows ? res.json({state:1}) : res.json({state:0})
         })
     } else {
