@@ -234,7 +234,7 @@ var user = {
     },
     // 获取用户攻略收藏
     getStrategyCollect:function (userId,page,callback) {
-        var sql = 'select t_strategy.*,t_strategy_img.src,t_user.`nick_name`,t_user.portrait from t_collect  left join t_strategy on t_strategy.id=t_collect.target_id left join t_strategy_img on t_strategy_img.strategy_id= t_strategy.id LEFT JOIN t_user ON t_user.id=t_strategy.`user_id` where t_collect.`user_id`=? and t_collect.target_type=2 group by t_strategy.id order by add_time desc  limit ?,10';
+        var sql = 'select t_strategy.*,t_strategy_img.src,t_user.`nick_name`,t_user.portrait from t_collect  left join t_strategy on t_strategy.id=t_collect.target_id left join t_strategy_img on t_strategy_img.strategy_id= t_strategy.id LEFT JOIN t_user ON t_user.id=t_strategy.`user_id` where t_collect.`user_id`=? and t_collect.target_type=2 group by t_strategy.id order by t_collect.id desc  limit ?,10';
         query(sql,[userId,(page-1)*10],function (result) {
             return callback(result)
         })
@@ -242,7 +242,7 @@ var user = {
     // 获取用户资讯收藏
     getNewsCollect:function (userId,page,callback) {
         var sql="SELECT a.id,a.title,a.img,a.add_time,a.agree,a.game_id,a.browse,b.game_name,b.icon,b.game_recommend FROM t_collect as c left join t_news AS a on a.id= c.target_id and c.user_id=?\n" +
-            "LEFT JOIN t_game AS b ON a.`game_id`=b.`id` where c.target_type=1  order by a.up desc,a.add_time desc limit ?,10";
+            "LEFT JOIN t_game AS b ON a.`game_id`=b.`id` where c.target_type=1  order by a.up desc,c.id desc limit ?,10";
         query(sql,[userId,(page-1)*10],function (result) {
             return callback(result)
         })

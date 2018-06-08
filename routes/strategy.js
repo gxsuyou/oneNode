@@ -119,10 +119,15 @@ router.get('/getStrategyByEssence',function (req,res) {
 router.get('/getStrategyById',function (req,res) {
     var data = req.query;
     if(data.strategyId && data.userId){
-        strategy.getStrategyById(data.userId,data.strategyId,function (result) {
-            console.log(result[0].browse_num);
-            res.json({state:1,strategy:result[0]})
-        })
+        function add(){
+            strategy.addBrowseNum(data.strategyId,function(result){
+                strategy.getStrategyById(data.userId,data.strategyId,function (result) {
+                    console.log(123);
+                    res.json({state:1,strategy:result[0]})
+                });
+            });
+        }
+        add();     
     }else {
         res.json({state:0})
     }
@@ -143,17 +148,6 @@ router.get('/addNum',function (req,res) {
                 });
             }
             num();
-        }else if(data.numType=="browse_num"){//添加浏览量
-            function bnum(){
-                strategy.getBrowseNum(data.strategyId,function(result){
-                    var bnum = result[0].bnum+1;
-                    
-                    strategy.addNum(bnum,data.strategyId,data.numType,function(result){
-                        res.json({state:2})
-                    });
-                });
-            }
-            bnum();
         }else if(data.numType=="agree_num"){// 添加点赞数
             function anum(){
                 strategy.getCountLikeComment(data.strategyId,function(result){
@@ -173,13 +167,13 @@ router.get('/addNum',function (req,res) {
    
 });
 // 统计评论条数
-router.get('/countComment',function (req,res) {
-    var data = req.query;
-    strategy.countComment(data.strategyId,function(result){
-        // console.log(result[0].num);
-        res.json({state:1,num:result});
-    });
-});
+// router.get('/countComment',function (req,res) {
+//     var data = req.query;
+//     strategy.countComment(data.strategyId,function(result){
+//         // console.log(result[0].num);
+//         res.json({state:1,num:result});
+//     });
+// });
 // 更换攻略评论图片
 router.get('/updateStrategyCommentImg',function (req,res) {
     var data= req.query;
@@ -202,23 +196,23 @@ router.get('/getCountLikeComment',function (req,res) {
         res.json({state:0})
     }
 });
-// 获取攻略的浏览量
-router.get('/getBrowseNum',function(req,res){
-    var data = req.query;
-    strategy.getBrowseNum(data.strategyId,function(result){
-        res.json({state:1,bnum:result});
-    });
-});
+
 // 添加评论
 router.get('/strategyComment',function (req,res) {
     var data = req.query;
     if(data.content && data.targetCommentId && data.targetUserId && data.userId && data.series){
-        var date=new Date();
-        strategy.strategyComment(data.content,data.userId,data.targetCommentId,data.targetUserId,data.series,date.Format('yyyy-MM-dd-hh-mm-ss'),function (result) {
-            result.insertId && strategy.addUserTip(result.insertId,data.targetUserId) ;
-            socketio.senMsg(data.targetUserId);
-            result.insertId ? res.json({state:1,commentId:result.insertId}) : res.json({state:0})
-        });
+        function addComment(){
+            strategy.addCommentNum(data.targetCommentId,function(result){
+                console.log(result);
+                var date=new Date();
+                strategy.strategyComment(data.content,data.userId,data.targetCommentId,data.targetUserId,data.series,date.Format('yyyy-MM-dd-hh-mm-ss'),function (result) {
+                    result.insertId && strategy.addUserTip(result.insertId,data.targetUserId) ;
+                    socketio.senMsg(data.targetUserId);
+                    result.insertId ? res.json({state:1,commentId:result.insertId}) : res.json({state:0})
+                });
+            });
+        }
+        addComment();
     }else {
         res.json({state:0})
     } 
@@ -293,16 +287,23 @@ router.get('/getCommentById',function (req,res) {
         res.json({state:0})
     }
 });
+// 点赞接口
 router.get('/likeComment',function (req,res) {
     var data = req.query;
     if(data.commentId && data.userId){
-        strategy.likeComment(data.commentId,data.userId,function (result) {
-            result.insertId ? res.json({state:1}) : res.json({state:0})
-        })
+        function addAgree(){
+            strategy.addAgreeNum(data.commentId,function(result){
+                strategy.likeComment(data.commentId,data.userId,function (result) {
+                    result.insertId ? res.json({state:1}) : res.json({state:0})
+                })
+            });
+        }
+        addAgree();
     }else {
         res.json({state:0})
     }
 });
+// 取消点赞接口
 router.get('/unLikeComment',function (req,res) {
     var data = req.query;
     if(data.commentId && data.userId){

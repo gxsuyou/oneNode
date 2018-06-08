@@ -77,28 +77,28 @@ var strategy={
             return callback(result)
         })
     },
-    // 统计该条攻略的评论条数
-    countComment:function (strategyId,callback) {
-        var sql = "select count(*) as num from t_strategy_comment where series=1 and target_comment_id=?";
-        query(sql,[strategyId],function(result){
-            return callback(result);
-        });
-    },
-    // 获取攻略点赞数
-    getCountLikeComment:function(strategyId,callback){
-        var sql = "select count(*) as lnum from t_strategy_like where strategy_id=?";
-        query(sql,[strategyId],function(result){
-            return callback(result);
-        });
-    },
-     // 获取攻略的浏览量
-    getBrowseNum:function(strategyId,callback){
-        var sql = 'select browse_num as bnum from t_strategy where id=?';
-        query(sql,[strategyId],function(result){
+    // 添加该条攻略的评论条数
+    addCommentNum:function (strategyId,callback) {
+        var sql="update t_strategy set comment_num=comment_num+1 where id =?";
+        query(sql,[strategyId],function (result) {
             return callback(result)
-        });
+        })
     },
-     // 点赞
+    // 添加攻略点赞数
+    addAgreeNum:function(commentId,callback){
+        var sql="update t_strategy_comment set agree_num=agree_num+1 where id =?";
+        query(sql,[commentId],function (result) {
+            return callback(result)
+        })
+    },
+     // 添加攻略的浏览量
+    addBrowseNum:function(strategyId,callback){
+        var sql="update t_strategy set browse_num=browse_num+1 where id =?";
+        query(sql,[strategyId],function (result) {
+            return callback(result)
+        })
+    },
+     //点赞接口
     likeComment:function (commentId,userId,callback) {
         var sql = 'insert into t_strategy_like (strategy_id,user_id) values (?,?)';
         query(sql,[commentId,userId],function (result) {
