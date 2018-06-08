@@ -697,6 +697,12 @@ router.get('/getCollectByUserId',function (req,res) {
             user.getStrategyCollect(data.userId,data.page,function (result) {
 
                 if(result.length){
+                    for(var i=0;i<result.length;i++){
+                        if(result[i].id==null){
+
+                           result.splice(i,result.length);                           
+                        }
+                    }
                     result.forEach(function (t) {
                         t.add_time=subdate(t.add_time)
                     })
@@ -743,7 +749,6 @@ router.get('/newMessage',function (req,res) {
                 user.newMessage(data.userId,data.page,function (results){
                     var n = result.length;
                     var m = results.length;
-                    console.log(n+':'+m);
                     var arr=[];
                     for(var i=0;i<n;i++){
                         arr=arr.concat(result[i]);

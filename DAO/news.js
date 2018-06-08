@@ -140,6 +140,7 @@ var news = {
             return callback(result)
         })
     },
+    // 获取资讯的二级评论
     getNewsCommentTowByPage:function (parentId,page,callback) {
         var sql="SELECT t_news_comment.id,t_news_comment.content,t_news_comment.add_time,a.nick_name AS selfNickName,a.portrait,b.nick_name AS targetUserNickName,a.id AS selfUserId FROM t_news_comment\n" +
             "LEFT  JOIN  t_user AS a ON t_news_comment.user_id=a.id \n" +

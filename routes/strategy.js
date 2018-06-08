@@ -157,7 +157,7 @@ router.get('/addNum',function (req,res) {
         }else if(data.numType=="agree_num"){// 添加点赞数
             function anum(){
                 strategy.getCountLikeComment(data.strategyId,function(result){
-                    var anum = result[0].lnum;
+                    var anum = result[0].lnum+1;
                     console.log(anum);
                     strategy.addNum(anum,data.strategyId,data.numType,function(result){
                         res.json({state:3})
@@ -358,11 +358,35 @@ router.get('/getStrategyCommentByPageUser',function(req,res){
    var targetId = req.query.targetId;
    var page = req.query.page;
    var userId= req.query.userId;
+   var strategyId = req.query.strategyId;
    // var userId = req.query.userId;
    if(userId && targetId && page){
-        strategy.getStrategyCommentByPageUser(userId,targetId,page,function(result){
-            console.log(result);
-          res.json({state:1,comment:result})
+        strategy.getStrategyCommentByPageUser(userId,targetId,strategyId,page,function(result){
+           if(result.length){
+                var data=result;
+                data.forEach(function (t) {
+                    t.add_time=subdate(t.add_time);
+                });
+                var len=result.length;
+                var index =0;
+                function selectTow() {
+                    strategy.getStrategyCommentTow(result[index].id,function (result) {
+                        result.forEach(function (t) {
+                            t.add_time=subdate(t.add_time);
+                        });
+                        data[index].towCommentList=result;
+                        if(index<(len-1)){
+                            index++;
+                            selectTow()
+                        }else {
+                            res.json({state:1,comment:data})
+                        }
+                    });
+                }
+                selectTow();
+            }else {
+                res.json({state:4,comment:[]})
+            }
         });
    }else{
         res.json({state:0})

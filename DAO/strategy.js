@@ -77,38 +77,26 @@ var strategy={
             return callback(result)
         })
     },
-    // 添加攻略的评论条数
-    getCommentNum:function (strategyId,callback) {
-        // var sql="update t_strategy set comment_num=comment_num+1 where id =?";
-        // query(sql,[strategyId],function (result) {
-        //     return callback(result)
-        // })
-        var sql = "select count(*) as num from t_strategy where id=?";
+    // 统计该条攻略的评论条数
+    countComment:function (strategyId,callback) {
+        var sql = "select count(*) as num from t_strategy_comment where series=1 and target_comment_id=?";
         query(sql,[strategyId],function(result){
             return callback(result);
         });
     },
-    // 添加攻略点赞数
-    getGreeNum:function(strategyId,callback){
+    // 获取攻略点赞数
+    getCountLikeComment:function(strategyId,callback){
         var sql = "select count(*) as lnum from t_strategy_like where strategy_id=?";
         query(sql,[strategyId],function(result){
             return callback(result);
         });
-        // var sql="update t_strategy set agree_num=agree_num+1 where id =?";
-        // query(sql,[strategyId],function (result) {
-        //     return callback(result)
-        // })
     },
-     // 添加攻略的浏览量
+     // 获取攻略的浏览量
     getBrowseNum:function(strategyId,callback){
         var sql = 'select browse_num as bnum from t_strategy where id=?';
         query(sql,[strategyId],function(result){
             return callback(result)
         });
-        // var sql="update t_strategy set browse_num=browse_num+1 where id =?";
-        // query(sql,[strategyId],function (result) {
-        //     return callback(result)
-        // })
     },
      // 点赞
     likeComment:function (commentId,userId,callback) {
@@ -142,7 +130,7 @@ var strategy={
             return callback(result)
         })
     },
-    // 获取攻略详情页评论接口中使用
+    // 获取攻略详情页评论接口中使用(获取一级评论的二级评论)
     getStrategyCommentTow:function (parentId,callback) {
         var sql="SELECT t_strategy_comment.content,t_strategy_comment.add_time,a.nick_name AS selfNickName,b.nick_name AS targetUserNickName FROM t_strategy_comment\n" +
             "LEFT  JOIN  t_user AS a ON t_strategy_comment.user_id=a.id \n" +
@@ -215,14 +203,14 @@ var strategy={
         })
     },
     // 只看楼主
-    getStrategyCommentByPageUser:function (userId,targetId,page,callback) {
-       var sql = "select t_strategy_comment.id,t_strategy_comment.content,t_strategy_comment.img,t_strategy_comment.add_time,t_user.nick_name,t_user.portrait from t_strategy_comment left join t_user on t_strategy_comment.target_user_id=t_user.id where t_strategy_comment.user_id=t_strategy_comment.target_user_id and t_strategy_comment.target_user_id=? order by t_strategy_comment.id desc limit ?,5";
+    getStrategyCommentByPageUser:function (userId,targetId,strategyId,page,callback) {
+       // var sql = "select t_strategy_comment.id,t_strategy_comment.content,t_strategy_comment.img,t_strategy_comment.add_time,t_user.nick_name,t_user.portrait from t_strategy_comment left join t_user on t_strategy_comment.target_user_id=t_user.id where t_strategy_comment.user_id=t_strategy_comment.target_user_id and t_strategy_comment.target_user_id=? order by t_strategy_comment.id desc limit ?,5";
         var sql="SELECT t_strategy_comment.id,t_strategy_comment.img,t_strategy_comment.content,t_strategy_comment.add_time,t_strategy_comment.agree_num,t_strategy_comment.comment_num,t_user.nick_name,t_user.portrait, t_strategy_like.state  \n" +
             "            FROM t_strategy_comment \n" +
             "            LEFT JOIN t_user ON t_strategy_comment.user_id = t_user.id \n" +
             "            LEFT JOIN t_strategy_like ON t_strategy_like.`strategy_id`=t_strategy_comment.`id` AND t_strategy_like.`user_id`=? \n"+ 
-            "            WHERE t_strategy_comment.user_id=t_strategy_comment.target_user_id and t_strategy_comment.target_user_id=? order by t_strategy_comment.id desc limit ?,5";
-       query(sql,[userId,targetId,(page-1)*5],function(result){
+            "            WHERE t_strategy_comment.user_id=t_strategy_comment.target_user_id and t_strategy_comment.target_user_id=? and t_strategy_comment.target_comment_id=? order by t_strategy_comment.id desc limit ?,5";
+       query(sql,[userId,targetId,strategyId,(page-1)*5],function(result){
             return callback(result);
        });
     },
