@@ -99,9 +99,9 @@ var strategy={
         })
     },
      //点赞接口
-    likeComment:function (commentId,userId,callback) {
-        var sql = 'insert into t_strategy_like (strategy_id,user_id) values (?,?)';
-        query(sql,[commentId,userId],function (result) {
+    likeComment:function (commentId,userId,state,callback) {
+        var sql = 'insert into t_strategy_like (strategy_id,user_id,state) values (?,?,?)';
+        query(sql,[commentId,userId,state],function (result) {
             return callback(result)
         })
     },
@@ -111,6 +111,13 @@ var strategy={
         query(sql,[content,userId,targetCommentId,targetUserId,series,addTime],function (result) {
             return callback(result);
         });    
+    },
+     // 添加一级评论的评论数
+    addFirstCommentNum:function(targetCommentId,callback){
+        var sql = "update t_strategy_comment set comment_num=comment_num+1 where id=?";
+        query(sql,[targetCommentId],function(result){
+            return callback(result);
+        });
     },
     
     updateStrategyCommentImg:function (strategyId,img,callback) {
@@ -156,12 +163,12 @@ var strategy={
         })
     },
     // 阅读新通知
-    readMessage:function (commentId,callback) {
-        var sql = 'update t_tip set state=1 where tip_id=?';
-        query(sql,[commentId],function (result) {
-            return callback(result)
-        })
-    },
+    // readMessage:function (commentId,callback) {
+    //     var sql = 'update t_tip set state=1 where tip_id=?';
+    //     query(sql,[commentId],function (result) {
+    //         return callback(result)
+    //     })
+    // },
     // 取消点赞接口
     unLikeComment:function (commentId,userId,callback) {
         var sql = 'delete from  t_strategy_like where strategy_id=? and user_id=?';
@@ -213,6 +220,13 @@ var strategy={
        query(sql,[userId,targetId,strategyId,(page-1)*5],function(result){
             return callback(result);
        });
+    },
+    // 我的作品删除
+    strategyDelete:function(strategyId,callback){
+        var sql = "delete from t_strategy where id=?";
+        query(sql,[strategyId],function(result){
+            return callback(result);
+        });
     },
     
 };

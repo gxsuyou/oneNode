@@ -293,6 +293,7 @@ router.get('/getGameByTag',function (req,res) {
         res.json({state:0})
     }
 });
+// 添加我的游戏
 router.get('/addMyGame',function (req,res) {
     var data =req.query;
     if(data.userId && data.gameId && data.sys){

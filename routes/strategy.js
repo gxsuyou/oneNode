@@ -166,14 +166,6 @@ router.get('/addNum',function (req,res) {
     }
    
 });
-// 统计评论条数
-// router.get('/countComment',function (req,res) {
-//     var data = req.query;
-//     strategy.countComment(data.strategyId,function(result){
-//         // console.log(result[0].num);
-//         res.json({state:1,num:result});
-//     });
-// });
 // 更换攻略评论图片
 router.get('/updateStrategyCommentImg',function (req,res) {
     var data= req.query;
@@ -201,18 +193,33 @@ router.get('/getCountLikeComment',function (req,res) {
 router.get('/strategyComment',function (req,res) {
     var data = req.query;
     if(data.content && data.targetCommentId && data.targetUserId && data.userId && data.series){
-        function addComment(){
-            strategy.addCommentNum(data.targetCommentId,function(result){
-                console.log(result);
-                var date=new Date();
-                strategy.strategyComment(data.content,data.userId,data.targetCommentId,data.targetUserId,data.series,date.Format('yyyy-MM-dd-hh-mm-ss'),function (result) {
-                    result.insertId && strategy.addUserTip(result.insertId,data.targetUserId) ;
-                    socketio.senMsg(data.targetUserId);
-                    result.insertId ? res.json({state:1,commentId:result.insertId}) : res.json({state:0})
+        if(data.series==1){
+            function addComment(){
+                strategy.addCommentNum(data.targetCommentId,function(result){
+                    var date=new Date();
+                    strategy.strategyComment(data.content,data.userId,data.targetCommentId,data.targetUserId,data.series,date.Format('yyyy-MM-dd-hh-mm-ss'),function (result) {
+                        result.insertId && strategy.addUserTip(result.insertId,data.targetUserId) ;
+                        socketio.senMsg(data.targetUserId);
+                        result.insertId ? res.json({state:1,commentId:result.insertId}) : res.json({state:0})
+                    });
                 });
-            });
+            }
+            addComment();
+        };
+        if(data.series==2){
+            function addFirstComment(){
+                strategy.addFirstCommentNum(data.targetCommentId,function(result){
+                     var date=new Date();
+                    strategy.strategyComment(data.content,data.userId,data.targetCommentId,data.targetUserId,data.series,date.Format('yyyy-MM-dd-hh-mm-ss'),function (result) {
+                        result.insertId && strategy.addUserTip(result.insertId,data.targetUserId) ;
+                        socketio.senMsg(data.targetUserId);
+                        result.insertId ? res.json({state:1,commentId:result.insertId}) : res.json({state:0})
+                    });
+                })
+            }
+            addFirstComment();
         }
-        addComment();
+        
     }else {
         res.json({state:0})
     } 
@@ -274,15 +281,15 @@ router.get('/getStrategyCommentTowByPage',function (req,res) {
 router.get('/getCommentById',function (req,res) {
     var data = req.query;
     if(data.commentId){
-        function ready(){
-            strategy.readMessage(data.commentId,function(result){
+        // function ready(){
+            // strategy.readMessage(data.commentId,function(result){
                  strategy.getCommentById(req.query.commentId,function (result) {
                     result.length && (result[0].add_time=subdate(result[0].add_time));
                     result.length?res.json({state:1,comment:result[0]}):res.json({state:0});
                 })
-            });
-        }
-        ready();
+            // });
+        // }
+        // ready();
     }else {
         res.json({state:0})
     }
@@ -290,10 +297,10 @@ router.get('/getCommentById',function (req,res) {
 // 点赞接口
 router.get('/likeComment',function (req,res) {
     var data = req.query;
-    if(data.commentId && data.userId){
+    if(data.commentId && data.userId && data.state){
         function addAgree(){
             strategy.addAgreeNum(data.commentId,function(result){
-                strategy.likeComment(data.commentId,data.userId,function (result) {
+                strategy.likeComment(data.commentId,data.userId,data.state,function (result) {
                     result.insertId ? res.json({state:1}) : res.json({state:0})
                 })
             });
@@ -392,6 +399,23 @@ router.get('/getStrategyCommentByPageUser',function(req,res){
    }else{
         res.json({state:0})
    }
+});
+//我的作品删除
+router.get('/strategyDelete',function(req,res){
+    var strategyId = req.query.strategyId;
+    if(strategyId){
+        strategy.strategyDelete(strategyId,function(result){
+
+                if(result.affectedRows>0){
+                    res.json({state:1});
+                }else{
+                    res.json({state:0});
+                }
+        });
+
+    }else{
+        res.json({state:0});
+    }
 });
 function subdate(str) {
     return str.substring(0,10);

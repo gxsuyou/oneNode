@@ -218,7 +218,10 @@ var game ={
     // 获取活动标签
     getActiveTag:function (sys,callback) {
         var data = {};
-        var sql = 'SELECT t_game.id AS gameId,t_game.game_name,t_game.`game_title_img`,t_game.`grade`,t_tag.`id` AS tagId,t_tag.`name` FROM (t_tag_relation LEFT JOIN t_tag ON t_tag_relation.`tag_id`=t_tag.`id`)  LEFT JOIN t_game ON t_tag_relation.`game_id`=t_game.`id` WHERE t_tag.`id`=(SELECT id FROM t_tag WHERE active=0 LIMIT 0,1) AND t_game.`sys`=? ORDER BY RAND() LIMIT 10';
+        var sql = 'SELECT t_game.id AS gameId,t_game.game_name,t_game.`game_title_img`,t_game.`grade`,t_tag.`id` AS tagId,t_tag.`name` FROM (t_tag_relation \n'+
+        'LEFT JOIN t_tag ON t_tag_relation.`tag_id`=t_tag.`id`) \n'+
+        'LEFT JOIN t_game ON t_tag_relation.`game_id`=t_game.`id`\n'+
+        'WHERE t_tag.`id`=(SELECT id FROM t_tag WHERE active=0 LIMIT 0,1) AND t_game.`sys`=? ORDER BY RAND() LIMIT 10';00
         query(sql,[sys],function (result) {
             if(result.length){
                 data[result[0].name]=result;
@@ -279,6 +282,7 @@ var game ={
             return callback(result)
         })
     },
+    // 添加我的游戏
     addMyGame:function (gameId,userId,sys,callback) {
         var sql = 'select id from t_collect where target_id=? and user_id=? and target_type=?';
         query(sql,[gameId,userId,3],function (result) {

@@ -253,6 +253,7 @@ var user = {
             return callback(result)
         })
     },
+    // 获取我的游戏
     getGameByUser:function (userId,page,callback) {
         var sql="SELECT t_game.*,GROUP_CONCAT(t_tag.name) AS tagList,GROUP_CONCAT(t_tag.id) AS tagId FROM t_collect \n" +
             "LEFT JOIN t_game ON t_game.`id`=t_collect.`target_id`\n" +
@@ -263,33 +264,47 @@ var user = {
         })
     },
     newMessage:function (userId,page,callback) {
-        // var sql ='call pro_newMessage(?,?)';
+        var sql ='call pro_newMessage(?,?)';
         // var arr=[];
-            // for (var i=0;i<result.length-1;i++){
-            //     arr=arr.concat(result[i])
-            // }
-            // result.forEach(function (t) {
-            //
-            // });
+        // query(sql,[userId,(page-1)*10],function(result){
+        //     for (var i=0;i<result.length-1;i++){
+        //         arr=arr.concat(result[i])
+        //     }
+        //     result.forEach(function (t) {
+                
+        //     });
+        //     return callback(arr);
+        // }) 
+             // var sql = "select t_strategy_comment.id,t_strategy_comment.content,t_strategy_comment.series,t_strategy_comment.target_comment_id as parentId,\n"+
+        // "t_strategy_comment.add_time, t_news_comment.id,t_news_comment.content,t_news_comment.series,t_news_comment.target_comment_id as parentId,\n"+
+        // "t_news_comment.add_time,t_tip.type,t_tip.state,t_user.nick_name,t_user.portrait from t_strategy_comment \n"+
+        // "left join t_news_comment on t_strategy_comment.target_user_id=t_news_comment.target_user_id\n"+
+        // "left join t_user on t_strategy_comment.user_id=t_news_comment.user_id=t_user.id \n"+
+        // "left join t_tip on t_strategy_comment.id=t_tip.tip_id \n"+
+        // "where t_strategy_comment.target_user_id=? order by ";
+
+
         var sql = "select t_strategy_comment.id,t_strategy_comment.content,t_strategy_comment.series,t_strategy_comment.target_comment_id as parentId,t_strategy_comment.add_time,t_tip.type,t_tip.state,t_user.nick_name,t_user.portrait from t_strategy_comment \n"+
                   "left join t_user on t_strategy_comment.user_id=t_user.id \n"+
                   "left join t_tip on t_strategy_comment.id=t_tip.tip_id \n"+
-                  "where t_strategy_comment.target_user_id=?group by t_strategy_comment.add_time desc limit ?,5";
-        query(sql,[userId,(page-1)*5],function(result){
+                  "where t_strategy_comment.target_user_id=? and t_strategy_comment.target_user_id!=t_strategy_comment.user_id group by t_strategy_comment.id desc limit ?,10";
+       
+        query(sql,[userId,(page-1)*10],function(result){
             return callback(result)
         }) 
             
     },
     newsMessage:function (userId,page,callback) {
-        var sql = "select t_news_comment.id,t_news_comment.content,t_news_comment.series,t_news_comment.target_comment_id as parentId,t_news_comment.add_time,t_tip.type,t_tip.state,t_user.nick_name,t_user.portrait from t_news_comment \n"+
+        var sql = "select t_news_comment.id,t_news_comment.content,t_news_comment.series,t_news_comment.target_comment_id as parentId,t_news_comment.add_time,t_tip.type,t_user.nick_name,t_user.portrait from t_news_comment \n"+
                   "left join t_user on t_news_comment.user_id=t_user.id \n"+
                   "left join t_tip on t_news_comment.id=t_tip.tip_id \n"+
-                  "where t_news_comment.target_user_id=?group by t_news_comment.add_time  desc limit ?,5";
-        query(sql,[userId,(page-1)*5],function(result){
+                  "where t_news_comment.target_user_id=? and t_news_comment.target_user_id!=t_news_comment.user_id group by t_news_comment.add_time  desc limit ?,10";
+        query(sql,[userId,(page-1)*10],function(result){
             return callback(result)
         }) 
             
     },
+    // 添加意见反馈信息
     addFeedbackMsg:function (userId,content,callback) {
         var sql = 'insert into t_feedback (detail,user_id) values (?,?)';
         query(sql,[content,userId],function (result) {
@@ -312,3 +327,4 @@ var user = {
 
 };
 module.exports = user;
+

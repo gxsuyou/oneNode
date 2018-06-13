@@ -283,17 +283,30 @@ router.get('/unCollect',function (req,res) {
     }
 });
 // 阅读新通知  改变通知阅读状态
+// router.get('/cancelMessage',function (req,res) {
+//     var data = req.query;
+//     if(data.commentId){
+//         news.readMessage(data.commentId,function (result) {
+//             socketio.cancelMsg(data.commentId);
+//             result.affectedRows ? res.json({state:1}) : res.json({state:0})
+//         })
+//     } else {
+//         res.json({state:0})
+//     }
+// });
 router.get('/cancelMessage',function (req,res) {
     var data = req.query;
-    if(data.commentId){
-        news.readMessage(data.commentId,function (result) {
-            socketio.cancelMsg(data.commentId);
+    if(data.userId){
+       news.readMessage(data.userId,function (result) {
+            socketio.cancelMsg(data.userId);
             result.affectedRows ? res.json({state:1}) : res.json({state:0})
         })
     } else {
         res.json({state:0})
+
     }
 });
+
 function subdate(str) {
     return str.substring(0,10);
 }

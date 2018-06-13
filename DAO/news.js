@@ -187,6 +187,13 @@ var news = {
 
         })
     },
+     // 阅读新通知
+    readMessage:function (userId,callback) {
+        var sql = 'update t_tip set state=1 where user_id=?';
+        query(sql,[userId],function (result) {
+            return callback(result)
+        })
+    },
 
 };
 module.exports = news;

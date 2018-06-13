@@ -716,6 +716,7 @@ router.get('/getCollectByUserId',function (req,res) {
         res.json({state:0})
     }
 });
+// 获取我的游戏
 router.get('/getGameByUserId',function (req,res) {
     var data = req.query;
     if(data.userId && data.page && data.type){
@@ -743,18 +744,18 @@ function subdate(str) {
 }
 router.get('/newMessage',function (req,res) {
     var data = req.query;
-    if(data.userId && data.page){
+    if(data.userId){
         function news(){
             user.newsMessage(data.userId,data.page,function (result){
                 user.newMessage(data.userId,data.page,function (results){
                     var n = result.length;
                     var m = results.length;
                     var arr=[];
-                    for(var i=0;i<n;i++){
-                        arr=arr.concat(result[i]);
-                    }
                     for(var i=0;i<m;i++){
                         arr=arr.concat(results[i]);
+                    }
+                    for(var i=0;i<n;i++){
+                        arr=arr.concat(result[i]);
                     }
                     res.json({state:1,tip:arr})
                 }) 
@@ -762,6 +763,8 @@ router.get('/newMessage',function (req,res) {
             });
         }
         news();
+
+
         // user.newMessage(data.userId,data.page,function (result) {
         //     if(result.length){
 
@@ -771,6 +774,7 @@ router.get('/newMessage',function (req,res) {
         //     }
         //     res.json({state:1,tip:result})
         // })
+
     }else {
         res.json({state:0})
     }
@@ -797,7 +801,6 @@ router.get('/addFeedbackImg',function (req,res) {
 });
 // 修改密码
 router.post('/upDatePassword',function (req,res,next) {
-    // console.log(req.body);
     var ver=req.body.verify;
     var tel=req.body.tel;
     var password=req.body.password;
