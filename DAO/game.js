@@ -70,6 +70,7 @@ var game ={
             })
         }
     },
+    // 根据关键词搜索游戏
     searchGameByMsg:function (sys,msg,sort,page,callback) {
         var sql="select id,game_name,icon,grade from t_game where sys=? and game_name like '%"+msg+"%'  ORDER BY "+sort+" DESC limit ?,20";
         query(sql,[sys,(page-1)*20],function (result) {
@@ -262,8 +263,9 @@ var game ={
             return callback(result)
         })
     },
+    // 获取游戏分类
     getGameCls:function (callback) {
-        var sql ='SELECT t_game_cls.*,t_game.icon FROM t_game_cls_relation  LEFT JOIN t_game ON t_game.id=t_game_cls_relation.`game_id` LEFT JOIN t_game_cls ON t_game_cls.`id`=t_game_cls_relation.`cls_id` WHERE t_game_cls.type =1 GROUP BY t_game_cls.`id` ';
+        var sql ='SELECT t_game_cls.*,t_game.game_title_img as icon FROM t_game_cls_relation  LEFT JOIN t_game ON t_game.id=t_game_cls_relation.`game_id` LEFT JOIN t_game_cls ON t_game_cls.`id`=t_game_cls_relation.`cls_id` WHERE t_game_cls.type =1 GROUP BY t_game_cls.`id` ';
         query(sql,[],function (result) {
             return callback(result)
         })

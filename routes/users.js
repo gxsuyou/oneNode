@@ -319,7 +319,7 @@ router.get("/getSign",function (req,res,next) {
     })
 });
 
-
+//登录
 router.post('/login', function(req, res, next) {
     var password=req.body.password;
     var md5 = crypto.createHash('md5');
@@ -802,17 +802,16 @@ router.get('/addFeedbackImg',function (req,res) {
 // 修改密码
 router.post('/upDatePassword',function (req,res,next) {
     var ver=req.body.verify;
-    var tel=req.body.tel;
+    var tel=req.body.tel;  
     var password=req.body.password;
 
     var md5 = crypto.createHash('md5');
+    md5.update(password);
     var sign = md5.digest('hex');
-    console.log(sign);
     sign=isReverse(sign);
     if(ver && tel && sign){
         if(ver==verify[tel]){
-            user.updatePassword(sign,tel,function (result) {
-                console.log(result);
+            user.upDatePassword(sign,tel,function (result) {
                 result.affectedRows ? res.json({state:1}) : res.json({state:0})
             })
         }else {
@@ -822,6 +821,7 @@ router.post('/upDatePassword',function (req,res,next) {
         res.json({state:99});
     }
 });
+
 
 // router.get("/edit");
 module.exports = router;

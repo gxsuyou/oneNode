@@ -220,7 +220,7 @@ router.get('/getGameByCls',function (req,res) {
         res.json({state:0})
     }
 });
-
+// 根据关键词搜索游戏
 router.get("/searchGameByMsg",function (req,res,next) {
    if(req.query.msg && req.query.sys){
        var data= req.query;

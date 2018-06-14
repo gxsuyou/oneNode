@@ -1,7 +1,7 @@
 var query = require('../config/config');
 
-//收藏、取消收藏
 var news = {
+    //根据页数获取资讯列表
     getNewsListByPage:function (page,callback) {
         // var sql="SELECT a.*,b.game_name,b.icon FROM t_news AS a\n" +
         //     "LEFT JOIN t_game AS b ON a.`game_id`=b.`id` order by a.add_time desc limit 0,20";

@@ -3,7 +3,6 @@
  */
 var query = require('../config/config');
 
-//收藏、取消收藏
 var user = {
     login:function (user_tel,password,callback) {
         var sql = "select id,nick_name,portrait,coin,integral,achievement_point,time_logon,tel,pay from t_user where tel=? and password=?";
@@ -212,13 +211,6 @@ var user = {
             return callback(result)
         })
     },
-    // 修改密码
-    upDatePassword:function (tel,password,callback) {
-        var sql = "update t_user set password=? where tel=?";
-        query(sql,[password,tel],function (result) {
-            return callback(result)
-        })
-    },
     getNewsByUserId:function (userId,page,callback) {
         var sql="SELECT a.id,a.title,a.img,a.add_time,a.agree,a.game_id,a.browse,b.game_name,b.icon,b.game_recommend FROM t_news AS a\n" +
             "LEFT JOIN t_game AS b ON a.`game_id`=b.`id` where a.add_user=? order by a.up desc,a.add_time desc limit ?,10";
@@ -318,12 +310,12 @@ var user = {
         })
     },
     // 找回密码
-    upDatePassword:function (tel,password,callback) {
-        var sql = 'update t_user set password = ? where tel=?';
+    upDatePassword:function (password,tel,callback) {
+        var sql = "update t_user set password=? where tel=?";
         query(sql,[password,tel],function (result) {
             return callback(result)
         })
-    }
+    },
 
 };
 module.exports = user;

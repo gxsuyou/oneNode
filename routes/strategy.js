@@ -33,7 +33,7 @@ router.get('/addStrategyMsg',function (req,res) {
     var data=req.query;
     if(data.userId && data.title && data.detail && data.gameName){
         var date=new Date();
-        strategy.addStartegy(data.userId,data.title,data.detail,data.gameName,date.Format('yyyy-MM-dd hh:mm:ss'),function (result) {
+        strategy.addStartegy(data.userId,data.title,data.detail,data.gameName,date.Format('yyyy-MM-dd'),function (result) {
             result.insertId ? res.json({state:1,strategyId:result.insertId}) : res.json({state:0})
         })
     }else {
@@ -94,10 +94,18 @@ router.get('/getStrategyByMsg',function (req,res) {
     if(data.sort && data.page){
         if(data.sort=='essence'){
             strategy.getStrategyByEssence(data.page,function (result) {
+                for(var i=0;i<result.length;i++){
+                    var newtime = result[i].add_time.substring(0,10);
+                    result[i].add_time = newtime;
+                }
                 res.json({state:1,strategy:result})
             })
         }else {
             strategy.getStrategyByMsg(data.sort,data.page,function (result) {
+                for(var i=0;i<result.length;i++){
+                    var newtime = result[i].add_time.substring(0,10);
+                    result[i].add_time = newtime;
+                }
                 res.json({state:1,strategy:result})
             })
         }
@@ -122,7 +130,9 @@ router.get('/getStrategyById',function (req,res) {
         function add(){
             strategy.addBrowseNum(data.strategyId,function(result){
                 strategy.getStrategyById(data.userId,data.strategyId,function (result) {
-                    console.log(123);
+                    
+                    var newtime = result[0].add_time.substring(0,10);
+                    result[0].add_time = newtime;
                     res.json({state:1,strategy:result[0]})
                 });
             });
@@ -367,8 +377,7 @@ router.get('/getStrategyCommentByPageUser',function(req,res){
    var page = req.query.page;
    var userId= req.query.userId;
    var strategyId = req.query.strategyId;
-   // var userId = req.query.userId;
-   if(userId && targetId && page){
+   if(userId && targetId && page && strategyId){
         strategy.getStrategyCommentByPageUser(userId,targetId,strategyId,page,function(result){
            if(result.length){
                 var data=result;
@@ -385,7 +394,7 @@ router.get('/getStrategyCommentByPageUser',function(req,res){
                         data[index].towCommentList=result;
                         if(index<(len-1)){
                             index++;
-                            selectTow()
+                            selectTow();
                         }else {
                             res.json({state:1,comment:data})
                         }

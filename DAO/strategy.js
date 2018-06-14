@@ -211,12 +211,10 @@ var strategy={
     },
     // 只看楼主
     getStrategyCommentByPageUser:function (userId,targetId,strategyId,page,callback) {
-       // var sql = "select t_strategy_comment.id,t_strategy_comment.content,t_strategy_comment.img,t_strategy_comment.add_time,t_user.nick_name,t_user.portrait from t_strategy_comment left join t_user on t_strategy_comment.target_user_id=t_user.id where t_strategy_comment.user_id=t_strategy_comment.target_user_id and t_strategy_comment.target_user_id=? order by t_strategy_comment.id desc limit ?,5";
-        var sql="SELECT t_strategy_comment.id,t_strategy_comment.img,t_strategy_comment.content,t_strategy_comment.add_time,t_strategy_comment.agree_num,t_strategy_comment.comment_num,t_user.nick_name,t_user.portrait, t_strategy_like.state  \n" +
-            "            FROM t_strategy_comment \n" +
-            "            LEFT JOIN t_user ON t_strategy_comment.user_id = t_user.id \n" +
-            "            LEFT JOIN t_strategy_like ON t_strategy_like.`strategy_id`=t_strategy_comment.`id` AND t_strategy_like.`user_id`=? \n"+ 
-            "            WHERE t_strategy_comment.user_id=t_strategy_comment.target_user_id and t_strategy_comment.target_user_id=? and t_strategy_comment.target_comment_id=? order by t_strategy_comment.id desc limit ?,5";
+        var sql="SELECT t_strategy_comment.id,t_strategy_comment.img,t_strategy_comment.content,t_strategy_comment.add_time,t_strategy_comment.agree_num,t_strategy_comment.comment_num,t_user.nick_name,t_user.portrait, t_strategy_like.state  FROM t_strategy_comment \n"+
+        "LEFT JOIN t_user ON t_strategy_comment.user_id = t_user.id \n"+
+        "LEFT JOIN t_strategy_like ON t_strategy_like.`strategy_id`=t_strategy_comment.`id` AND t_strategy_like.`user_id`=? \n"+
+        "WHERE t_strategy_comment.user_id=? and t_strategy_comment.target_comment_id=? order by t_strategy_comment.id desc limit ?,5";
        query(sql,[userId,targetId,strategyId,(page-1)*5],function(result){
             return callback(result);
        });
