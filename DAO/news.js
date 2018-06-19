@@ -81,9 +81,10 @@ var news = {
             return callback(result)
         })
     },
-    newsComment:function (targetCommentId,userId,series,content,addTime,targetUserId,callback) {
-        var sql="insert into t_news_comment (content,user_id,series,target_comment_id,add_time,target_user_id) values (?,?,?,?,?,?)";
-        query(sql,[content,userId,series,targetCommentId,addTime,targetUserId],function (result) {
+    //添加资讯评论
+    newsComment:function (targetCommentId,userId,series,content,addTime,targetUserId,news_img,news_title,newsid,callback) {
+        var sql="insert into t_news_comment (content,user_id,series,target_comment_id,add_time,target_user_id,news_img,news_title,newsid) values (?,?,?,?,?,?,?,?,?)";
+        query(sql,[content,userId,series,targetCommentId,addTime,targetUserId,news_img,news_title,newsid],function (result) {
             return callback(result)
         })
     },
@@ -116,12 +117,24 @@ var news = {
             return callback(result)
         })
     },
+    // 获取资讯评论
     getNewsCommentByPage:function (userId,commentParentId,page,callback) {
         var sql="SELECT t_news_comment.id,t_news_comment.content,t_news_comment.add_time,t_news_comment.agree,t_news_comment.comment,t_user.nick_name,t_user.portrait, t_like.state  \n" +
             "FROM t_news_comment  \n" +
             "LEFT JOIN t_user ON t_news_comment.user_id = t_user.id  \n" +
             "LEFT JOIN t_like ON t_news_comment.id=t_like.parent_id and t_like.like_user_id=? AND t_like.`like_type`=12 WHERE t_news_comment.target_comment_id=? AND \n" +
-            "t_news_comment.series=1  LIMIT ?,5";
+            "t_news_comment.series=1 order by t_news_comment.add_time desc  LIMIT ?,5";
+        query(sql,[userId,commentParentId,(page-1)*5],function (result) {
+            return callback(result)
+        })
+    },
+    // 获取热门资讯评论
+    getHotNewsCommentByPage:function (userId,commentParentId,page,callback) {
+        var sql="SELECT t_news_comment.id,t_news_comment.content,t_news_comment.add_time,t_news_comment.agree,t_news_comment.comment,t_user.nick_name,t_user.portrait, t_like.state  \n" +
+            "FROM t_news_comment  \n" +
+            "LEFT JOIN t_user ON t_news_comment.user_id = t_user.id  \n" +
+            "LEFT JOIN t_like ON t_news_comment.id=t_like.parent_id and t_like.like_user_id=? AND t_like.`like_type`=12 WHERE t_news_comment.target_comment_id=? AND \n" +
+            "t_news_comment.series=1 order by t_news_comment.comment desc LIMIT ?,5";
         query(sql,[userId,commentParentId,(page-1)*5],function (result) {
             return callback(result)
         })

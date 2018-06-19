@@ -51,21 +51,21 @@ var strategy={
     },
     // 获取攻略列表                                          
     getStrategyByMsg:function (sort,page,callback) {
-        var sql = 'select t_strategy.*,t_strategy_img.src,t_user.`nick_name`,t_user.portrait from t_strategy left join t_strategy_img on t_strategy_img.strategy_id= t_strategy.id LEFT JOIN t_user ON t_user.id=t_strategy.`user_id` group by t_strategy.id order by '+sort+' desc  limit ?,10';
+        var sql = 'select t_strategy.*,GROUP_CONCAT(t_strategy_img.src order by t_strategy_img.src desc) as src,t_user.`nick_name`,t_user.portrait from t_strategy_img  left join t_strategy on t_strategy_img.strategy_id= t_strategy.id LEFT JOIN t_user ON t_user.id=t_strategy.`user_id` group by t_strategy.id order by '+sort+' desc  limit ?,10';
         query(sql,[(page-1)*10],function (result) {
             return callback(result)
         })
     },
     // 获取精华攻略
     getStrategyByEssence:function (page,callback) {
-        var sql = "select t_strategy.*,t_strategy_img.src from t_strategy left join t_strategy_img on t_strategy_img.strategy_id= t_strategy.id where essence = 1 group by t_strategy.id desc limit ?,10";
+        var sql = "select t_strategy.*,t_strategy_img.src from t_strategy_img  left join t_strategy on t_strategy_img.strategy_id= t_strategy.id where essence = 1 group by t_strategy.id desc limit ?,10";
         query(sql,[((page-1)*10)],function (result) {
             return callback(result)
         })
     },
     // 获取攻略详情
     getStrategyById:function (userId,strategyId,callback) {
-        var sql ="SELECT t_strategy.*,GROUP_CONCAT(t_strategy_img.src order by t_strategy_img.src asc) as imgList,t_user.`nick_name`,t_user.portrait,d.id as collect,t_strategy_like.`state` FROM t_strategy LEFT JOIN t_strategy_img ON t_strategy_img.strategy_id= t_strategy.id LEFT JOIN t_user ON t_user.id=t_strategy.`user_id` LEFT JOIN t_strategy_like ON t_strategy_like.`strategy_id`=t_strategy.`id` AND t_strategy_like.`user_id`=? LEFT JOIN t_collect AS d ON t_strategy.id=d.`target_id` AND d.`target_type`=2 AND d.`user_id`=?  WHERE t_strategy.id =? GROUP BY t_strategy.id";
+        var sql ="SELECT t_strategy.*,GROUP_CONCAT(t_strategy_img.src order by t_strategy_img.src desc) as imgList,t_user.`nick_name`,t_user.portrait,d.id as collect,t_strategy_like.`state` FROM t_strategy LEFT JOIN t_strategy_img ON t_strategy_img.strategy_id= t_strategy.id LEFT JOIN t_user ON t_user.id=t_strategy.`user_id` LEFT JOIN t_strategy_like ON t_strategy_like.`strategy_id`=t_strategy.`id` AND t_strategy_like.`user_id`=? LEFT JOIN t_collect AS d ON t_strategy.id=d.`target_id` AND d.`target_type`=2 AND d.`user_id`=?  WHERE t_strategy.id =? GROUP BY t_strategy.id";
         query(sql,[userId,userId,strategyId],function (result) {
             return callback(result)
         })
@@ -77,11 +77,33 @@ var strategy={
             return callback(result)
         })
     },
+     // 添加评论
+    strategyComment:function (content,userId,targetCommentId,targetUserId,series,addTime,target_img,targetid,target_title,callback) {
+        var sql = 'insert into t_strategy_comment (content,user_id,target_comment_id,target_user_id,series,add_time,target_img,targetid,target_title) values (?,?,?,?,?,?,?,?,?)';
+        query(sql,[content,userId,targetCommentId,targetUserId,series,addTime,target_img,targetid,target_title],function (result) {
+            return callback(result);
+        });    
+    },
     // 添加该条攻略的评论条数
     addCommentNum:function (strategyId,callback) {
         var sql="update t_strategy set comment_num=comment_num+1 where id =?";
         query(sql,[strategyId],function (result) {
             return callback(result)
+        })
+    },
+     // 添加一级评论的评论数
+    addFirstCommentNum:function(targetCommentId,callback){
+        var sql = "update t_strategy_comment set comment_num=comment_num+1 where id=?";
+        query(sql,[targetCommentId],function(result){
+            return callback(result);
+        
+        });
+    },
+    // 根据一级评论id查询出攻略id
+    getStrategyId:function(targetCommentId,callback){
+        var sql = "select target_comment_id as tarId from t_strategy_comment where id=?";
+        query(sql,[targetCommentId],function(result){
+            return callback(result);
         })
     },
     // 添加攻略点赞数
@@ -105,20 +127,7 @@ var strategy={
             return callback(result)
         })
     },
-    // 添加评论
-    strategyComment:function (content,userId,targetCommentId,targetUserId,series,addTime,callback) {
-        var sql = 'insert into t_strategy_comment (content,user_id,target_comment_id,target_user_id,series,add_time) values (?,?,?,?,?,?)';
-        query(sql,[content,userId,targetCommentId,targetUserId,series,addTime],function (result) {
-            return callback(result);
-        });    
-    },
-     // 添加一级评论的评论数
-    addFirstCommentNum:function(targetCommentId,callback){
-        var sql = "update t_strategy_comment set comment_num=comment_num+1 where id=?";
-        query(sql,[targetCommentId],function(result){
-            return callback(result);
-        });
-    },
+    
     
     updateStrategyCommentImg:function (strategyId,img,callback) {
         var sql = 'update t_strategy_comment set img=? where id =?';
@@ -185,7 +194,7 @@ var strategy={
     },
     // 根据关游戏名字获取攻略
     getStrategyByGameName:function (gameName,sort,page,callback) {
-        var sql = "select t_strategy.*,t_strategy_img.src,t_user.`nick_name`,t_user.portrait from t_strategy left join t_strategy_img on t_strategy_img.strategy_id= t_strategy.id LEFT JOIN t_user ON t_user.id=t_strategy.`user_id` where t_strategy.game_name  =? group by t_strategy.id  order by "+sort+" desc limit ?,10";
+        var sql = "select t_strategy.*,GROUP_CONCAT(t_strategy_img.src order by t_strategy_img.src desc) as src,t_user.`nick_name`,t_user.portrait from t_strategy left join t_strategy_img on t_strategy_img.strategy_id= t_strategy.id LEFT JOIN t_user ON t_user.id=t_strategy.`user_id` where t_strategy.game_name  =? group by t_strategy.id  order by "+sort+" desc limit ?,10";
         query(sql,[gameName,(page-1)*10],function (result) {
             return callback(result)
         })
@@ -223,6 +232,13 @@ var strategy={
     strategyDelete:function(strategyId,callback){
         var sql = "delete from t_strategy where id=?";
         query(sql,[strategyId],function(result){
+            return callback(result);
+        });
+    },
+    // 测试
+    test:function(content,callback){
+        var sql = "select * from t_strategy_comment where content like '%"+content+"%'";
+        query(sql,[content],function(result){
             return callback(result);
         });
     },

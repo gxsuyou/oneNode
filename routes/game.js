@@ -176,7 +176,7 @@ router.get('/comment',function (req,res,next) {
     var data=req.query;
     if(data.userId && data.gameId && data.content){
         var date=new Date();
-        game.gameComment(data.userId,data.gameId,data.score,data.content,date.Format('yyyy-MM-dd'),data.parentId,data.series,data.targetUserId || null,function (result) {
+        game.gameComment(data.userId,data.gameId,data.score,data.content,date.Format('yyyy-MM-dd'),data.parentId,data.series,data.targetUserId || null,data.game_name,data.game_title_img,function (result) {
             if(result.insertId){
                 data.targetUserId && game.addUserTip(result.insertId,data.targetUserId);
                 data.targetUserId && socketio.senMsg(data.targetUserId);
@@ -307,6 +307,7 @@ router.get('/addMyGame',function (req,res) {
 // 获取推荐位(2个)
 router.get('/getActiveLenOfTow',function (req,res) {
         game.getActiveLenOfTow(function (result) {
+            
             res.json({state:1,game:result})
         })
 });

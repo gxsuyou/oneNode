@@ -35,6 +35,7 @@ var game ={
             return callback(result)
         })
     },
+    // 获取推荐位(2个)
     getActiveLenOfTow:function (callback) {
         var sql="select t_activity.type as activeType,t_game.id,t_game.game_name,t_game.game_title_img from t_activity left join t_game on t_game.id= t_activity.game_id where t_activity.type=5 and t_activity.active=1 and t_game.sys = 2 ORDER BY RAND() LIMIT 2";
         query(sql,[],function (result) {
@@ -176,12 +177,12 @@ var game ={
         })
     },
     // 评论游戏接口
-    gameComment:function (userId,gameId,score,content,addTime,parentId,series,targetUserId,callback) {
+    gameComment:function (userId,gameId,score,content,addTime,parentId,series,targetUserId,game_name,game_title_img,callback) {
         parentId=parentId||0;
         // 如果没有评分 默认为8分
         score=score||8;
-        var sql="INSERT into t_game_comment (user_id,game_id,score,content,add_time,parent_id,series,target_user_id) values (?,?,?,?,?,?,?,?)";
-        query(sql,[userId,gameId,score,content,addTime,parentId,series,targetUserId],function (result) {
+        var sql="INSERT into t_game_comment (user_id,game_id,score,content,add_time,parent_id,series,target_user_id,game_name,game_title_img) values (?,?,?,?,?,?,?,?,?,?)";
+        query(sql,[userId,gameId,score,content,addTime,parentId,series,targetUserId,game_name,game_title_img],function (result) {
             return callback(result)
         })
     },

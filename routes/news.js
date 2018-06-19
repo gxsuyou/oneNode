@@ -122,12 +122,13 @@ router.get("/addCommentNum",function (req,res,next) {
 
     }
 });
+//添加资讯评论
 router.get("/comment",function (req,res,next) {
     // console.log(req.query);
     var date=new Date();
     if(req.query.targetCommentId){
        var data=req.query;
-       news.newsComment(data.targetCommentId,data.userId,data.series,data.content,date.Format('yyyy-MM-dd-HH-mm-SS'),data.targetUserId || 0,function (result) {
+       news.newsComment(data.targetCommentId,data.userId,data.series,data.content,date.Format('yyyy-MM-dd-HH-mm-SS'),data.targetUserId || 0,data.news_img,data.news_title,data.newsid,function (result) {
            if(result.insertId){
                if(data.series==1){
                    news.addNewsComment(req.query.targetCommentId,function (result) {
@@ -192,8 +193,43 @@ router.get("/getLikeState",function (req,res,next) {
         })
     }
 });
+// 获取资讯评论
 router.get("/getCommentByPage",function (req,res,next) {
     if(req.query.commentParentId){
+        news.getNewsCommentByPage(req.query.userId,req.query.commentParentId,req.query.page,function (result) {
+            if(result.length){
+                var data=result;
+                data.forEach(function (t) {
+                    t.add_time=subdate(t.add_time);
+                });
+                var len=result.length;
+                var index =0;
+                function selectTow() {
+                    news.getNewsCommentTow(result[index].id,function (result) {
+                        result.forEach(function (t) {
+                            t.add_time=subdate(t.add_time);
+                        });
+                        data[index].towCommentList=result;
+                        if(index<(len-1)){
+                            index++;
+                            selectTow()
+                        }else {
+                            res.json({state:1,comment:data})
+                        }
+                    });
+                }
+                selectTow();
+            }else {
+                res.json({state:4,comment:[]})
+            }
+        })
+    }else {
+        res.json({state:0})
+    }
+});
+// 获取热门资讯评论
+router.get("/getHotNewsCommentByPage",function(req,res){
+     if(req.query.commentParentId){
         news.getNewsCommentByPage(req.query.userId,req.query.commentParentId,req.query.page,function (result) {
             if(result.length){
                 var data=result;

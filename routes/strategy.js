@@ -94,7 +94,18 @@ router.get('/getStrategyByMsg',function (req,res) {
     if(data.sort && data.page){
         if(data.sort=='essence'){
             strategy.getStrategyByEssence(data.page,function (result) {
+                // console.log(result);
                 for(var i=0;i<result.length;i++){
+                    var arr = [];
+                    if(result[i].src!=null){
+                        var str = result[i].id.toString();
+                        var n = str.length;
+                        var m = result[i].src.match(/img0/).index;
+                        var s = m+4;
+                        var num = m-n-20;
+                        var newsrc = result[i].src.substring(num,s);
+                        result[i].src = newsrc; 
+                    }
                     var newtime = result[i].add_time.substring(0,10);
                     result[i].add_time = newtime;
                 }
@@ -103,6 +114,16 @@ router.get('/getStrategyByMsg',function (req,res) {
         }else {
             strategy.getStrategyByMsg(data.sort,data.page,function (result) {
                 for(var i=0;i<result.length;i++){
+                    var arr = [];
+                    if(result[i].src!=null){
+                        var str = result[i].id.toString();
+                        var n = str.length;
+                        var m = result[i].src.match(/img0/).index;
+                        var s = m+4;
+                        var num = m-n-20;
+                        var newsrc = result[i].src.substring(num,s);
+                        result[i].src = newsrc; 
+                    }
                     var newtime = result[i].add_time.substring(0,10);
                     result[i].add_time = newtime;
                 }
@@ -130,7 +151,6 @@ router.get('/getStrategyById',function (req,res) {
         function add(){
             strategy.addBrowseNum(data.strategyId,function(result){
                 strategy.getStrategyById(data.userId,data.strategyId,function (result) {
-                    
                     var newtime = result[0].add_time.substring(0,10);
                     result[0].add_time = newtime;
                     res.json({state:1,strategy:result[0]})
@@ -207,7 +227,8 @@ router.get('/strategyComment',function (req,res) {
             function addComment(){
                 strategy.addCommentNum(data.targetCommentId,function(result){
                     var date=new Date();
-                    strategy.strategyComment(data.content,data.userId,data.targetCommentId,data.targetUserId,data.series,date.Format('yyyy-MM-dd-hh-mm-ss'),function (result) {
+                    strategy.strategyComment(data.content,data.userId,data.targetCommentId,data.targetUserId,data.series,date.Format('yyyy-MM-dd-hh-mm-ss'),data.target_img,data.targetid,data.target_title,function (result) {
+                        console.log(result);
                         result.insertId && strategy.addUserTip(result.insertId,data.targetUserId) ;
                         socketio.senMsg(data.targetUserId);
                         result.insertId ? res.json({state:1,commentId:result.insertId}) : res.json({state:0})
@@ -219,12 +240,24 @@ router.get('/strategyComment',function (req,res) {
         if(data.series==2){
             function addFirstComment(){
                 strategy.addFirstCommentNum(data.targetCommentId,function(result){
-                     var date=new Date();
-                    strategy.strategyComment(data.content,data.userId,data.targetCommentId,data.targetUserId,data.series,date.Format('yyyy-MM-dd-hh-mm-ss'),function (result) {
-                        result.insertId && strategy.addUserTip(result.insertId,data.targetUserId) ;
-                        socketio.senMsg(data.targetUserId);
-                        result.insertId ? res.json({state:1,commentId:result.insertId}) : res.json({state:0})
-                    });
+                    function getstrategyid(){
+                        strategy.getStrategyId(data.targetCommentId,function(result){
+                            // console.log(result[0].tarId);
+                            function addComment(){
+                                strategy.addCommentNum(result[0].tarId,function(result){
+                                    var date=new Date();
+                                    strategy.strategyComment(data.content,data.userId,data.targetCommentId,data.targetUserId,data.series,date.Format('yyyy-MM-dd-hh-mm-ss'),data.target_img,data.targetid,data.target_title,function (result) {
+                                        result.insertId && strategy.addUserTip(result.insertId,data.targetUserId) ;
+                                        socketio.senMsg(data.targetUserId);
+                                        result.insertId ? res.json({state:1,commentId:result.insertId}) : res.json({state:0})
+                                    });
+                                });
+                            }
+                            addComment();
+                        });
+                    }
+                    getstrategyid();
+                    
                 })
             }
             addFirstComment();
@@ -337,10 +370,24 @@ router.get('/getStrategyByGameName',function (req,res) {
     if(data.msg && data.page && data.sort){
         if(data.sort=='essence'){
             strategy.getEssenceStrategyByGameName(data.msg,data.page,function (result) {
+                for(var i=0;i<result.length;i++){
+                    var arr = [];
+                    if(result[i].src!=null){
+                       arr=result[i].src.split(',');
+                        result[i].src = arr[arr.length-1]; 
+                    }
+                }
                 res.json({state:1,strategy:result})
             })
         }else {
             strategy.getStrategyByGameName(data.msg,data.sort,data.page,function (result) {
+                for(var i=0;i<result.length;i++){
+                    var arr = [];
+                    if(result[i].src!=null){
+                       arr=result[i].src.split(',');
+                        result[i].src = arr[arr.length-1]; 
+                    }
+                }
                 res.json({state:1,strategy:result})
             })
         }
@@ -421,6 +468,26 @@ router.get('/strategyDelete',function(req,res){
                     res.json({state:0});
                 }
         });
+
+    }else{
+        res.json({state:0});
+    }
+});
+// 测试
+router.get('/test',function(req,res){
+    var content = req.query.content;
+    if(content){
+        if(content.match(/操你妈/)){
+            console.log(content.match(/操你妈/));
+        }
+        // strategy.test(content,function(result){
+
+        //         if(result.affectedRows>0){
+        //             res.json({state:1});
+        //         }else{
+        //             res.json({state:0});
+        //         }
+        // });
 
     }else{
         res.json({state:0});

@@ -744,37 +744,67 @@ function subdate(str) {
 }
 router.get('/newMessage',function (req,res) {
     var data = req.query;
+    // console.log(data.type);
     if(data.userId){
-        function news(){
+        if(data.type==1){
             user.newsMessage(data.userId,data.page,function (result){
-                user.newMessage(data.userId,data.page,function (results){
-                    var n = result.length;
-                    var m = results.length;
+                
+                        var n = result.length;
+                        for(var i=0;i<n;i++){
+                            var newtime = result[i].add_time.substring(0,10);
+                            result[i].add_time = newtime;
+                        }
+                        res.json({state:1,tip:result})
+                
+                
+            }); 
+        }else if(data.type==2){
+            user.newMessage(data.userId,data.page,function (result){
+                    var arr =[];
+                        var n = result.length;
+                        
+                        for(var i=0;i<n;i++){
+                            var newtime = result[i].add_time.substring(0,10);
+                            result[i].add_time = newtime;
+                            arr = arr.concat(result[i]);
+                            function getstrategy(){
+                                user.getStrategyByMsg(result[i].parentId,function(result){
+                                    arr = arr.concat(result);
+                                });
+                            }
+                            getstrategy();
+                        }
+                        res.json({state:1,tip:arr})
+            }); 
+        }else if(data.type==3){
+            user.gameMessage(data.userId,data.page,function (results){
+
+                var n = results.length;
+                for(var i=0;i<n;i++){
+                    var newtime = results[i].add_time.substring(0,10);
+                    results[i].add_time = newtime;
+                }
+                
+                function getGame(){
                     var arr=[];
-                    for(var i=0;i<m;i++){
-                        arr=arr.concat(results[i]);
-                    }
                     for(var i=0;i<n;i++){
-                        arr=arr.concat(result[i]);
+                        user.getGameByMsg(results[i].game_id,function(result){
+                            // console.log(result[0].gimg);
+
+                            arr=arr.concat(result);    
+                            
+                        });
+                        res.json({state:1,tip:arr})
                     }
-                    res.json({state:1,tip:arr})
-                }) 
+                }
+                getGame();
 
-            });
+                
+
+                 
+            }); 
         }
-        news();
-
-
-        // user.newMessage(data.userId,data.page,function (result) {
-        //     if(result.length){
-
-        //         result.forEach(function (t) {
-        //             t.add_time=subdate(t.add_time)
-        //         })
-        //     }
-        //     res.json({state:1,tip:result})
-        // })
-
+       
     }else {
         res.json({state:0})
     }
