@@ -33,9 +33,18 @@ router.get('/addStrategyMsg',function (req,res) {
     var data=req.query;
     if(data.userId && data.title && data.detail && data.gameName){
         var date=new Date();
-        strategy.addStartegy(data.userId,data.title,data.detail,data.gameName,date.Format('yyyy-MM-dd'),function (result) {
-            result.insertId ? res.json({state:1,strategyId:result.insertId}) : res.json({state:0})
-        })
+        function find(){
+            strategy.findGameName(data.gameName,function(result){
+                if(result[0]){
+                    strategy.addStartegy(data.userId,data.title,data.detail,data.gameName,date.Format('yyyy-MM-dd hh:mm:ss'),function (result) {
+                        result.insertId ? res.json({state:1,strategyId:result.insertId}) : res.json({state:0})
+                    })
+                }else{
+                    res.json({state:2,msg:'游戏名不存在'});
+                }
+            });
+        }
+        find();
     }else {
         res.json({state:0})
     }
@@ -96,36 +105,59 @@ router.get('/getStrategyByMsg',function (req,res) {
             strategy.getStrategyByEssence(data.page,function (result) {
                 // console.log(result);
                 for(var i=0;i<result.length;i++){
-                    var arr = [];
-                    if(result[i].src!=null){
-                        var str = result[i].id.toString();
-                        var n = str.length;
-                        var m = result[i].src.match(/img0/).index;
+                    var str = result[i].id.toString();
+                    var n = str.length;
+                   if(result[i].src!=null){
+                        if(result[i].src.match(/img0/)){
+                            var m = result[i].src.match(/img0/).index;
+                        }else if(result[i].src.match(/img1/)){
+                            var m = result[i].src.match(/img1/).index;
+                        }else if(result[i].src.match(/img2/)){
+                            var m = result[i].src.match(/img2/).index;
+                        }
                         var s = m+4;
                         var num = m-n-20;
                         var newsrc = result[i].src.substring(num,s);
                         result[i].src = newsrc; 
                     }
+                
                     var newtime = result[i].add_time.substring(0,10);
                     result[i].add_time = newtime;
+
+                    if(result[i].user_id==null){
+                        result[i].nick_name = 'haode';
+                    }
                 }
                 res.json({state:1,strategy:result})
             })
         }else {
             strategy.getStrategyByMsg(data.sort,data.page,function (result) {
+                // console.log(result);
                 for(var i=0;i<result.length;i++){
+                    // console.log(result[i].src.match(/img0/));
                     var arr = [];
+                    var str = result[i].id.toString();
+                    var n = str.length;
                     if(result[i].src!=null){
-                        var str = result[i].id.toString();
-                        var n = str.length;
-                        var m = result[i].src.match(/img0/).index;
+                        if(result[i].src.match(/img0/)){
+                            var m = result[i].src.match(/img0/).index;
+                        }else if(result[i].src.match(/img1/)){
+                            var m = result[i].src.match(/img1/).index;
+                        }else if(result[i].src.match(/img2/)){
+                            var m = result[i].src.match(/img2/).index;
+                        }
+                    
+                    var newtime = result[i].add_time.substring(0,10);
+                    result[i].add_time = newtime;
                         var s = m+4;
                         var num = m-n-20;
                         var newsrc = result[i].src.substring(num,s);
                         result[i].src = newsrc; 
                     }
-                    var newtime = result[i].add_time.substring(0,10);
-                    result[i].add_time = newtime;
+
+                    if(result[i].nick_name==null){
+                        result[i].nick_name = result[i].nike_name;
+                    }
                 }
                 res.json({state:1,strategy:result})
             })
@@ -227,7 +259,11 @@ router.get('/strategyComment',function (req,res) {
             function addComment(){
                 strategy.addCommentNum(data.targetCommentId,function(result){
                     var date=new Date();
-                    strategy.strategyComment(data.content,data.userId,data.targetCommentId,data.targetUserId,data.series,date.Format('yyyy-MM-dd-hh-mm-ss'),data.target_img,data.targetid,data.target_title,function (result) {
+                    var content = test(data.content);
+                    if(data.targetUserId==null){
+                        data.targetUserId=data.aid;
+                    }
+                    strategy.strategyComment(content,data.userId,data.targetCommentId,data.targetUserId,data.series,date.Format('yyyy-MM-dd-hh-mm-ss'),data.target_img,data.targetid,data.target_title,function (result) {
                         console.log(result);
                         result.insertId && strategy.addUserTip(result.insertId,data.targetUserId) ;
                         socketio.senMsg(data.targetUserId);
@@ -246,7 +282,8 @@ router.get('/strategyComment',function (req,res) {
                             function addComment(){
                                 strategy.addCommentNum(result[0].tarId,function(result){
                                     var date=new Date();
-                                    strategy.strategyComment(data.content,data.userId,data.targetCommentId,data.targetUserId,data.series,date.Format('yyyy-MM-dd-hh-mm-ss'),data.target_img,data.targetid,data.target_title,function (result) {
+                                    var content = test(data.content);
+                                    strategy.strategyComment(content,data.userId,data.targetCommentId,data.targetUserId,data.series,date.Format('yyyy-MM-dd-hh-mm-ss'),data.target_img,data.targetid,data.target_title,function (result) {
                                         result.insertId && strategy.addUserTip(result.insertId,data.targetUserId) ;
                                         socketio.senMsg(data.targetUserId);
                                         result.insertId ? res.json({state:1,commentId:result.insertId}) : res.json({state:0})
@@ -473,26 +510,29 @@ router.get('/strategyDelete',function(req,res){
         res.json({state:0});
     }
 });
-// 测试
-router.get('/test',function(req,res){
-    var content = req.query.content;
+// 限制不文明词语
+// router.get('/test',function(req,res){
+//     var con = req.query.content;
+//     console.log(test(con));
+// });
+function test(content){
     if(content){
-        if(content.match(/操你妈/)){
-            console.log(content.match(/操你妈/));
+        if(content.match(/([操你妈]|[我操]|[草泥马]|[操你妈逼]|[你妈逼]|[傻逼]|[鸡巴]|[你妈的])/)){
+            var content = content.replace(/操你妈/g,'***');
+            var content = content.replace(/我操/g,'**');
+            var content = content.replace(/草泥马/g,'***');
+            var content = content.replace(/曹尼玛/g,'***');
+            var content = content.replace(/操你妈逼/g,'****');
+            var content = content.replace(/你妈逼/g,'***'); 
+            var content = content.replace(/傻逼/g,'**');
+            var content = content.replace(/鸡巴/g,'**'); 
+            var content = content.replace(/你妈的/g,'***');      
         }
-        // strategy.test(content,function(result){
 
-        //         if(result.affectedRows>0){
-        //             res.json({state:1});
-        //         }else{
-        //             res.json({state:0});
-        //         }
-        // });
-
-    }else{
-        res.json({state:0});
     }
-});
+    return content;
+}
+
 function subdate(str) {
     return str.substring(0,10);
 }

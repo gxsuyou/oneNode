@@ -2,11 +2,18 @@ var router=require('express').Router();
 var game =require("../DAO/game");
 var bodyParser = require('body-parser');
 var socketio=require('./socketio');
-
+// 获取游戏详情
 router.get('/getGameById', function(req, res, next) {
     var data=req.query;
     if(data.gameId){
         game.getDetailById(data.gameId,function (result) {
+            if(result[0].game_detail!=null){
+                var str = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+result[0].game_detail;
+                var mstr = str.replace(/\t/g,"&nbsp;");
+                var nstr = mstr.replace(/\r\n/g,"<br/>"+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+                result[0].game_detail=nstr;
+            }
+
             result.length? res.json({state:1,gameDetail:result[0]}):res.json({state:0})
         })
     }else {

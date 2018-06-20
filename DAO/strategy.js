@@ -2,10 +2,19 @@ var query = require('../config/config');
 var strategy={
     // 添加攻略信息
     addStartegy:function (userId,title,detail,gameName,addTime,callback) {
+        
         var sql='insert into t_strategy (user_id,title,detail,game_name,add_time) values (?,?,?,?,?)';
         query(sql,[userId,title,detail,gameName,addTime],function (result) {
             return callback(result)
-        })
+        });
+ 
+    },
+    //添加攻略时判断游戏名是否存在
+    findGameName:function(gameName,callback){
+        var sql = "select id from t_game where game_name=?";
+        query(sql,[gameName],function(result){
+            return callback(result);
+        });
     },
     // 添加攻略图片
     addStrategyImg:function (strategyId,img,sort_id,callback) {
@@ -51,7 +60,10 @@ var strategy={
     },
     // 获取攻略列表                                          
     getStrategyByMsg:function (sort,page,callback) {
-        var sql = 'select t_strategy.*,GROUP_CONCAT(t_strategy_img.src order by t_strategy_img.src desc) as src,t_user.`nick_name`,t_user.portrait from t_strategy_img  left join t_strategy on t_strategy_img.strategy_id= t_strategy.id LEFT JOIN t_user ON t_user.id=t_strategy.`user_id` group by t_strategy.id order by '+sort+' desc  limit ?,10';
+        var sql = 'select t_strategy.*,GROUP_CONCAT(t_strategy_img.src order by t_strategy_img.src desc) as src,t_user.nick_name,t_admin.id as aid,t_admin.nike_name,t_user.portrait \n'+
+        ' from t_strategy left join t_strategy_img  on t_strategy_img.strategy_id= t_strategy.id \n'+
+        ' LEFT JOIN t_user ON t_user.id=t_strategy.`user_id`  \n'+
+        ' left join t_admin on t_admin.id=t_strategy.user_id group by t_strategy.id order by '+sort+' desc  limit ?,10';
         query(sql,[(page-1)*10],function (result) {
             return callback(result)
         })
@@ -236,12 +248,7 @@ var strategy={
         });
     },
     // 测试
-    test:function(content,callback){
-        var sql = "select * from t_strategy_comment where content like '%"+content+"%'";
-        query(sql,[content],function(result){
-            return callback(result);
-        });
-    },
+   
     
 };
 module.exports=strategy;

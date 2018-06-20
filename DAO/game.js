@@ -1,9 +1,10 @@
 var query=require('../config/config');
 var game ={
+    // 获取游戏详情
     getDetailById:function (gameId,callback) {
         // console.log(gameId);
         // query("call pro_getGameDetailById(?)",[gameId],callback);
-        var sql='SELECT t_game.game_download_ios,t_game.game_download_andriod,t_game.`game_name`,t_game.game_size,t_game.game_download_num,t_game.game_version,t_game.game_update_date,t_game.game_detail,t_game.`game_title_img`,t_game.`game_company`,t_game.`icon`,t_game.`grade`,GROUP_CONCAT(t_tag.name) AS tagList FROM t_game \n' +
+        var sql='SELECT t_game.game_download_ios,t_game.game_packagename,t_game.game_download_andriod,t_game.`game_name`,t_game.game_size,t_game.game_download_num,t_game.game_version,t_game.game_update_date,t_game.game_detail,t_game.`game_title_img`,t_game.`game_company`,t_game.`icon`,t_game.`grade`,GROUP_CONCAT(t_tag.name) AS tagList FROM t_game \n' +
             'LEFT JOIN t_tag_relation ON t_tag_relation.`game_id`=t_game.`id`\n' +
             'LEFT JOIN t_tag ON t_tag_relation.`tag_id`=t_tag.`id`\n' +
             'WHERE t_game.`id`=?';
