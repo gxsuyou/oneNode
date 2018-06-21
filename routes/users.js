@@ -759,22 +759,15 @@ router.get('/newMessage',function (req,res) {
                 
             }); 
         }else if(data.type==2){
-            user.newMessage(data.userId,data.page,function (result){
+            user.strategyMessage(data.userId,data.page,function (result){
                     var arr =[];
                         var n = result.length;
                         
                         for(var i=0;i<n;i++){
                             var newtime = result[i].add_time.substring(0,10);
                             result[i].add_time = newtime;
-                            arr = arr.concat(result[i]);
-                            function getstrategy(){
-                                user.getStrategyByMsg(result[i].parentId,function(result){
-                                    arr = arr.concat(result);
-                                });
-                            }
-                            getstrategy();
                         }
-                        res.json({state:1,tip:arr})
+                        res.json({state:1,tip:result})
             }); 
         }else if(data.type==3){
             user.gameMessage(data.userId,data.page,function (results){
@@ -784,24 +777,7 @@ router.get('/newMessage',function (req,res) {
                     var newtime = results[i].add_time.substring(0,10);
                     results[i].add_time = newtime;
                 }
-                
-                function getGame(){
-                    var arr=[];
-                    for(var i=0;i<n;i++){
-                        user.getGameByMsg(results[i].game_id,function(result){
-                            // console.log(result[0].gimg);
-
-                            arr=arr.concat(result);    
-                            
-                        });
-                        res.json({state:1,tip:arr})
-                    }
-                }
-                getGame();
-
-                
-
-                 
+                res.json({state:1,tip:result})
             }); 
         }
        

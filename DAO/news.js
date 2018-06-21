@@ -16,7 +16,7 @@ var news = {
     },
     // 根据id获取资讯详情
     getNewsById:function (id,userId,callback) {
-        var sql="SELECT a.id,a.title,a.add_time,a.add_user,a.agree,a.browse,a.comment,a.detail_addr,a.game_id,a.sys,b.icon,b.game_name,c.state,d.id AS collect FROM t_news AS a\n" +
+        var sql="SELECT a.id,a.img,a.title,a.add_time,a.add_user,a.agree,a.browse,a.comment,a.detail,a.game_id,a.sys,b.icon,b.game_name,c.state,d.id AS collect FROM t_news AS a\n" +
             "            LEFT JOIN t_game AS b ON  (a.`game_id`=b.`id`)\n" +
             "            LEFT JOIN t_like AS c ON a.id=c.parent_id AND c.like_type=11 AND c.like_user_id=? \n" +
             "            LEFT JOIN t_collect AS d ON a.id=d.`target_id` AND d.`target_type`=1 AND d.`user_id`=?\n" +

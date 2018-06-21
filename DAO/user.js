@@ -256,7 +256,7 @@ var user = {
         })
     },
     //获取攻略新消息
-    newMessage:function (userId,page,callback) {
+    strategyMessage:function (userId,page,callback) {
         var sql = "select t_strategy_comment.id,t_strategy_comment.target_img,t_strategy_comment.targetid,t_strategy_comment.target_title,t_strategy_comment.content as s_content,t_strategy_comment.series,t_strategy_comment.target_comment_id as parentId,t_strategy_comment.add_time,t_tip.type,t_tip.state, \n"+
                   "t_user.nick_name,t_user.portrait from  t_strategy_comment \n"+
                   "left join t_tip ON t_tip.`tip_id`=t_strategy_comment.`id`\n"+
@@ -293,12 +293,12 @@ var user = {
             
     },
     //获取游戏
-    getGameByMsg:function(gameId,callback){
-        var sql = "select game_title_img as gimg from t_game where id=?";
-        query(sql,[gameId],function(result){
-            return callback(result);
-        });
-    },
+    // getGameByMsg:function(gameId,callback){
+    //     var sql = "select game_title_img as gimg from t_game where id=?";
+    //     query(sql,[gameId],function(result){
+    //         return callback(result);
+    //     });
+    // },
     // 添加意见反馈信息
     addFeedbackMsg:function (userId,content,callback) {
         var sql = 'insert into t_feedback (detail,user_id) values (?,?)';
