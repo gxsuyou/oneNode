@@ -1,10 +1,10 @@
 var query = require('../config/config');
 var strategy={
     // 添加攻略信息
-    addStartegy:function (userId,title,detail,gameName,addTime,callback) {
+    addStartegy:function (userId,title,detail,gameName,addTime,top_img_src,callback) {
         
-        var sql='insert into t_strategy (user_id,title,detail,game_name,add_time) values (?,?,?,?,?)';
-        query(sql,[userId,title,detail,gameName,addTime],function (result) {
+        var sql='insert into t_strategy (user_id,title,detail,game_name,add_time,top_img_src) values (?,?,?,?,?,?)';
+        query(sql,[userId,title,detail,gameName,addTime,top_img_src],function (result) {
             return callback(result)
         });
  
@@ -60,8 +60,7 @@ var strategy={
     },
     // 获取攻略列表                                          
     getStrategyByMsg:function (sort,page,callback) {
-        var sql = 'select t_strategy.*,GROUP_CONCAT(t_strategy_img.src order by t_strategy_img.src desc) as src,t_user.nick_name,t_admin.id as aid,t_admin.nike_name,t_user.portrait \n'+
-        ' from t_strategy left join t_strategy_img  on t_strategy_img.strategy_id= t_strategy.id \n'+
+        var sql = 'select t_strategy.*,t_user.nick_name,t_admin.id as aid,t_admin.nike_name,t_user.portrait \n'+
         ' LEFT JOIN t_user ON t_user.id=t_strategy.`user_id`  \n'+
         ' left join t_admin on t_admin.id=t_strategy.user_id group by t_strategy.id order by '+sort+' desc  limit ?,10';
         query(sql,[(page-1)*10],function (result) {

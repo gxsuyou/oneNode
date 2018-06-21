@@ -82,6 +82,9 @@ router.get("/getNewsById",function (req,res,next) {
                 result[0].add_time+=" ";
                 result[0].add_time+=str;
             }
+            if(result[0].detail){
+                result[0].detail = result[0].detail.replace(/"/g,"'");
+            }
             result.length?res.json({state:1,news:result[0]}):res.json({state:0})
         })
     }else {
@@ -125,9 +128,9 @@ router.get("/addCommentNum",function (req,res,next) {
 //添加资讯评论
 router.get("/comment",function (req,res,next) {
     // console.log(req.query);
+    var data=req.query;
     var date=new Date();
-    if(req.query.targetCommentId){
-       var data=req.query;
+    if(data.targetCommentId && data.newsid && data.news_title){
        news.newsComment(data.targetCommentId,data.userId,data.series,data.content,date.Format('yyyy-MM-dd-HH-mm-SS'),data.targetUserId || 0,data.news_img,data.news_title,data.newsid,function (result) {
            if(result.insertId){
                if(data.series==1){

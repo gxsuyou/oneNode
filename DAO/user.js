@@ -257,7 +257,8 @@ var user = {
     },
     //获取攻略新消息
     strategyMessage:function (userId,page,callback) {
-        var sql = "select t_strategy_comment.id,t_strategy_comment.target_img,t_strategy_comment.targetid,t_strategy_comment.target_title,t_strategy_comment.content as s_content,t_strategy_comment.series,t_strategy_comment.target_comment_id as parentId,t_strategy_comment.add_time,t_tip.type,t_tip.state, \n"+
+        var sql = "select t_strategy_comment.id,t_strategy_comment.target_img as img,t_strategy_comment.targetid as pid,t_strategy_comment.target_title as title, \n"+
+                  "t_strategy_comment.content as content,t_strategy_comment.series,t_strategy_comment.target_comment_id as parentId,t_strategy_comment.add_time,t_tip.type,t_tip.state, \n"+
                   "t_user.nick_name,t_user.portrait from  t_strategy_comment \n"+
                   "left join t_tip ON t_tip.`tip_id`=t_strategy_comment.`id`\n"+
                   "left join t_user ON t_strategy_comment.`user_id`=t_user.id \n"+
@@ -270,7 +271,8 @@ var user = {
     },
     // 获取资讯新消息
     newsMessage:function (userId,page,callback) {
-        var sql = "select t_news_comment.id,t_news_comment.news_img,t_news_comment.newsid,t_news_comment.news_title,t_news_comment.content,t_news_comment.series,t_news_comment.target_comment_id as parentId,t_news_comment.add_time,t_tip.type,t_user.nick_name,t_user.portrait from t_news_comment \n"+
+        var sql = "select t_news_comment.id,t_news_comment.news_img as img,t_news_comment.newsid as pid,t_news_comment.news_title as title,t_news_comment.content,t_news_comment.series, \n"+
+                  "t_news_comment.target_comment_id as parentId,t_news_comment.add_time,t_tip.type,t_tip.state,t_user.nick_name,t_user.portrait from t_news_comment \n"+
                   "left join t_user on t_news_comment.user_id=t_user.id \n"+
                   "left join t_tip on t_news_comment.id=t_tip.tip_id \n"+
                   "where t_news_comment.target_user_id=? group by t_news_comment.add_time  desc limit ?,10";
@@ -279,10 +281,11 @@ var user = {
             return callback(result)
         }) 
             
-    },
+    }, 
      // 获取游戏新消息
     gameMessage:function (userId,page,callback) {
-        var sql = "select t_game_comment.id,t_game_comment.game_name,t_game_comment.game_title_img,t_game_comment.game_id,t_game_comment.content,t_game_comment.series,t_game_comment.parent_id as parentId,t_game_comment.add_time,t_tip.type,t_user.nick_name,t_user.portrait from t_game_comment \n"+
+        var sql = "select t_game_comment.id,t_game_comment.game_name as title,t_game_comment.game_icon as img,t_game_comment.game_id as pid,t_game_comment.content, \n"+
+                  "t_game_comment.series,t_game_comment.parent_id as parentId,t_game_comment.add_time,t_tip.type,t_tip.state,t_user.nick_name,t_user.portrait from t_game_comment \n"+
                   "left join t_user on t_game_comment.user_id=t_user.id \n"+
                   "left join t_tip on t_game_comment.id=t_tip.tip_id \n"+
                   "where t_game_comment.user_id=? group by t_game_comment.add_time  desc limit ?,10";

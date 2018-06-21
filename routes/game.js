@@ -183,22 +183,27 @@ router.get('/comment',function (req,res,next) {
     var data=req.query;
     if(data.userId && data.gameId && data.content){
         var date=new Date();
-        game.gameComment(data.userId,data.gameId,data.score,data.content,date.Format('yyyy-MM-dd'),data.parentId,data.series,data.targetUserId || null,data.game_name,data.game_title_img,function (result) {
+        game.gameComment(data.userId,data.gameId,data.score,data.content,date.Format('yyyy-MM-dd'),data.parentId,data.series,data.targetUserId || null,data.game_name,data.game_icon,function (result) {
             if(result.insertId){
-                data.targetUserId && game.addUserTip(result.insertId,data.targetUserId);
-                data.targetUserId && socketio.senMsg(data.targetUserId);
-                game.getGameCommentScoreById(data.gameId,function (result) {
-                    if(result.length>0){
-                        var len=result.length;
-                        var allScore=0;
-                        for(var i=0;i<len;i++){
-                            allScore+=result[i].score;
-                        }
-                        game.updateGameScore(data.gameId,(allScore / len).toFixed(1),function (result) {
-                            result.affectedRows?res.json({state:1}):res.json({state:0})
+                function addNum(){
+                    game.addCommentNum(data.parentId,function(resultss){
+                        data.targetUserId && game.addUserTip(result.insertId,data.targetUserId);
+                        data.targetUserId && socketio.senMsg(data.targetUserId);
+                        game.getGameCommentScoreById(data.gameId,function (result) {
+                            if(result.length>0){
+                                var len=result.length;
+                                var allScore=0;
+                                for(var i=0;i<len;i++){
+                                    allScore+=result[i].score;
+                                }
+                                game.updateGameScore(data.gameId,(allScore / len).toFixed(1),function (result) {
+                                    result.affectedRows?res.json({state:1}):res.json({state:0})
+                                })
+                            }
                         })
-                    }
-                })
+                    })
+                }
+                addNum();        
             }
         })
     }else {

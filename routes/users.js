@@ -746,7 +746,7 @@ router.get('/newMessage',function (req,res) {
     var data = req.query;
     // console.log(data.type);
     if(data.userId){
-        if(data.type==1){
+        if(data.sort==1){
             user.newsMessage(data.userId,data.page,function (result){
                 
                         var n = result.length;
@@ -758,7 +758,7 @@ router.get('/newMessage',function (req,res) {
                 
                 
             }); 
-        }else if(data.type==2){
+        }else if(data.sort==2){
             user.strategyMessage(data.userId,data.page,function (result){
                     var arr =[];
                         var n = result.length;
@@ -769,7 +769,7 @@ router.get('/newMessage',function (req,res) {
                         }
                         res.json({state:1,tip:result})
             }); 
-        }else if(data.type==3){
+        }else if(data.sort==3){
             user.gameMessage(data.userId,data.page,function (results){
 
                 var n = results.length;
@@ -777,7 +777,7 @@ router.get('/newMessage',function (req,res) {
                     var newtime = results[i].add_time.substring(0,10);
                     results[i].add_time = newtime;
                 }
-                res.json({state:1,tip:result})
+                res.json({state:1,tip:results})
             }); 
         }
        
