@@ -270,7 +270,8 @@ var game = {
         //query(sql, [tagId, sys, (page - 1) * 20], function (result) {
         //    return callback(result)
         //})
-        var sql = "SELECT * FROM t_game WHERE tag_ids LIKE'%," + tagId + ",%' ORDER BY id DESC LIMIT ?,20"
+        //var page = (page - 1) * 20
+        var sql = "SELECT id,cls_ids,tag_ids FROM t_game WHERE tag_ids LIKE '%," + tagId + ",%' ORDER BY id DESC LIMIT ?,20"
         query(sql, [(page - 1) * 20], function (result) {
             return callback(result)
         })
@@ -310,7 +311,7 @@ var game = {
     getGameByTags: function (obj, page, callback) {
         var sql = "SELECT a.id,a.icon,a.game_name,a.game_title_img,a.game_recommend,grade,a.cls_ids,a.tag_ids," +
             "(SELECT group_concat(`name`) as tagName FROM t_tag as b WHERE b.id IN (0" + obj.tag_ids + "0)) AS tag_name " +
-            "FROM t_game as a WHERE a.cls_ids LIKE '%" + obj.cls_ids + "%' AND a.id=? ORDER BY a.id DESC LIMIT ?,20"
+            "FROM t_game as a WHERE a.cls_ids LIKE '%" + obj.cls_ids + "%' AND a.id=? ORDER BY a.id DESC"
         query(sql, [obj.id, (page - 1) * 20], function (result) {
             return callback(result)
         })
@@ -318,7 +319,7 @@ var game = {
     getGameTags: function (obj, page, callback) {
         var sql = "SELECT a.id,a.icon,a.game_name,a.game_title_img,a.game_recommend,grade,a.cls_ids,a.tag_ids," +
             "(SELECT group_concat(`name`) as tagName FROM t_tag as b WHERE b.id IN (0" + obj.tag_ids + "0)) AS tag_name " +
-            "FROM t_game as a WHERE a.tag_ids LIKE '%" + obj.tag_ids + "%' AND a.id=? ORDER BY a.id DESC LIMIT ?,20"
+            "FROM t_game as a WHERE a.tag_ids LIKE '%" + obj.tag_ids + "%' ORDER BY a.id DESC"
         query(sql, [obj.id, (page - 1) * 20], function (result) {
             return callback(result)
         })
