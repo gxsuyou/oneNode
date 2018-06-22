@@ -226,14 +226,19 @@ router.get('/getGameByCls', function (req, res) {
                 result.forEach(function (v, k, array) {
                     game.getGameByTags(v, data.page, function (tag_resulr) {
                         //arr.push()
+                        var tagId = tag_resulr[0].tag_ids.substr(1);
+                        tagId = tagId.substring(0, tagId.length - 1);
                         arr.push({
                             id: tag_resulr[0].id,
-                            icon: tag_resulr[0].icon,
                             game_name: tag_resulr[0].game_name,
+                            icon: tag_resulr[0].icon,
+                            game_title_img: tag_resulr[0].game_title_img,
                             grade: tag_resulr[0].grade,
+                            game_recommend: tag_resulr[0].game_recommend,
                             cls_ids: tag_resulr[0].cls_ids,
                             tag_ids: tag_resulr[0].tag_ids,
-                            tagNameList: tag_resulr[0].tag_name,
+                            tagList: tag_resulr[0].tag_name,
+                            tagId: tagId
                         })
                         if (k == 19) {
                             reslove(arr);
@@ -321,14 +326,19 @@ router.get('/getGameByTag', function (req, res) {
                 result.forEach(function (v, k, array) {
                     game.getGameTags(v, data.page, function (tag_resulr) {
                         //arr.push()
+                        var tagId = tag_resulr[0].tag_ids.substr(1);
+                        tagId = tagId.substring(0, tagId.length - 1);
                         arr.push({
                             id: tag_resulr[0].id,
-                            icon: tag_resulr[0].icon,
                             game_name: tag_resulr[0].game_name,
+                            icon: tag_resulr[0].icon,
+                            game_title_img: tag_resulr[0].game_title_img,
                             grade: tag_resulr[0].grade,
+                            game_recommend: tag_resulr[0].game_recommend,
                             cls_ids: tag_resulr[0].cls_ids,
                             tag_ids: tag_resulr[0].tag_ids,
-                            tagNameList: tag_resulr[0].tag_name,
+                            tagList: tag_resulr[0].tag_name,
+                            tagId: tagId
                         })
                         if (k == 19) {
                             reslove(arr);
