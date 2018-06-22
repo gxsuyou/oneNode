@@ -90,7 +90,7 @@ router.get('/unCollect',function (req,res) {
 router.get('/getSearchGame',function (req,res) {
     var data = req.query;
     if(data.sys){
-        strategy.getSearchGame(data.sys,function (result) {
+        strategy.getSearchGame(1,function (result) {
             result.length ? res.json({state:1,gameList:result}) : res.json({state:0})
         })
     }else {

@@ -272,16 +272,7 @@ var game = {
         //})
         var sql = "SELECT * FROM t_game WHERE tag_ids LIKE'%," + tagId + ",%' ORDER BY id DESC LIMIT ?,20"
         query(sql, [(page - 1) * 20], function (result) {
-            for (var i in result) {
-                var ids = result[i].tag_ids;
-                ids = ids.substr(1);
-                ids = ids.substring(0, ids.length - 1);
-                var sql_tag = "SELECT * FROM t_tag WHERE id IN (" + ids + ")"
-                query(sql_tag, [], function (tag_result) {
-                    result.tagList = tag_result
-                    return callback(result)
-                })
-            }
+            return callback(result)
         })
     },
     // 获取游戏分类
@@ -320,6 +311,14 @@ var game = {
         var sql = "SELECT a.id,a.icon,a.game_name,grade,a.cls_ids,a.tag_ids," +
             "(SELECT group_concat(`name`) as tagName FROM t_tag as b WHERE b.id IN (0" + obj.tag_ids + "0)) AS tag_name " +
             "FROM t_game as a WHERE a.cls_ids LIKE '%" + obj.cls_ids + "%' AND a.id=? ORDER BY a.id DESC LIMIT ?,20"
+        query(sql, [obj.id, (page - 1) * 20], function (result) {
+            return callback(result)
+        })
+    },
+    getGameTags: function (obj, page, callback) {
+        var sql = "SELECT a.id,a.icon,a.game_name,grade,a.cls_ids,a.tag_ids," +
+            "(SELECT group_concat(`name`) as tagName FROM t_tag as b WHERE b.id IN (0" + obj.tag_ids + "0)) AS tag_name " +
+            "FROM t_game as a WHERE a.tag_ids LIKE '%" + obj.tag_ids + "%' AND a.id=? ORDER BY a.id DESC LIMIT ?,20"
         query(sql, [obj.id, (page - 1) * 20], function (result) {
             return callback(result)
         })

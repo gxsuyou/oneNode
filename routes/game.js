@@ -226,7 +226,6 @@ router.get('/getGameByCls', function (req, res) {
                 result.forEach(function (v, k, array) {
                     game.getGameByTags(v, data.page, function (tag_resulr) {
                         //arr.push()
-                        //console.log(tag_resulr[0]);
                         arr.push({
                             id: tag_resulr[0].id,
                             icon: tag_resulr[0].icon,
@@ -242,7 +241,6 @@ router.get('/getGameByCls', function (req, res) {
                     })
                 });
             }).then(function (arr) {
-                    console.log(arr);
                     res.json({state: 1, gameList: arr})
                 })
             //res.json({state: 1, gameList: result})
@@ -316,9 +314,31 @@ router.get('/getGameBySubject', function (req, res) {
 // 根据标签获取游戏
 router.get('/getGameByTag', function (req, res) {
     var data = req.query;
-    if (data.tagId && data.sys && data.page) {
+    var arr = new Array();
+    if (data.tagId) {
         game.getGameByTag(data.tagId, data.sys, data.page, function (result) {
-            res.json({state: 1, game: result})
+            new Promise(function (reslove, reject) {
+                result.forEach(function (v, k, array) {
+                    game.getGameTags(v, data.page, function (tag_resulr) {
+                        //arr.push()
+                        arr.push({
+                            id: tag_resulr[0].id,
+                            icon: tag_resulr[0].icon,
+                            game_name: tag_resulr[0].game_name,
+                            grade: tag_resulr[0].grade,
+                            cls_ids: tag_resulr[0].cls_ids,
+                            tag_ids: tag_resulr[0].tag_ids,
+                            tagNameList: tag_resulr[0].tag_name,
+                        })
+                        if (k == 19) {
+                            reslove(arr);
+                        }
+                    })
+                });
+            }).then(function (arr) {
+                    res.json({state: 1, game: arr})
+                })
+            //res.json({state: 1, game: result})
         })
     } else {
         res.json({state: 0})
