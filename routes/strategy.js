@@ -31,9 +31,14 @@ Date.prototype.Format = function(formatStr)
 // 添加攻略信息
 router.post('/addStrategyMsg',function (req,res) {
     var data=req.body;
+    console.log(data.top_img_src);
     if(data.userId && data.title && data.detail && data.gameName){
         var date=new Date();
         strategy.addStartegy(data.userId,data.title,data.detail,data.gameName,date.Format('yyyy-MM-dd hh:mm:ss'),data.top_img_src,function (result) {
+            // if(!result[0].top_img_src){
+            //     result[0].top_img_src=0;
+            // }
+            console.log(result);
             result.insertId ? res.json({state:1,strategyId:result.insertId}) : res.json({state:0})
         })
           
@@ -91,6 +96,7 @@ router.get('/getSearchGame',function (req,res) {
 });
 // 获取攻略列表
 router.get('/getStrategyByMsg',function (req,res) {
+
     var data = req.query;
     if(data.sort && data.page){
         if(data.sort=='essence'){
@@ -351,15 +357,15 @@ router.get('/getStrategyCommentTowByPage',function (req,res) {
 router.get('/getCommentById',function (req,res) {
     var data = req.query;
     if(data.commentId){
-        // function ready(){
-            // strategy.readMessage(data.commentId,function(result){
-                 strategy.getCommentById(req.query.commentId,function (result) {
-                    result.length && (result[0].add_time=subdate(result[0].add_time));
-                    result.length?res.json({state:1,comment:result[0]}):res.json({state:0});
-                })
-            // });
-        // }
-        // ready();
+  
+        strategy.getCommentById(req.query.commentId,function (result) {
+            if(!result[0].strategy_img){
+                result[0].strategy_img=0;
+            }
+            result.length && (result[0].add_time=subdate(result[0].add_time));
+            result.length?res.json({state:1,comment:result[0]}):res.json({state:0});
+        })
+
     }else {
         res.json({state:0})
     }

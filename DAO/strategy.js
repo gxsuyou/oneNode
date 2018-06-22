@@ -60,7 +60,8 @@ var strategy={
     },
     // 获取攻略列表                                          
     getStrategyByMsg:function (sort,page,callback) {
-        var sql = 'select t_strategy.*,t_user.nick_name,t_admin.id as aid,t_admin.nike_name,t_user.portrait \n'+
+        var sql = 'select t_strategy.*,GROUP_CONCAT(t_strategy_img.src order by t_strategy_img.src desc) as src,t_user.nick_name,t_admin.nike_name,t_user.portrait \n'+
+        ' from t_strategy left join t_strategy_img  on t_strategy_img.strategy_id= t_strategy.id \n'+
         ' LEFT JOIN t_user ON t_user.id=t_strategy.`user_id`  \n'+
         ' left join t_admin on t_admin.id=t_strategy.user_id group by t_strategy.id order by '+sort+' desc  limit ?,10';
         query(sql,[(page-1)*10],function (result) {
@@ -75,9 +76,9 @@ var strategy={
         })
     },
     // 获取攻略详情
-    getStrategyById:function (userId,strategyId,callback) {
+    getStrategyById:function (userId,id,callback) {
         var sql ="SELECT t_strategy.*,GROUP_CONCAT(t_strategy_img.src order by t_strategy_img.src desc) as imgList,t_user.`nick_name`,t_user.portrait,d.id as collect,t_strategy_like.`state` FROM t_strategy LEFT JOIN t_strategy_img ON t_strategy_img.strategy_id= t_strategy.id LEFT JOIN t_user ON t_user.id=t_strategy.`user_id` LEFT JOIN t_strategy_like ON t_strategy_like.`strategy_id`=t_strategy.`id` AND t_strategy_like.`user_id`=? LEFT JOIN t_collect AS d ON t_strategy.id=d.`target_id` AND d.`target_type`=2 AND d.`user_id`=?  WHERE t_strategy.id =? GROUP BY t_strategy.id";
-        query(sql,[userId,userId,strategyId],function (result) {
+        query(sql,[userId,userId,id],function (result) {
             return callback(result)
         })
     },
@@ -182,13 +183,6 @@ var strategy={
             return callback(result)
         })
     },
-    // 阅读新通知
-    // readMessage:function (commentId,callback) {
-    //     var sql = 'update t_tip set state=1 where tip_id=?';
-    //     query(sql,[commentId],function (result) {
-    //         return callback(result)
-    //     })
-    // },
     // 取消点赞接口
     unLikeComment:function (commentId,userId,callback) {
         var sql = 'delete from  t_strategy_like where strategy_id=? and user_id=?';

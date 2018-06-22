@@ -742,6 +742,7 @@ function subdate(str) {
         return str
     }
 }
+// 关于资讯/攻略/游戏的最新通知信息
 router.get('/newMessage',function (req,res) {
     var data = req.query;
     // console.log(data.type);
@@ -749,33 +750,57 @@ router.get('/newMessage',function (req,res) {
         if(data.sort==1){
             user.newsMessage(data.userId,data.page,function (result){
                 
-                        var n = result.length;
-                        for(var i=0;i<n;i++){
-                            var newtime = result[i].add_time.substring(0,10);
-                            result[i].add_time = newtime;
-                        }
-                        res.json({state:1,tip:result})
+                var n = result.length;
+                for(var i=0;i<n;i++){
+                    if(result[i].add_time.length>18){
+                        var str=result[i].add_time.substring(11,16);
+                        str=str.replace(/-/g, ':');
+                        result[i].add_time=result[i].add_time.substring(0,10);
+                        result[i].add_time+=" ";
+                        result[i].add_time+=str;
+                    }
+                    if(!result[i].img){
+                        result[i].img=0;
+                    }
+                }
+                res.json({state:1,tip:result})
                 
                 
             }); 
         }else if(data.sort==2){
             user.strategyMessage(data.userId,data.page,function (result){
-                    var arr =[];
-                        var n = result.length;
-                        
-                        for(var i=0;i<n;i++){
-                            var newtime = result[i].add_time.substring(0,10);
-                            result[i].add_time = newtime;
-                        }
-                        res.json({state:1,tip:result})
+                var arr =[];
+                var n = result.length;
+                
+                for(var i=0;i<n;i++){
+                    if(result[i].add_time.length>18){
+                        var str=result[i].add_time.substring(11,16);
+                        str=str.replace(/-/g, ':');
+                        result[i].add_time=result[i].add_time.substring(0,10);
+                        result[i].add_time+=" ";
+                        result[i].add_time+=str;
+                    }
+                    if(!result[i].img){
+                        result[i].img=0;
+                    }
+                }
+                res.json({state:1,tip:result})
             }); 
         }else if(data.sort==3){
             user.gameMessage(data.userId,data.page,function (results){
 
                 var n = results.length;
                 for(var i=0;i<n;i++){
-                    var newtime = results[i].add_time.substring(0,10);
-                    results[i].add_time = newtime;
+                    if(results[i].add_time.length>18){
+                        var str=results[i].add_time.substring(11,16);
+                        str=str.replace(/-/g, ':');
+                        results[i].add_time=results[i].add_time.substring(0,10);
+                        results[i].add_time+=" ";
+                        results[i].add_time+=str;
+                    }
+                    if(!results[i].img){
+                        results[i].img=0;
+                    }
                 }
                 res.json({state:1,tip:results})
             }); 

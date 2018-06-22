@@ -90,10 +90,14 @@ router.get('/getGameHotComment', function (req, res) {
         res.json({state: 0})
     }
 });
+// 根据ID获取游戏一级评论
 router.get('/getOneCommentByCommentId', function (req, res) {
     var data = req.query;
     if (data.commentId) {
         game.getOneCommentByCommentId(data.commentId, function (result) {
+            if(!result[0].game_icon){
+                result[0].game_icon=0;
+            }
             res.json({state: 1, comment: result[0]})
         })
     } else {
@@ -179,7 +183,6 @@ router.get('/getGameCommentScore', function (req, res) {
     }
 });
 // 评论游戏接口
-<<<<<<< HEAD
 router.get('/comment',function (req,res,next) {
     var data=req.query;
     if(data.userId && data.gameId && data.content){
@@ -201,25 +204,6 @@ router.get('/comment',function (req,res,next) {
                                     result.affectedRows?res.json({state:1}):res.json({state:0})
                                 })
                             }
-=======
-router.get('/comment', function (req, res, next) {
-    var data = req.query;
-    if (data.userId && data.gameId && data.content) {
-        var date = new Date();
-        game.gameComment(data.userId, data.gameId, data.score, data.content, date.Format('yyyy-MM-dd'), data.parentId, data.series, data.targetUserId || null, data.game_name, data.game_title_img, function (result) {
-            if (result.insertId) {
-                data.targetUserId && game.addUserTip(result.insertId, data.targetUserId);
-                data.targetUserId && socketio.senMsg(data.targetUserId);
-                game.getGameCommentScoreById(data.gameId, function (result) {
-                    if (result.length > 0) {
-                        var len = result.length;
-                        var allScore = 0;
-                        for (var i = 0; i < len; i++) {
-                            allScore += result[i].score;
-                        }
-                        game.updateGameScore(data.gameId, (allScore / len).toFixed(1), function (result) {
-                            result.affectedRows ? res.json({state: 1}) : res.json({state: 0})
->>>>>>> 8c657004a5f94ca014717ca38660360d924c1a5f
                         })
                     })
                 }

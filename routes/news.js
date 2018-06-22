@@ -44,8 +44,11 @@ router.get("/addNewsBrowse",function (req,res,next) {
 router.get('/getNewsByPage',function (req,res,next) {
     news.getNewsListByPage(req.query.page,function (result) {
         for(var i=0;i<result.length;i++){
-            var newtime = result[i].add_time.substring(0,10);
-            result[i].add_time = newtime;
+            if(result[i].add_time.length>18){
+                var newtime = result[i].add_time.substring(0,10);
+                result[i].add_time = newtime;
+            }
+
         }
         result.length?res.json({state:1,news:result}):res.json({state:0})
     })
@@ -76,15 +79,18 @@ router.get("/getNewsById",function (req,res,next) {
     if(req.query.id){
         news.getNewsById(req.query.id,req.query.userId,function (result) {
             if(result.length){
-                var str=result[0].add_time.substring(11,16);
-                str=str.replace(/-/g, ':');
-                result[0].add_time=result[0].add_time.substring(0,10);
-                result[0].add_time+=" ";
-                result[0].add_time+=str;
+                if(result[0].add_time.length>18){
+                    var str=result[0].add_time.substring(11,16);
+                    str=str.replace(/-/g, ':');
+                    result[0].add_time=result[0].add_time.substring(0,10);
+                    result[0].add_time+=" ";
+                    result[0].add_time+=str;
+                } 
+                if(result[0].detail){
+                    result[0].detail = result[0].detail.replace(/"/g,"'");
+                }         
             }
-            if(result[0].detail){
-                result[0].detail = result[0].detail.replace(/"/g,"'");
-            }
+            
             result.length?res.json({state:1,news:result[0]}):res.json({state:0})
         })
     }else {
@@ -141,8 +147,10 @@ router.get("/comment",function (req,res,next) {
                    news.addUserTip(result.insertId,data.targetUserId);
                    console.log('news'+data.targetUserId);
                    socketio.senMsg(data.targetUserId);
-                   news.addNewsCommentComment(req.query.targetCommentId,function (result) {
-                       result.affectedRows ? res.json({state:1}) : res.json({state:0})
+                   news.addNewsComment(data.newsid,function (result){
+                       news.addNewsCommentComment(req.query.targetCommentId,function (result) {
+                           result.affectedRows ? res.json({state:1}) : res.json({state:0})
+                       })
                    })
                }
            }else {
@@ -276,9 +284,13 @@ router.get("/getNewsCommentTowByPage",function (req,res,next) {
         }
     })
 });
+//根据ID获取一级评论
 router.get("/getCommentById",function (req,res,next) {
     if(req.query.commentId){
         news.getCommentById(req.query.commentId,function (result) {
+            if(!result[0].news_img){
+                result[0].news_img=0;
+            }
             result.length && (result[0].add_time=subdate(result[0].add_time));
             result.length?res.json({state:1,comment:result[0]}):res.json({state:0});
         })
