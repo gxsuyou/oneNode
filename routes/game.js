@@ -324,24 +324,36 @@ router.get('/getGameByTag', function (req, res) {
         game.getGameByTag(data.tagId, data.sys, data.page, function (result) {
             if (result.length) {
                 new Promise(function (reslove, reject) {
+                    var i = 0
                     result.forEach(function (v, k, array) {
                         game.getGameTags(array[k], data.page, function (tag_resulr) {
                             //arr.push()
                             var tagId = tag_resulr[0].tag_ids.substr(1);
                             tagId = tagId.substring(0, tagId.length - 1);
-                            arr.push({
-                                id: tag_resulr[0].id,
-                                game_name: tag_resulr[0].game_name,
-                                icon: tag_resulr[0].icon,
-                                game_title_img: tag_resulr[0].game_title_img,
-                                grade: tag_resulr[0].grade,
-                                game_recommend: tag_resulr[0].game_recommend,
-                                cls_ids: tag_resulr[0].cls_ids,
-                                tag_ids: tag_resulr[0].tag_ids,
-                                tagList: tag_resulr[0].tag_name,
-                                tagId: tagId
-                            });
-                            if (k + 1 >= result.length) {
+
+                            if ((parseInt(k)) == i) {
+                                var newArr = {
+                                    id: tag_resulr[0].id,
+                                    game_name: tag_resulr[0].game_name,
+                                    icon: tag_resulr[0].icon,
+                                    game_title_img: tag_resulr[0].game_title_img,
+                                    grade: tag_resulr[0].grade,
+                                    game_recommend: tag_resulr[0].game_recommend,
+                                    cls_ids: tag_resulr[0].cls_ids,
+                                    tag_ids: tag_resulr[0].tag_ids,
+                                    tagList: tag_resulr[0].tag_name,
+                                    tagId: tagId
+                                };
+                                arr.push(newArr);
+                            } else {
+                                aaa(array[k], data.page, function (tags_resulr) {
+                                    arr.splice((i - 1), 0, tags_resulr[0]);
+                                    console.log(i + "++++++" + (parseInt(k)));
+                                    console.log(i);
+                                });
+                            }
+                            i++;
+                            if (i >= result.length) {
                                 //console.log(1545615654)
                                 reslove(arr);
                             }
@@ -394,4 +406,12 @@ router.get('/getStrategyByGameName', function (req, res) {
         res.json({state: 0})
     }
 });
+
+function aaa(array, gage, callback) {
+
+    game.getGameTags(array, gage, function (tags_resulr) {
+        //console.log(tag_resulr)
+        callback(tags_resulr);
+    })
+}
 module.exports = router;
