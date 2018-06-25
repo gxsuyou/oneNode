@@ -60,8 +60,8 @@ var game = {
     },
     // 根据标签获取游戏
     getGameByTag: function (tagId, sys, page, callback) {
-        var sql = "SELECT tag_ids,id FROM t_game WHERE tag_ids LIKE'%," + tagId + ",%' ORDER BY id DESC LIMIT ?,20"
-        query(sql, [(page - 1) * 20], function (result) {
+        var sql = "SELECT tag_ids,id FROM t_game WHERE tag_ids LIKE'%," + tagId + ",%' ORDER BY id DESC LIMIT ?,30"
+        query(sql, [(page - 1) * 30], function (result) {
             return callback(result)
         })
     },
@@ -70,9 +70,9 @@ var game = {
         // console.log(obj);
         var sql = "SELECT a.id,a.icon,a.game_name,a.game_title_img,a.game_recommend,grade,a.tag_ids as tagId," +
             "(SELECT group_concat(`name`) as tagName FROM t_tag as b WHERE b.id IN (0" + obj.tag_ids + "0)) AS tagList " +
-            "FROM t_game as a WHERE a.tag_ids LIKE '%" + obj.tag_ids + "%' AND a.id="+obj.id+" ORDER BY a.id DESC LIMIT ?,20"
+            "FROM t_game as a WHERE a.tag_ids LIKE '%" + obj.tag_ids + "%' AND a.id="+obj.id+" ORDER BY a.id DESC LIMIT ?,30"
         // console.log(sql);
-        query(sql, [(page - 1) * 20], function (result) {
+        query(sql, [(page - 1) * 30], function (result) {
             // console.log(result);
             return callback(result)
         })
