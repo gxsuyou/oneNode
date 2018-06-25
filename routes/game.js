@@ -61,33 +61,32 @@ router.get('/getGameByTag', function (req, res) {
     if (data.tagId) {
         game.getGameByTag(data.tagId, data.sys, data.page, function (result) {
             var num = result.length;
-             new Promise(function (reslove, reject) {
-                result.forEach(function (v, k, array) {
-                    console.log(v.id);
-                    game.getGameTags(v, data.page, function (tag_resulr) {
-                        var tagId = tag_resulr[0].tag_ids.substr(1);
-                        tagId = tagId.substring(0, tagId.length - 1);
-                        arr.push({
-                            id: tag_resulr[0].id,
-                            game_name: tag_resulr[0].game_name,
-                            icon: tag_resulr[0].icon,
-                            game_title_img: tag_resulr[0].game_title_img,
-                            grade: tag_resulr[0].grade,
-                            game_recommend: tag_resulr[0].game_recommend,
-                            // cls_ids: tag_resulr[0].cls_ids,
-                            tag_ids: tag_resulr[0].tag_ids,
-                            tagList: tag_resulr[0].tag_name,
-                            tagId: tagId
+            // console.log(num);
+            if(num>0){
+                new Promise(function (reslove, reject) {
+                    result.forEach(function (v, k, array) {
+                        game.getGameTags(v, data.page, function (tag_resulr) {
+                            arr.push(tag_resulr);
+                        
+                            if (k == num-1) {
+                                reslove(arr);
+                            }
+                            
+                            
                         })
-                        // arr.push(tag_resulr);
-                        if (k == num-1) {
-                            reslove(arr);
-                        }
-                    })
-                });
-            }).then(function (arr) {
-                    res.json({state: 1, gameList: arr})
+                    });
+                }).then(function (arr) {
+                    // console.log(typeof arr);
+                    if(JSON.stringify(arr[0])=="[]"){
+                        res.json({state:0})
+                    }else{
+                        res.json({state:1,game:arr})
+                    }
                 })
+            }else{
+                res.json({state:0})
+            }
+            
         })
     } else {
         res.json({state: 0})

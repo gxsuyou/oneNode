@@ -1,7 +1,6 @@
 node_modules/
 config/
 resource/
-.git/
 /game
 /goods
 /news
