@@ -52,9 +52,9 @@ var strategy={
         })
     },
     // 获取顶部便捷搜索游戏
-    getSearchGame:function (sys,callback) {
-        var sql = 'select t_game.icon,t_game.game_name from t_game where sys=? order by sort desc limit 0,8';
-        query(sql,[sys],function (result) {
+    getSearchGame:function (strategy_head,callback) {
+        var sql = 'select t_game.icon,t_game.game_name from t_game where strategy_head=? order by id desc limit 0,8';
+        query(sql,[strategy_head],function (result) {
             return callback(result)
         })
     },

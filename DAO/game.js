@@ -60,67 +60,37 @@ var game = {
     },
     // 根据标签获取游戏
     getGameByTag: function (tagId, sys, page, callback) {
-        //var sql = 'SELECT t_game.id,t_game.game_name,t_game.icon,t_game.game_title_img,t_game.grade,t_game.game_recommend,' +
-        //    'GROUP_CONCAT(t_tag.name) AS tagList,GROUP_CONCAT(t_tag.id) AS tagId  FROM t_game \n' +
-        //    'LEFT JOIN t_tag_relation ON t_tag_relation.`game_id`=t_game.id\n' +
-        //    'LEFT JOIN t_tag ON t_tag_relation.`tag_id`=t_tag.`id`\n' +
-        //    'WHERE  t_game.id IN(SELECT t_tag_relation.`game_id` FROM t_tag_relation WHERE tag_id=?) and t_game.sys=? ' +
-        //    'GROUP BY t_game.id limit ?,20';
-        ////var sql = "SELECT * FROM t_game WHERE tag_ids LIKE'%," + tagId + ",%' ORDER BY id DESC LIMIT ?,20"
-        //query(sql, [tagId, sys, (page - 1) * 20], function (result) {
-        //    return callback(result)
-        //})
         var sql = "SELECT * FROM t_game WHERE tag_ids LIKE'%," + tagId + ",%' ORDER BY id DESC LIMIT ?,20"
         query(sql, [(page - 1) * 20], function (result) {
-            for (var i in result) {
-                var ids = result[i].tag_ids;
-                ids = ids.substr(1);
-                ids = ids.substring(0, ids.length - 1);
-                var sql_tag = "SELECT * FROM t_tag WHERE id IN (" + ids + ")"
-                query(sql_tag, [], function (tag_result) {
-                    result.tagList = tag_result
-                    return callback(result)
-                })
-            }
+            return callback(result)
+        })
+    },
+    // 根据标签获取游戏(相关)
+    getGameTags: function (obj, page, callback) {
+        var sql = "SELECT a.id,a.icon,a.game_name,a.game_title_img,a.game_recommend,grade,a.cls_ids,a.tag_ids," +
+            "(SELECT group_concat(`name`) as tagName FROM t_tag as b WHERE b.id IN (0" + obj.tag_ids + "0)) AS tag_name " +
+            "FROM t_game as a WHERE a.tag_ids LIKE '%" + obj.tag_ids + "%' AND a.id=? ORDER BY a.id DESC LIMIT ?,20"
+        query(sql, [obj.id, (page - 1) * 20], function (result) {
+            return callback(result)
         })
     },
     // 获取游戏排行
-    getGameByMsg: function (sys, type, sort, page, callback) {
-        // if (type !== '') {
-        //     var sql = "SELECT t_game.*,GROUP_CONCAT(t_tag.name) AS tagList,GROUP_CONCAT(t_tag.id) AS tagId FROM t_tag_relation \n"+
-        //     " LEFT JOIN t_game ON t_tag_relation.game_id = t_game.id \n"+
-        //     " LEFT JOIN t_tag ON t_tag.`id`=t_tag_relation.`tag_id` where sys=? and type=? GROUP BY t_game.id ORDER BY " + sort + " DESC limit ?,20";
-        //     query(sql, [sys, type, (page - 1) * 20], function (result) {
-        //         return callback(result)
-        //     })
-        // } else {
-        //     var sql = "SELECT t_game.*,GROUP_CONCAT(t_tag.name) AS tagList,GROUP_CONCAT(t_tag.id) AS tagId " +
-        //         "FROM t_tag_relation " +
-        //         "LEFT JOIN t_game ON t_tag_relation.game_id = t_game.id " +
-        //         "LEFT JOIN t_tag ON t_tag.`id`=t_tag_relation.`tag_id` where sys=? " +
-        //         "GROUP BY t_game.id ORDER BY " + sort + " DESC limit ?,20";
-        //     query(sql, [sys, (page - 1) * 20], function (result) {
-        //         return callback(result)
-        //     })
-        // }
-        var sql = "select tag_ids from t_game order by "+sort+" desc limit ?,20";
-        query(sql,[],function(result){
-            // console.log(result.length);
-            var n=result.length;
-            for(var i=0;i<n;i++){
-                var str = result[i].tag_ids;
-                var m = str.length;
-                var newStr = str.substring(1,m-1);
-                // console.log(newStr);
-                // if(newStr){
-                //    var sql = "select name as tagList from t_tag where id in ("+newStr+")";
-                //    query(sql,[],function(results){
-                //         return callback(result);
-                //    })
-                // }
-            }
-            return callback(result);
-        })
+    getGameByMsg:function (obj,sys,type,sort,page,callback) {
+        if(type!==''){
+            var sql="SELECT t_game.*,GROUP_CONCAT(t_tag.name) AS tagList,GROUP_CONCAT(t_tag.id) AS tagId FROM t_tag_relation \n"+
+            " LEFT JOIN t_game ON t_tag_relation.game_id = t_game.id \n"+
+            " LEFT JOIN t_tag ON t_tag.`id` = t_tag_relation.tag_id where sys=? and type=? GROUP BY t_game.id ORDER BY "+sort+" DESC limit ?,20";
+            query(sql,[sys,type,(page-1)*3],function (result) {
+                return callback(result)
+            })
+        }else {
+            var sql="SELECT t_game.*,GROUP_CONCAT(t_tag.name) AS tagList,GROUP_CONCAT(t_tag.id) AS tagId FROM t_tag_res \n"+
+            " LEFT JOIN t_game ON t_tag_res.game_id = t_game.id \n"+
+            "LEFT JOIN t_tag ON t_tag.`id` = t_tag_relation.tag_id where sys=? GROUP BY t_game.id ORDER BY "+sort+" DESC limit ?,20";
+            query(sql,[sys,(page-1)*3],function (result) {
+                return callback(result)
+            })
+        }
     },
     // 根据关键词搜索游戏
     searchGameByMsg: function (sys, msg, sort, page, callback) {
@@ -313,7 +283,8 @@ var game = {
             return callback(result)
         })
     },
- 
+
+    
     // 获取游戏分类
     getGameCls: function (callback) {
         var sql = 'SELECT t_game_cls.*,t_game.game_title_img as icon FROM t_game_cls_relation  ' +
@@ -343,17 +314,19 @@ var game = {
             return callback(result)
         })
     },
-    /**
-     * 从游戏中获取标签
-     */
+     // 根据分类获取游戏(相关)
     getGameByTags: function (obj, page, callback) {
-        var sql = "SELECT a.id,a.icon,a.game_name,grade,a.cls_ids,a.tag_ids," +
+        var sql = "SELECT a.id,a.icon,a.game_name,a.game_title_img,a.game_recommend,grade,a.cls_ids,a.tag_ids," +
             "(SELECT group_concat(`name`) as tagName FROM t_tag as b WHERE b.id IN (0" + obj.tag_ids + "0)) AS tag_name " +
             "FROM t_game as a WHERE a.cls_ids LIKE '%" + obj.cls_ids + "%' AND a.id=? ORDER BY a.id DESC LIMIT ?,20"
         query(sql, [obj.id, (page - 1) * 20], function (result) {
             return callback(result)
         })
     },
+    /**
+     * 从游戏中获取标签
+     */
+    
     // 添加我的游戏
     addMyGame: function (gameId, userId, sys, callback) {
         var sql = 'select id from t_collect where target_id=? and user_id=? and target_type=?';
