@@ -395,6 +395,11 @@ router.get('/getStrategyByGameName', function (req, res) {
     var data = req.query;
     if (data.gameName && data.page) {
         game.getStrategyByGameName(data.gameName, data.page, function (result) {
+            for(var i=0;i<result.length;i++){
+                if(!result[i].nick_name){
+                    result[i].nick_name=result[i].nike_name;
+                }
+            }
             res.json({state: 1, strategy: result})
         })
     } else {

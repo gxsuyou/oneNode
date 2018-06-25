@@ -103,21 +103,21 @@ router.get('/getStrategyByMsg',function (req,res) {
             strategy.getStrategyByEssence(data.page,function (result) {
                 // console.log(result);
                 for(var i=0;i<result.length;i++){
-                    var str = result[i].id.toString();
-                    var n = str.length;
-                   if(result[i].src!=null){
-                        if(result[i].src.match(/img0/)){
-                            var m = result[i].src.match(/img0/).index;
-                        }else if(result[i].src.match(/img1/)){
-                            var m = result[i].src.match(/img1/).index;
-                        }else if(result[i].src.match(/img2/)){
-                            var m = result[i].src.match(/img2/).index;
-                        }
-                        var s = m+4;
-                        var num = m-n-20;
-                        var newsrc = result[i].src.substring(num,s);
-                        result[i].src = newsrc; 
-                    }
+                    // var str = result[i].id.toString();
+                   //  var n = str.length;
+                   // if(result[i].src!=null){
+                   //      if(result[i].src.match(/img0/)){
+                   //          var m = result[i].src.match(/img0/).index;
+                   //      }else if(result[i].src.match(/img1/)){
+                   //          var m = result[i].src.match(/img1/).index;
+                   //      }else if(result[i].src.match(/img2/)){
+                   //          var m = result[i].src.match(/img2/).index;
+                   //      }
+                   //      var s = m+4;
+                   //      var num = m-n-20;
+                   //      var newsrc = result[i].src.substring(num,s);
+                   //      result[i].src = newsrc; 
+                   //  }
                 
                     var newtime = result[i].add_time.substring(0,10);
                     result[i].add_time = newtime;
