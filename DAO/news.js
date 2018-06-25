@@ -9,7 +9,7 @@ var news = {
         //     return callback(result)
         // })
         var sql="SELECT a.id,a.title,a.img,a.add_time,a.agree,a.game_id,a.browse,b.game_name,b.icon,b.game_recommend FROM t_news AS a\n" +
-            "LEFT JOIN t_game AS b ON a.`game_id`=b.`id` order by a.add_time desc limit ?,5";
+            "LEFT JOIN t_game AS b ON a.`game_id`=b.`id` order by a.up desc,a.add_time desc limit ?,5";
         query(sql,[(page-1)*5],function (result) {
             return callback(result)
         })
@@ -88,7 +88,6 @@ var news = {
             return callback(result)
         })
     },
-    
     like:function (parentId,userId,type,callback) {
         var sql="select * from t_like where parent_id=? and like_type=? and like_user_id=?";
         query(sql,[parentId,type,userId],function (result) {
@@ -140,7 +139,6 @@ var news = {
             return callback(result)
         })
     },
-    //根据ID获取一级评论
     getCommentById:function (id,callback) {
         var sql="select t_news_comment.*,t_user.nick_name,t_user.portrait from t_news_comment left join t_user on t_news_comment.user_id = t_user.id where  t_news_comment.id=?";
         query(sql,[id],function (result) {

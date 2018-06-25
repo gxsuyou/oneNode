@@ -44,11 +44,8 @@ router.get("/addNewsBrowse",function (req,res,next) {
 router.get('/getNewsByPage',function (req,res,next) {
     news.getNewsListByPage(req.query.page,function (result) {
         for(var i=0;i<result.length;i++){
-            if(result[i].add_time.length>18){
-                var newtime = result[i].add_time.substring(0,10);
-                result[i].add_time = newtime;
-            }
-
+            var newtime = result[i].add_time.substring(0,10);
+            result[i].add_time = newtime;
         }
         result.length?res.json({state:1,news:result}):res.json({state:0})
     })
@@ -79,18 +76,12 @@ router.get("/getNewsById",function (req,res,next) {
     if(req.query.id){
         news.getNewsById(req.query.id,req.query.userId,function (result) {
             if(result.length){
-                if(result[0].add_time.length>18){
-                    var str=result[0].add_time.substring(11,16);
-                    str=str.replace(/-/g, ':');
-                    result[0].add_time=result[0].add_time.substring(0,10);
-                    result[0].add_time+=" ";
-                    result[0].add_time+=str;
-                } 
-                if(result[0].detail){
-                    result[0].detail = result[0].detail.replace(/"/g,"'");
-                }         
+                var str=result[0].add_time.substring(11,16);
+                str=str.replace(/-/g, ':');
+                result[0].add_time=result[0].add_time.substring(0,10);
+                result[0].add_time+=" ";
+                result[0].add_time+=str;
             }
-            
             result.length?res.json({state:1,news:result[0]}):res.json({state:0})
         })
     }else {
@@ -134,9 +125,9 @@ router.get("/addCommentNum",function (req,res,next) {
 //添加资讯评论
 router.get("/comment",function (req,res,next) {
     // console.log(req.query);
-    var data=req.query;
     var date=new Date();
-    if(data.targetCommentId && data.newsid && data.news_title){
+    if(req.query.targetCommentId){
+       var data=req.query;
        news.newsComment(data.targetCommentId,data.userId,data.series,data.content,date.Format('yyyy-MM-dd-HH-mm-SS'),data.targetUserId || 0,data.news_img,data.news_title,data.newsid,function (result) {
            if(result.insertId){
                if(data.series==1){
@@ -147,10 +138,8 @@ router.get("/comment",function (req,res,next) {
                    news.addUserTip(result.insertId,data.targetUserId);
                    console.log('news'+data.targetUserId);
                    socketio.senMsg(data.targetUserId);
-                   news.addNewsComment(data.newsid,function (result){
-                       news.addNewsCommentComment(req.query.targetCommentId,function (result) {
-                           result.affectedRows ? res.json({state:1}) : res.json({state:0})
-                       })
+                   news.addNewsCommentComment(req.query.targetCommentId,function (result) {
+                       result.affectedRows ? res.json({state:1}) : res.json({state:0})
                    })
                }
            }else {
@@ -284,13 +273,9 @@ router.get("/getNewsCommentTowByPage",function (req,res,next) {
         }
     })
 });
-//根据ID获取一级评论
 router.get("/getCommentById",function (req,res,next) {
     if(req.query.commentId){
         news.getCommentById(req.query.commentId,function (result) {
-            if(!result[0].news_img){
-                result[0].news_img=0;
-            }
             result.length && (result[0].add_time=subdate(result[0].add_time));
             result.length?res.json({state:1,comment:result[0]}):res.json({state:0});
         })

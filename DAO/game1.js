@@ -24,7 +24,7 @@ var game = {
         })
     },
     getCarousel: function (callback) {
-        var sql = "select * from t_activity where type=1 and active=1";
+        var sql = "select * from t_activity where type=1 and active=1 and sys =2";
         query(sql, [], function (result) {
             return callback(result)
         })
@@ -271,8 +271,7 @@ var game = {
         //    return callback(result)
         //})
         //var page = (page - 1) * 20
-        var sql = "SELECT id,cls_ids,tag_ids FROM t_game WHERE tag_ids LIKE '%," + tagId + ",%' " +
-            "ORDER BY game_download_num,sort,sort2 DESC LIMIT ?,20"
+        var sql = "SELECT id,cls_ids,tag_ids FROM t_game WHERE tag_ids LIKE '%," + tagId + ",%' ORDER BY game_download_num,sort,sort2 DESC LIMIT ?,20"
         query(sql, [(page - 1) * 20], function (result) {
             return callback(result)
         })
