@@ -53,46 +53,6 @@ router.get("/clsActive", function (req, res, next) {
         result.length ? res.json({state: 1, clsActive: result}) : res.json({state: 0})
     })
 });
-// 根据标签获取游戏
-router.get('/getGameByTag', function (req, res) {
-    var data = req.query;
-    // console.log(data.page);
-    var arr = new Array();
-    if (data.tagId) {
-        game.getGameByTag(data.tagId, data.sys, data.page, function (result) {
-            var num = result.length;
-            // console.log(num);
-            if(num>0){
-                new Promise(function (reslove, reject) {
-                    result.forEach(function (v, k, array) {
-                        game.getGameTags(v, data.page, function (tag_resulr) {
-                            arr.push(tag_resulr[0]);
-                        
-                            if (k == num-1) {
-                                reslove(arr);
-                            }
-                            
-                            
-                        })
-                    });
-                }).then(function (arr) {
-                    // console.log(typeof arr);
-                    if(JSON.stringify(arr[0])=="[]"){
-                        res.json({state:0})
-                    }else{
-                        res.json({state:1,game:arr})
-                    }
-                })
-            }else{
-                res.json({state:0})
-            }
-            
-        })
-    } else {
-        res.json({state: 0})
-    }
-});
-// 游戏排行
 router.get("/getGameByMsg", function (req, res, next) {
     req = req.query;
     // console.log(req);
@@ -356,6 +316,61 @@ router.get('/getGameBySubject', function (req, res) {
         res.json({state: 0})
     }
 });
+// 根据标签获取游戏
+router.get('/getGameByTag', function (req, res) {
+    var data = req.query;
+    var arr = new Array();
+    if (data.tagId) {
+        game.getGameByTag(data.tagId, data.sys, data.page, function (result) {
+            if (result.length) {
+                new Promise(function (reslove, reject) {
+                    var i = 0
+                    result.forEach(function (v, k, array) {
+                        game.getGameTags(array[k], data.page, function (tag_resulr) {
+                            //arr.push()
+                            var tagId = tag_resulr[0].tag_ids.substr(1);
+                            tagId = tagId.substring(0, tagId.length - 1);
+
+                            if ((parseInt(k)) == i) {
+                                var newArr = {
+                                    id: tag_resulr[0].id,
+                                    game_name: tag_resulr[0].game_name,
+                                    icon: tag_resulr[0].icon,
+                                    game_title_img: tag_resulr[0].game_title_img,
+                                    grade: tag_resulr[0].grade,
+                                    game_recommend: tag_resulr[0].game_recommend,
+                                    cls_ids: tag_resulr[0].cls_ids,
+                                    tag_ids: tag_resulr[0].tag_ids,
+                                    tagList: tag_resulr[0].tag_name,
+                                    tagId: tagId
+                                };
+                                arr.push(newArr);
+                            } else {
+                                aaa(array[k], data.page, function (tags_resulr) {
+                                    arr.splice((i - 1), 0, tags_resulr[0]);
+                                    console.log(i + "++++++" + (parseInt(k)));
+                                    console.log(i);
+                                });
+                            }
+                            i++;
+                            if (i >= result.length) {
+                                //console.log(1545615654)
+                                reslove(arr);
+                            }
+                        })
+                    });
+                }).then(function (arr) {
+                        //console.log(arr);
+                        res.json({state: 1, game: arr})
+                    })
+            } else {
+                res.json({state: 0})
+            }
+        })
+    } else {
+        res.json({state: 0})
+    }
+});
 // 添加我的游戏
 router.get('/addMyGame', function (req, res) {
     var data = req.query;
@@ -385,11 +400,6 @@ router.get('/getStrategyByGameName', function (req, res) {
     var data = req.query;
     if (data.gameName && data.page) {
         game.getStrategyByGameName(data.gameName, data.page, function (result) {
-            for(var i=0;i<result.length;i++){
-                if(!result[i].nick_name){
-                    result[i].nick_name=result[i].nike_name;
-                }
-            }
             res.json({state: 1, strategy: result})
         });
     } else {
