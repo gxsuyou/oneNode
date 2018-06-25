@@ -3,3 +3,4 @@ config/
 resource/
 .git/
 /game
+/goods
