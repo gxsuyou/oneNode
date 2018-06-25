@@ -60,34 +60,37 @@ var game = {
     },
     // 根据标签获取游戏
     getGameByTag: function (tagId, sys, page, callback) {
-        var sql = "SELECT * FROM t_game WHERE tag_ids LIKE'%," + tagId + ",%' ORDER BY id DESC LIMIT ?,20"
-        query(sql, [(page - 1) * 20], function (result) {
+        var sql = "SELECT tag_ids,id FROM t_game WHERE tag_ids LIKE'%," + tagId + ",%' ORDER BY id DESC LIMIT ?,30"
+        query(sql, [(page - 1) * 30], function (result) {
             return callback(result)
         })
     },
     // 根据标签获取游戏(相关)
     getGameTags: function (obj, page, callback) {
+        // console.log(obj);
         var sql = "SELECT a.id,a.icon,a.game_name,a.game_title_img,a.game_recommend,grade,a.cls_ids,a.tag_ids," +
             "(SELECT group_concat(`name`) as tagName FROM t_tag as b WHERE b.id IN (0" + obj.tag_ids + "0)) AS tag_name " +
-            "FROM t_game as a WHERE a.tag_ids LIKE '%" + obj.tag_ids + "%' AND a.id=? ORDER BY a.id DESC LIMIT ?,20"
-        query(sql, [obj.id, (page - 1) * 20], function (result) {
+            "FROM t_game as a WHERE a.tag_ids LIKE '%" + obj.tag_ids + "%' AND a.id="+obj.id+" ORDER BY a.id DESC LIMIT ?,30"
+        // console.log(sql);
+        query(sql, [(page - 1) * 30], function (result) {
+            // console.log(result);
             return callback(result)
         })
     },
     // 获取游戏排行
-    getGameByMsg:function (obj,sys,type,sort,page,callback) {
+    getGameByMsg:function (sys,type,sort,page,callback) {
         if(type!==''){
             var sql="SELECT t_game.*,GROUP_CONCAT(t_tag.name) AS tagList,GROUP_CONCAT(t_tag.id) AS tagId FROM t_tag_relation \n"+
-            " LEFT JOIN t_game ON t_tag_relation.game_id = t_game.id \n"+
-            " LEFT JOIN t_tag ON t_tag.`id` = t_tag_relation.tag_id where sys=? and type=? GROUP BY t_game.id ORDER BY "+sort+" DESC limit ?,20";
-            query(sql,[sys,type,(page-1)*3],function (result) {
+            "LEFT JOIN t_game ON t_tag_relation.game_id = t_game.id \n"+
+            " LEFT JOIN t_tag ON t_tag.`id`=t_tag_relation.`tag_id` where sys=? and type=? GROUP BY t_game.id ORDER BY "+sort+" DESC limit ?,20";
+            query(sql,[sys,type,(page-1)*20],function (result) {
                 return callback(result)
             })
         }else {
-            var sql="SELECT t_game.*,GROUP_CONCAT(t_tag.name) AS tagList,GROUP_CONCAT(t_tag.id) AS tagId FROM t_tag_res \n"+
-            " LEFT JOIN t_game ON t_tag_res.game_id = t_game.id \n"+
-            "LEFT JOIN t_tag ON t_tag.`id` = t_tag_relation.tag_id where sys=? GROUP BY t_game.id ORDER BY "+sort+" DESC limit ?,20";
-            query(sql,[sys,(page-1)*3],function (result) {
+            var sql="SELECT t_game.*,GROUP_CONCAT(t_tag.name) AS tagList,GROUP_CONCAT(t_tag.id) AS tagId FROM t_tag_relation \n"+
+            "right join t_tag ON t_tag.`id`=t_tag_relation.`tag_id` \n"+
+            "right join t_game ON t_tag_relation.game_id = t_game.id  where sys=? GROUP BY t_game.id ORDER BY "+sort+" DESC limit ?,20";
+            query(sql,[sys,(page-1)*20],function (result) {
                 return callback(result)
             })
         }
@@ -317,17 +320,6 @@ var game = {
         var sql = "SELECT a.id,a.icon,a.game_name,a.game_title_img,a.game_recommend,grade,a.cls_ids,a.tag_ids," +
             "(SELECT group_concat(`name`) as tagName FROM t_tag as b WHERE b.id IN (0" + obj.tag_ids + "0)) AS tag_name " +
             "FROM t_game as a WHERE a.cls_ids LIKE '%" + obj.cls_ids + "%' AND a.id=?"
-        query(sql, [obj.id, (page - 1) * 20], function (result) {
-            return callback(result)
-        })
-    },
-    /**
-     * 从游戏中获取标签
-     */
-    getGameTags: function (obj, page, callback) {
-        var sql = "SELECT a.id,a.icon,a.game_name,a.game_title_img,a.game_recommend,grade,a.cls_ids,a.tag_ids," +
-            "(SELECT group_concat(`name`) as tagName FROM t_tag as b WHERE b.id IN (0" + obj.tag_ids + "0)) AS tag_name " +
-            "FROM t_game as a WHERE a.tag_ids LIKE '%" + obj.tag_ids + "%' AND a.id=?"
         query(sql, [obj.id, (page - 1) * 20], function (result) {
             return callback(result)
         })

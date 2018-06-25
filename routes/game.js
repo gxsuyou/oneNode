@@ -53,16 +53,18 @@ router.get("/clsActive", function (req, res, next) {
         result.length ? res.json({state: 1, clsActive: result}) : res.json({state: 0})
     })
 });
-// 根据分类获取游戏
-router.get('/getGameByCls', function (req, res) {
+// 根据标签获取游戏
+router.get('/getGameByTag', function (req, res) {
     var data = req.query;
+    // console.log(data.page);
     var arr = new Array();
-    if (data.clsId && data.page) {
-        game.getGameByCls(data.clsId, data.page, function (result) {
-            new Promise(function (reslove, reject) {
+    if (data.tagId) {
+        game.getGameByTag(data.tagId, data.sys, data.page, function (result) {
+            var num = result.length;
+             new Promise(function (reslove, reject) {
                 result.forEach(function (v, k, array) {
-                    game.getGameByTags(v, data.page, function (tag_resulr) {
-                        //arr.push()
+                    console.log(v.id);
+                    game.getGameTags(v, data.page, function (tag_resulr) {
                         var tagId = tag_resulr[0].tag_ids.substr(1);
                         tagId = tagId.substring(0, tagId.length - 1);
                         arr.push({
@@ -72,33 +74,20 @@ router.get('/getGameByCls', function (req, res) {
                             game_title_img: tag_resulr[0].game_title_img,
                             grade: tag_resulr[0].grade,
                             game_recommend: tag_resulr[0].game_recommend,
-                            cls_ids: tag_resulr[0].cls_ids,
+                            // cls_ids: tag_resulr[0].cls_ids,
                             tag_ids: tag_resulr[0].tag_ids,
                             tagList: tag_resulr[0].tag_name,
                             tagId: tagId
                         })
-                        if (k == 19) {
+                        // arr.push(tag_resulr);
+                        if (k == num-1) {
                             reslove(arr);
                         }
                     })
                 });
             }).then(function (arr) {
-                res.json({state: 1, gameList: arr})
-            })
-            //res.json({state: 1, gameList: result})
-        })
-    } else {
-        res.json({state: 0})
-    }
-});
-// 根据标签获取游戏
-router.get('/getGameByTag', function (req, res) {
-    var data = req.query;
-    var arr = new Array();
-    if (data.tagId) {
-        game.getGameByTag(data.tagId, data.sys, data.page, function (result) {
-            
-            res.json({state: 1, game: result})
+                    res.json({state: 1, gameList: arr})
+                })
         })
     } else {
         res.json({state: 0})
@@ -108,7 +97,47 @@ router.get('/getGameByTag', function (req, res) {
 router.get("/getGameByMsg", function (req, res, next) {
     var data = req.query;
     game.getGameByMsg(data.sys,data.type,data.sort, data.page, function (result) {
-        result.length?res.json({state:1,game:result}):res.json(state:0)
+        result.length?res.json({state:1,game:result}):res.json({state:0})
+    })
+});
+// 根据分类获取游戏
+router.get('/getGameByCls', function (req, res) {
+    var data = req.query;
+    var arr = new Array();
+    if (data.clsId && data.page) {
+        game.getGameByCls(data.clsId, data.page, function (result) {
+            // new Promise(function (reslove, reject) {
+            //     result.forEach(function (v, k, array) {
+            //         game.getGameTags(v, data.page, function (tag_resulr) {
+            //             //arr.push()
+            //             var tagId = tag_resulr[0].tag_ids.substr(1);
+            //             tagId = tagId.substring(0, tagId.length - 1);
+            //             arr.push({
+            //                 id: tag_resulr[0].id,
+            //                 game_name: tag_resulr[0].game_name,
+            //                 icon: tag_resulr[0].icon,
+            //                 game_title_img: tag_resulr[0].game_title_img,
+            //                 grade: tag_resulr[0].grade,
+            //                 game_recommend: tag_resulr[0].game_recommend,
+            //                 cls_ids: tag_resulr[0].cls_ids,
+            //                 tag_ids: tag_resulr[0].tag_ids,
+            //                 tagList: tag_resulr[0].tag_name,
+            //                 tagId: tagId
+            //             })
+            //             console.log(arr);
+            //             if (k == 19) {
+            //                 reslove(arr);
+            //             }
+            //         })
+            //     });
+            // }).then(function (arr) {
+            //         res.json({state: 1, gameList: arr})
+            //     })
+            res.json({state: 1, gameList: result})
+        })
+    } else {
+        res.json({state: 0})
+    }
 });
 router.get("/hotGame", function (req, res, next) {
     game.getHotGame(function (result) {
@@ -274,44 +303,7 @@ router.get('/getAppCls', function (req, res) {
         res.json({state: 1, cls: result})
     })
 });
-// 根据分类获取游戏
-router.get('/getGameByCls', function (req, res) {
-    var data = req.query;
-    var arr = new Array();
-    if (data.clsId && data.page) {
-        game.getGameByCls(data.clsId, data.page, function (result) {
-            // new Promise(function (reslove, reject) {
-            //     result.forEach(function (v, k, array) {
-            //         game.getGameByTags(v, data.page, function (tag_resulr) {
-            //             //arr.push()
-            //             var tagId = tag_resulr[0].tag_ids.substr(1);
-            //             tagId = tagId.substring(0, tagId.length - 1);
-            //             arr.push({
-            //                 id: tag_resulr[0].id,
-            //                 game_name: tag_resulr[0].game_name,
-            //                 icon: tag_resulr[0].icon,
-            //                 game_title_img: tag_resulr[0].game_title_img,
-            //                 grade: tag_resulr[0].grade,
-            //                 game_recommend: tag_resulr[0].game_recommend,
-            //                 cls_ids: tag_resulr[0].cls_ids,
-            //                 tag_ids: tag_resulr[0].tag_ids,
-            //                 tagList: tag_resulr[0].tag_name,
-            //                 tagId: tagId
-            //             })
-            //             if (k == 19) {
-            //                 reslove(arr);
-            //             }
-            //         })
-            //     });
-            // }).then(function (arr) {
-            //         res.json({state: 1, gameList: arr})
-            //     })
-            res.json({state: 1, gameList: result})
-        })
-    } else {
-        res.json({state: 0})
-    }
-});
+
 
 // 根据关键词搜索游戏
 router.get("/searchGameByMsg", function (req, res, next) {
@@ -405,7 +397,7 @@ router.get('/getStrategyByGameName', function (req, res) {
     if (data.gameName && data.page) {
         game.getStrategyByGameName(data.gameName, data.page, function (result) {
             res.json({state: 1, strategy: result})
-        });
+        })
     } else {
         res.json({state: 0})
     }
