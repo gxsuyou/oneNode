@@ -223,6 +223,7 @@ router.get('/comment', function (req, res, next) {
     var data = req.query;
     if (data.userId && data.gameId && data.content) {
         var date = new Date();
+        console.log(data.game_title_img);
         game.gameComment(data.userId, data.gameId, data.score, data.content, date.Format('yyyy-MM-dd'), data.parentId, data.series, data.targetUserId || null, data.game_name, data.game_title_img, function (result) {
             if (result.insertId) {
                 data.targetUserId && game.addUserTip(result.insertId, data.targetUserId);
