@@ -35,7 +35,7 @@ router.post('/addStrategyMsg', function (req, res) {
         function find() {
             strategy.findGameName(data.gameName, function (result) {
                 //if (result[0]) {
-                data.addTime = date.Format('yyyy-MM-dd hh:mm:ss')
+                data.addTime = date.Format('yyyy-MM-dd-hh-mm-ss')
                 strategy.addStartegy(data, function (result) {
                     result.insertId ? res.json({state: 1, strategyId: result.insertId}) : res.json({state: 0})
                 })
