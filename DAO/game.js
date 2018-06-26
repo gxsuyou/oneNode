@@ -312,7 +312,7 @@ var game = {
      * 从游戏中获取标签
      */
     getGameByTags: function (obj, page, callback) {
-        var sql = "SELECT a.id,a.icon,a.game_name,a.game_title_img,a.game_recommend,grade,a.cls_ids,a.tag_ids," +
+        var sql = "SELECT a.id,a.icon,a.game_name,a.game_title_img,a.game_recommend,a.grade,a.cls_ids,a.tag_ids," +
             "(SELECT GROUP_CONCAT(`name`) as tagName FROM t_tag as b WHERE b.id IN (0" + obj.tag_ids + "0)) AS tag_name " +
             "FROM t_game as a WHERE a.cls_ids LIKE '%" + obj.cls_ids + "%' AND a.id=?"
         query(sql, [obj.id, (page - 1) * 20], function (result) {
