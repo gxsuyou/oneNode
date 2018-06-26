@@ -24,4 +24,8 @@ router.get('/addMyH5',function (req,res) {
        res.json({state:0})
    }
 });
+// 检测更新接口    mark -> 更新的版本号  
+router.get("/update",function (req,res,next) {
+    res.json({state:1,mark:'3.0.0'});
+});
 module.exports = router;
