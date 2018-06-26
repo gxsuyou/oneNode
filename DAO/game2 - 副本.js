@@ -250,6 +250,7 @@ var game = {
             'LEFT JOIN t_tag ON t_tag_relation.`tag_id`=t_tag.`id`) \n' +
             'LEFT JOIN t_game ON t_tag_relation.`game_id`=t_game.`id`\n' +
             'WHERE t_tag.`id`=(SELECT id FROM t_tag WHERE active=0 LIMIT 0,1) AND t_game.`sys`=? ORDER BY RAND() LIMIT 10';
+        00
         query(sql, [sys], function (result) {
             if (result.length) {
                 data[result[0].name] = result;
@@ -279,6 +280,25 @@ var game = {
             return callback(result)
         })
     },
+    // 根据标签获取游戏
+    getGameByTag: function (tagId, sys, page, callback) {
+        //var sql = 'SELECT t_game.id,t_game.game_name,t_game.icon,t_game.game_title_img,t_game.grade,t_game.game_recommend,' +
+        //    'GROUP_CONCAT(t_tag.name) AS tagList,GROUP_CONCAT(t_tag.id) AS tagId  FROM t_game \n' +
+        //    'LEFT JOIN t_tag_relation ON t_tag_relation.`game_id`=t_game.id\n' +
+        //    'LEFT JOIN t_tag ON t_tag_relation.`tag_id`=t_tag.`id`\n' +
+        //    'WHERE  t_game.id IN(SELECT t_tag_relation.`game_id` FROM t_tag_relation WHERE tag_id=?) and t_game.sys=? ' +
+        //    'GROUP BY t_game.id limit ?,20';
+        ////var sql = "SELECT * FROM t_game WHERE tag_ids LIKE'%," + tagId + ",%' ORDER BY id DESC LIMIT ?,20"
+        //query(sql, [tagId, sys, (page - 1) * 20], function (result) {
+        //    return callback(result)
+        //})
+        //var page = (page - 1) * 20
+        var sql = "SELECT id,cls_ids,tag_ids FROM t_game WHERE tag_ids LIKE '%," + tagId + ",%' " +
+            "ORDER BY game_download_num,sort,sort2 DESC LIMIT ?,20"
+        query(sql, [(page - 1) * 20], function (result) {
+            return callback(result)
+        })
+    },
     // 获取游戏分类
     getGameCls: function (callback) {
         var sql = 'SELECT t_game_cls.*,t_game.game_title_img as icon FROM t_game_cls_relation  ' +
@@ -300,11 +320,11 @@ var game = {
     },
     // 根据分类获取游戏
     getGameByCls: function (clsId, page, callback) {
-        var sql = 'SELECT a.id,a.icon,a.game_name,a.grade,GROUP_CONCAT(t_tag.`name`) as tagNameList,GROUP_CONCAT(t_tag.`id`) as tagIdList FROM (t_game_cls_relation LEFT JOIN t_game AS a ON a.id = t_game_cls_relation.game_id) LEFT JOIN t_tag_relation ON a.id = t_tag_relation.`game_id` LEFT JOIN t_tag ON t_tag.`id`=t_tag_relation.`tag_id`\n' +
-            ' WHERE t_game_cls_relation.cls_id=? GROUP BY a.`id` ORDER BY a.id DESC limit ?,20';
-        //var sql = "SELECT id,icon,game_name,sort,sort2,cls_ids,tag_ids FROM t_game " +
-        //    "WHERE cls_ids LIKE '%," + clsId + ",%' ORDER BY game_download_num,sort,sort2 DESC LIMIT ?,20"
-        query(sql, [clsId, (page - 1) * 20], function (result) {
+        //var sql = 'SELECT a.id,a.icon,a.game_name,a.grade,GROUP_CONCAT(t_tag.`name`) as tagNameList,GROUP_CONCAT(t_tag.`id`) as tagIdList FROM (t_game_cls_relation LEFT JOIN t_game AS a ON a.id = t_game_cls_relation.game_id) LEFT JOIN t_tag_relation ON a.id = t_tag_relation.`game_id` LEFT JOIN t_tag ON t_tag.`id`=t_tag_relation.`tag_id`\n' +
+        //' WHERE t_game_cls_relation.cls_id=? GROUP BY a.`id` limit ?,20';
+        var sql = "SELECT id,icon,game_name,sort,sort2,cls_ids,tag_ids FROM t_game " +
+            "WHERE cls_ids LIKE '%," + clsId + ",%' ORDER BY game_download_num,sort,sort2 DESC LIMIT ?,20"
+        query(sql, [(page - 1) * 20], function (result) {
             return callback(result)
         })
     },
@@ -313,7 +333,7 @@ var game = {
      */
     getGameByTags: function (obj, page, callback) {
         var sql = "SELECT a.id,a.icon,a.game_name,a.game_title_img,a.game_recommend,grade,a.cls_ids,a.tag_ids," +
-            "(SELECT GROUP_CONCAT(`name`) as tagName FROM t_tag as b WHERE b.id IN (0" + obj.tag_ids + "0)) AS tag_name " +
+            "(SELECT group_concat(`name`) as tagName FROM t_tag as b WHERE b.id IN (0" + obj.tag_ids + "0)) AS tag_name " +
             "FROM t_game as a WHERE a.cls_ids LIKE '%" + obj.cls_ids + "%' AND a.id=?"
         query(sql, [obj.id, (page - 1) * 20], function (result) {
             return callback(result)
@@ -349,10 +369,7 @@ var game = {
     },
     // 根据游戏名字获取相关攻略
     getStrategyByGameName: function (gameName, page, callback) {
-        var sql = "SELECT a.*,b.nike_name,c.`nick_name`,c.portrait FROM t_strategy as a \n " +
-            " LEFT JOIN t_admin AS b ON b.id = a.`user_id`\n " +
-            " LEFT JOIN t_user AS c ON c.id=a.`user_id` " +
-            " WHERE a.game_name  =? GROUP BY a.id  ORDER BY browse_num  DESC LIMIT ?,6";
+        var sql = "select t_strategy.*,t_strategy_img.src,t_user.`nick_name`,t_user.portrait from t_strategy left join t_strategy_img on t_strategy_img.strategy_id= t_strategy.id LEFT JOIN t_user ON t_user.id=t_strategy.`user_id` where t_strategy.game_name  =? group by t_strategy.id  order by id  desc limit ?,6";
         query(sql, [gameName, (page - 1) * 6], function (result) {
             return callback(result)
         })
