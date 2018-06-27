@@ -67,7 +67,7 @@ router.get('/getGameByTag', function (req, res) {
                     result.forEach(function (v, k, array) {
                         game.getGameTags(v, data.page, function (tag_resulr) {
                             arr.push(tag_resulr[0]);
-
+                            console.log(num+"+"+k);
                             if (k == num - 1) {
                                 reslove(arr);
                             }
