@@ -106,7 +106,7 @@ router.get('/getStrategyByMsg', function (req, res) {
             strategy.getStrategyByEssence(data.page, function (result) {
                 // console.log(result);
                 for(var i=0;i<result.length;i++){
-                
+
                     var newtime = result[i].add_time.substring(0,10);
 
                     result[i].add_time = newtime;
