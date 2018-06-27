@@ -207,7 +207,7 @@ var game = {
         parentId = parentId || 0;
         // 如果没有评分 默认为8分
         score = score || 8;
-        var sql = "INSERT into t_game_comment (user_id,game_id,score,content,add_time,parent_id,series,target_user_id,game_name,game_title_img) values (?,?,?,?,?,?,?,?,?,?)";
+        var sql = "INSERT into t_game_comment (user_id,game_id,score,content,add_time,parent_id,series,target_user_id,game_name,game_icon) values (?,?,?,?,?,?,?,?,?,?)";
         query(sql, [userId, gameId, score, content, addTime, parentId, series, targetUserId, game_name, game_title_img], function (result) {
             return callback(result)
         })

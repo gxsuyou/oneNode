@@ -71,7 +71,7 @@ router.get('/collect', function (req, res) {
     var data = req.query;
     if (data.targetId && data.userId && data.sys && data.type) {
         strategy.collect(data.targetId, data.userId, data.sys, data.type, function (result) {
-            console.log(result);
+            //console.log(result);
             res.json({state: 1})
         })
     } else {
@@ -115,7 +115,7 @@ router.get('/getStrategyByMsg', function (req, res) {
             })
         } else {
             strategy.getStrategyByMsg(data.sort, data.page, function (result) {
-                // console.log(result);
+                 //console.log(result);
                 for (var i = 0; i < result.length; i++) {
                     if (result[i].nick_name == null) {
                         result[i].nick_name = result[i].nike_name;
@@ -178,7 +178,7 @@ router.get('/addNum', function (req, res) {
             function anum() {
                 strategy.getCountLikeComment(data.strategyId, function (result) {
                     var anum = result[0].lnum + 1;
-                    console.log(anum);
+                    //console.log(anum);
                     strategy.addNum(anum, data.strategyId, data.numType, function (result) {
                         res.json({state: 3})
                     });
@@ -229,7 +229,7 @@ router.get('/strategyComment', function (req, res) {
                         data.targetUserId = data.aid;
                     }
                     strategy.strategyComment(content, data.userId, data.targetCommentId, data.targetUserId, data.series, date.Format('yyyy-MM-dd-hh-mm-ss'), data.target_img, data.targetid, data.target_title, function (result) {
-                        console.log(result);
+                        //console.log(result);
                         result.insertId && strategy.addUserTip(result.insertId, data.targetUserId);
                         socketio.senMsg(data.targetUserId);
                         result.insertId ? res.json({state: 1, commentId: result.insertId}) : res.json({state: 0})
