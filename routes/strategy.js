@@ -119,7 +119,7 @@ router.get('/getStrategyByMsg', function (req, res) {
             })
         } else {
             strategy.getStrategyByMsg(data.sort, data.page, function (result) {
-                // console.log(result);
+                 console.log(result);
                 for (var i = 0; i < result.length; i++) {
                     if (result[i].nick_name == null) {
                         result[i].nick_name = result[i].nike_name;
