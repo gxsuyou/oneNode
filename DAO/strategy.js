@@ -208,13 +208,20 @@ var strategy = {
     },
     // 根据关游戏名字获取攻略
     getStrategyByGameName: function (gameName, sort, page, callback) {
-        var sql = "select t_strategy.*,GROUP_CONCAT(t_strategy_img.src order by t_strategy_img.src desc) as src,t_user.`nick_name`,t_user.portrait from t_strategy left join t_strategy_img on t_strategy_img.strategy_id= t_strategy.id LEFT JOIN t_user ON t_user.id=t_strategy.`user_id` where t_strategy.game_name  =? group by t_strategy.id  order by " + sort + " desc limit ?,10";
+        var sql = "select t_strategy.*," +
+            "GROUP_CONCAT(t_strategy_img.src order by t_strategy_img.src desc) as src,t_user.`nick_name`,t_user.portrait,t_admin.nike_name " +
+            "from t_strategy left join t_strategy_img on t_strategy_img.strategy_id= t_strategy.id " +
+            "LEFT JOIN t_user ON t_user.id=t_strategy.`user_id` " +
+            "LEFT JOIN t_admin ON t_admin.id=t_strategy.`user_id` " +
+            "where t_strategy.game_name  =? group by t_strategy.id  order by " + sort + " desc limit ?,10";
         query(sql, [gameName, (page - 1) * 10], function (result) {
             return callback(result)
         })
     },
     getEssenceStrategyByGameName: function (gameName, page, callback) {
-        var sql = "select t_strategy.*,t_strategy_img.src from t_strategy left join t_strategy_img on t_strategy_img.strategy_id= t_strategy.id where essence = 1 and t_strategy.game_name  =? group by t_strategy.id limit ?,10";
+        var sql = "select t_strategy.*,t_strategy_img.src from t_strategy " +
+            "left join t_strategy_img on t_strategy_img.strategy_id= t_strategy.id " +
+            "where essence = 1 and t_strategy.game_name  =? group by t_strategy.id limit ?,10";
         query(sql, [gameName, (page - 1) * 10], function (result) {
             return callback(result)
         })

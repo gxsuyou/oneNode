@@ -32,6 +32,7 @@ router.post('/addStrategyMsg', function (req, res) {
     var data = req.body;
     if (data.userId && data.title && data.detail && data.gameName) {
         var date = new Date();
+
         function find() {
             strategy.findGameName(data.gameName, function (result) {
                 //if (result[0]) {
@@ -90,9 +91,9 @@ router.get('/unCollect', function (req, res) {
 });
 router.get('/getSearchGame', function (req, res) {
     var data = req.query;
-        strategy.getSearchGame(1, function (result) {
-            result.length ? res.json({state: 1, gameList: result}) : res.json({state: 0})
-        })
+    strategy.getSearchGame(1, function (result) {
+        result.length ? res.json({state: 1, gameList: result}) : res.json({state: 0})
+    })
 });
 // 获取攻略列表
 router.get('/getStrategyByMsg', function (req, res) {
@@ -101,9 +102,9 @@ router.get('/getStrategyByMsg', function (req, res) {
         if (data.sort == 'essence') {
             strategy.getStrategyByEssence(data.page, function (result) {
                 // console.log(result);
-                for(var i=0;i<result.length;i++){
+                for (var i = 0; i < result.length; i++) {
 
-                    var newtime = result[i].add_time.substring(0,10);
+                    var newtime = result[i].add_time.substring(0, 10);
 
                     result[i].add_time = newtime;
 
@@ -115,8 +116,11 @@ router.get('/getStrategyByMsg', function (req, res) {
             })
         } else {
             strategy.getStrategyByMsg(data.sort, data.page, function (result) {
-                 //console.log(result);
+                //console.log(result);
                 for (var i = 0; i < result.length; i++) {
+                    var newtime = result[i].add_time.substring(0, 10);
+
+                    result[i].add_time = newtime;
                     if (result[i].nick_name == null) {
                         result[i].nick_name = result[i].nike_name;
                     }
@@ -385,6 +389,9 @@ router.get('/getStrategyByGameName', function (req, res) {
         if (data.sort == 'essence') {
             strategy.getEssenceStrategyByGameName(data.msg, data.page, function (result) {
                 for (var i = 0; i < result.length; i++) {
+                    var newtime = result[i].add_time.substring(0, 10);
+
+                    result[i].add_time = newtime;
                     var arr = [];
                     if (result[i].src != null) {
                         arr = result[i].src.split(',');
@@ -396,6 +403,9 @@ router.get('/getStrategyByGameName', function (req, res) {
         } else {
             strategy.getStrategyByGameName(data.msg, data.sort, data.page, function (result) {
                 for (var i = 0; i < result.length; i++) {
+                    var newtime = result[i].add_time.substring(0, 10);
+
+                    result[i].add_time = newtime;
                     var arr = [];
                     if (result[i].src != null) {
                         arr = result[i].src.split(',');

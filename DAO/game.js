@@ -300,7 +300,12 @@ var game = {
     },
     // 根据分类获取游戏
     getGameByCls: function (clsId, page, callback) {
-        var sql = 'SELECT a.id,a.icon,a.game_name,a.grade,GROUP_CONCAT(t_tag.`name`) as tagNameList,GROUP_CONCAT(t_tag.`id`) as tagIdList FROM (t_game_cls_relation LEFT JOIN t_game AS a ON a.id = t_game_cls_relation.game_id) LEFT JOIN t_tag_relation ON a.id = t_tag_relation.`game_id` LEFT JOIN t_tag ON t_tag.`id`=t_tag_relation.`tag_id`\n' +
+        var sql = 'SELECT a.id,a.icon,a.game_name,a.grade,' +
+            'GROUP_CONCAT(t_tag.`name`) as tagNameList,' +
+            'GROUP_CONCAT(t_tag.`id`) as tagIdList ' +
+            'FROM (t_game_cls_relation LEFT JOIN t_game AS a ON a.id = t_game_cls_relation.game_id) ' +
+            'LEFT JOIN t_tag_relation ON a.id = t_tag_relation.`game_id` ' +
+            'LEFT JOIN t_tag ON t_tag.`id`=t_tag_relation.`tag_id`\n' +
             ' WHERE t_game_cls_relation.cls_id=? GROUP BY a.`id` ORDER BY a.id DESC limit ?,20';
         //var sql = "SELECT id,icon,game_name,sort,sort2,cls_ids,tag_ids FROM t_game " +
         //    "WHERE cls_ids LIKE '%," + clsId + ",%' ORDER BY game_download_num,sort,sort2 DESC LIMIT ?,20"

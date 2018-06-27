@@ -41,7 +41,8 @@ router.get("/addNewsBrowse", function (req, res, next) {
 });
 //根据页数获取资讯列表
 router.get('/getNewsByPage', function (req, res, next) {
-    news.getNewsListByPage(req.query.page, function (result) {
+    var page = req.query.page > 0 ? req.query.page : 1;
+    news.getNewsListByPage(page, function (result) {
         for (var i = 0; i < result.length; i++) {
             var newtime = result[i].add_time.substring(0, 10);
             result[i].add_time = newtime;
