@@ -716,12 +716,16 @@ router.get('/getStrategyByUserId', function (req, res) {
 // 获取用户收藏
 router.get('/getCollectByUserId', function (req, res) {
     var data = req.query;
+    console.log(data.userId+data.page+data.type);
     if (data.userId && data.type && data.page) {
         if (data.type == 1) {
             user.getNewsCollect(data.userId, data.page, function (result) {
                 if (result.length) {
 
                     for (var i = 0; i < result.length; i++) {
+                        if(!result[i].game_name){
+                            result[i].game_name = "";
+                        }
                         if (result[i].id == null) {
 
                             result.splice(i, result.length);
@@ -737,8 +741,11 @@ router.get('/getCollectByUserId', function (req, res) {
             user.getStrategyCollect(data.userId, data.page, function (result) {
                 if (result.length) {
                     for (var i = 0; i < result.length; i++) {
+                        if(!result[i].nick_name){
+                            result[i].nick_name=result[i].nike_name;
+                        }
                         if (result[i].id == null) {
-
+                            
                             result.splice(i, result.length);
                         }
                     }
@@ -787,7 +794,7 @@ router.get('/newMessage', function (req, res) {
     var data = req.query;
     // console.log(data.type);
     if (data.userId) {
-        if (data.type == 1) {
+        if (data.sort == 1) {
             user.newsMessage(data.userId, data.page, function (result) {
 
                 var n = result.length;
@@ -799,7 +806,7 @@ router.get('/newMessage', function (req, res) {
 
 
             });
-        } else if (data.type == 2) {
+        } else if (data.sort == 2) {
             user.strategyMessage(data.userId, data.page, function (result) {
                 var arr = [];
                 var n = result.length;
@@ -810,7 +817,7 @@ router.get('/newMessage', function (req, res) {
                 }
                 res.json({state: 1, tip: result})
             });
-        } else if (data.type == 3) {
+        } else if (data.sort == 3) {
             user.gameMessage(data.userId, data.page, function (results) {
 
                 var n = results.length;
