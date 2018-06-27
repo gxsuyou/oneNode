@@ -90,13 +90,9 @@ router.get('/unCollect', function (req, res) {
 });
 router.get('/getSearchGame', function (req, res) {
     var data = req.query;
-    if (data.sys) {
         strategy.getSearchGame(1, function (result) {
             result.length ? res.json({state: 1, gameList: result}) : res.json({state: 0})
         })
-    } else {
-        res.json({state: 0})
-    }
 });
 // 获取攻略列表
 router.get('/getStrategyByMsg', function (req, res) {
