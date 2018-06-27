@@ -150,7 +150,7 @@ var strategy = {
     },
     // 获取攻略详情页评论接口
     getStrategyCommentByPage: function (userId, strategyId, page, sort, callback) {
-        var sql = "SELECT t_strategy_comment.id,t_strategy_comment.img,t_strategy_comment.content,t_strategy_comment.add_time,t_strategy_comment.agree_num,t_strategy_comment.comment_num,t_user.nick_name,t_user.portrait, t_strategy_like.state  \n" +
+        var sql = "SELECT t_strategy_comment.id,t_strategy_comment.content,t_strategy_comment.add_time,t_strategy_comment.agree_num,t_strategy_comment.comment_num,t_user.nick_name,t_user.portrait, t_strategy_like.state  \n" +
             "            FROM t_strategy_comment \n" +
             "            LEFT JOIN t_user ON t_strategy_comment.user_id = t_user.id \n" +
             "            LEFT JOIN t_strategy_like ON t_strategy_like.`strategy_id`=t_strategy_comment.`id` AND t_strategy_like.`user_id`=? WHERE t_strategy_comment.target_comment_id=? AND \n" +
