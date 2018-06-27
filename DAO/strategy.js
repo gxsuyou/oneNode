@@ -60,12 +60,13 @@ var strategy = {
     },
     // 获取攻略列表                                          
 
-    getStrategyByMsg:function (sort,page,callback) {
-        var sql = 'select t_strategy.*,t_user.nick_name,t_admin.nike_name,t_user.portrait \n'+
-        ' from t_strategy \n'+
-        ' LEFT JOIN t_user ON t_user.id=t_strategy.`user_id`  \n'+
-        ' left join t_admin on t_admin.id=t_strategy.user_id group by t_strategy.id order by '+sort+' desc  limit ?,10';
-        query(sql,[(page-1)*10],function (result) {
+    getStrategyByMsg: function (sort, page, callback) {
+        var sql = 'select t_strategy.*,t_user.nick_name,t_admin.nike_name,t_user.portrait \n' +
+            ' from t_strategy \n' +
+            ' LEFT JOIN t_user ON t_user.id=t_strategy.`user_id`  \n' +
+            ' left join t_admin on t_admin.id=t_strategy.user_id ' +
+            ' group by t_strategy.id order by ' + sort + ' desc  limit ?,10';
+        query(sql, [(page - 1) * 10], function (result) {
             return callback(result)
         })
     },

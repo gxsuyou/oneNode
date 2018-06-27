@@ -233,8 +233,11 @@ var user = {
     },
     // 获取用户资讯收藏
     getNewsCollect: function (userId, page, callback) {
-        var sql = "SELECT a.id,a.title,a.img,a.add_time,a.agree,a.game_id,a.browse,b.game_name,b.icon,b.game_recommend FROM t_collect as c left join t_news AS a on a.id= c.target_id and c.user_id=?\n" +
-            "LEFT JOIN t_game AS b ON a.`game_id`=b.`id` where c.target_type=1  order by a.up desc,c.id desc limit ?,10";
+        var sql = "SELECT a.id,a.title,a.img,a.add_time,a.agree,a.game_id,a.browse,b.game_name,b.icon,b.game_recommend " +
+            "FROM t_collect as c " +
+            "left join t_news AS a on a.id= c.target_id and c.user_id=?\n" +
+            "LEFT JOIN t_game AS b ON a.`game_id`=b.`id` " +
+            "where c.target_type=1  order by a.up desc,c.id desc limit ?,10";
         query(sql, [userId, (page - 1) * 10], function (result) {
             return callback(result)
         })
