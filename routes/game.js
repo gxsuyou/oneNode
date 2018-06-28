@@ -223,7 +223,7 @@ router.get('/comment', function (req, res, next) {
     var data = req.query;
     if (data.userId && data.gameId && data.content) {
         var date = new Date();
-        console.log(data.game_title_img);
+        //console.log(data);
         game.gameComment(data.userId, data.gameId, data.score, data.content, date.Format('yyyy-MM-dd'), data.parentId, data.series, data.targetUserId || null, data.game_name, data.game_title_img, function (result) {
             if (result.insertId) {
                 data.targetUserId && game.addUserTip(result.insertId, data.targetUserId);
@@ -360,8 +360,10 @@ router.get('/getStrategyByGameName', function (req, res) {
     var data = req.query;
     if (data.gameName && data.page) {
         game.getStrategyByGameName(data.gameName, data.page, function (result) {
-            console.log(data.gameName)
             for (var i = 0; i < result.length; i++) {
+                var newtime = result[i].add_time.substring(0, 10);
+
+                result[i].add_time = newtime;
                 if (!result[i].nick_name) {
                     result[i].nick_name = result[i].nike_name;
                 }
