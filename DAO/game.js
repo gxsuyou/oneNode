@@ -127,6 +127,12 @@ var game = {
             return callback(result)
         })
     },
+    getCommentUserById: function (obj, callback) {
+        var sql = "SELECT * FROM t_game_comment WHERE user_id=? AND game_id=? ORDER BY id DESC LIMIT 0,1"
+        query(sql, [obj.user_id, obj.game_id], function (result) {
+            return callback(result)
+        })
+    },
     getGameHotComment: function (gameId, callback) {
         var sql = "SELECT t_game_comment.`id`,t_game_comment.`content`,t_game_comment.`add_time`,t_game_comment.`comment_num`,t_game_comment.`score`,t_game_comment.`agree`,t_user.id as uid,t_user.`nick_name`,t_user.`portrait`,t_game_comment_like.state FROM t_game_comment \n" +
             "LEFT JOIN t_game_comment_like on t_game_comment.`user_id`=t_game_comment_like.user_id and t_game_comment.id = t_game_comment_like.comment_id\n" +

@@ -67,7 +67,7 @@ router.get('/getGameByTag', function (req, res) {
                     result.forEach(function (v, k, array) {
                         game.getGameTags(v, data.page, function (tag_resulr) {
                             arr.push(tag_resulr[0]);
-                            console.log(num+"+"+k);
+                            console.log(num + "+" + k);
                             if (k == num - 1) {
                                 reslove(arr);
                             }
@@ -217,6 +217,18 @@ router.get('/getGameCommentScore', function (req, res) {
         console.log(result);
         res.json({state: 0})
     }
+});
+
+router.get("/getCommentUserById", function (req, res, next) {
+    var data = req.query;
+    if (data.user_id && data.game_id) {
+        game.getCommentUserById(data, function (result) {
+            result.length < 1 ? res.json({state: 1}) : res.json({state: 0})
+        })
+    } else {
+        res.json({state: 0})
+    }
+
 });
 // 评论游戏接口
 router.get('/comment', function (req, res, next) {
