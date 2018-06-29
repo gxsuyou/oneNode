@@ -716,14 +716,14 @@ router.get('/getStrategyByUserId', function (req, res) {
 // 获取用户收藏
 router.get('/getCollectByUserId', function (req, res) {
     var data = req.query;
-    console.log(data.userId+data.page+data.type);
+    console.log(data.userId + data.page + data.type);
     if (data.userId && data.type && data.page) {
         if (data.type == 1) {
             user.getNewsCollect(data.userId, data.page, function (result) {
                 if (result.length) {
 
                     for (var i = 0; i < result.length; i++) {
-                        if(!result[i].game_name){
+                        if (!result[i].game_name) {
                             result[i].game_name = "";
                         }
                         if (result[i].id == null) {
@@ -741,11 +741,11 @@ router.get('/getCollectByUserId', function (req, res) {
             user.getStrategyCollect(data.userId, data.page, function (result) {
                 if (result.length) {
                     for (var i = 0; i < result.length; i++) {
-                        if(!result[i].nick_name){
-                            result[i].nick_name=result[i].nike_name;
+                        if (!result[i].nick_name) {
+                            result[i].nick_name = result[i].nike_name;
                         }
                         if (result[i].id == null) {
-                            
+
                             result.splice(i, result.length);
                         }
                     }
@@ -876,6 +876,16 @@ router.post('/upDatePassword', function (req, res, next) {
     }
 });
 
+router.get("/getDelCollect", function (req, res, next) {
+    var data = req.query;
+    if (data.id) {
+        user.getDelCollect(data, function (result) {
+            result.affectedRows ? res.json({state: 1}) : res.json({state: 0});
+        })
+    } else {
+        res.json({state: 0});
+    }
+});
 
 // router.get("/edit");
 module.exports = router;

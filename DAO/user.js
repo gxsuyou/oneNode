@@ -224,7 +224,7 @@ var user = {
             return callback(result)
         })
     },
-    
+
     getStrategyUser: function (userId, callback) {
         var sql = "SELECT nike_name FROM t_admin WHERE id =?";
         query(sql, [userId], function (result) {
@@ -254,7 +254,9 @@ var user = {
         })
     },
     getH5ByUser: function (userId, page, callback) {
-        var sql = 'select t_h5.* from t_collect left join t_h5 on t_h5.id = t_collect.target_id where t_collect.user_id = ? and t_collect.target_type=4 limit ?,10';
+        var sql = 'select t_h5.*,t_collect.id as coll_id from t_collect ' +
+            'left join t_h5 on t_h5.id = t_collect.target_id ' +
+            'where t_collect.user_id = ? and t_collect.target_type=4 limit ?,10';
         query(sql, [userId, (page - 1) * 10], function (result) {
             return callback(result)
         })
@@ -333,6 +335,20 @@ var user = {
             return callback(result)
         })
     },
+    /**
+     * 删除即玩小游戏
+     */
+    getDelCollect: function (obj, callback) {
+        var sql = "SELECT * FROM t_collect WHERE id=? "
+        query(sql, [obj.id], function (result) {
+            if (result.length) {
+                var del_sql = "DELETE FROM t_collect WHERE id=?";
+                query(del_sql, [obj.id], function (del_result) {
+                    return callback(del_result)
+                })
+            }
+        })
+    }
 
 };
 module.exports = user;

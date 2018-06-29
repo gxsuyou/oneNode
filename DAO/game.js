@@ -369,5 +369,6 @@ var game = {
             return callback(result)
         })
     }
+
 };
 module.exports = game;

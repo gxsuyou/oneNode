@@ -386,4 +386,5 @@ router.get('/getStrategyByGameName', function (req, res) {
         res.json({state: 0})
     }
 });
+
 module.exports = router;
