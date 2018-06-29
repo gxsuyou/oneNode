@@ -285,7 +285,7 @@ var game = {
     },
     // 获取游戏分类
     getGameCls: function (callback) {
-        var sql = 'SELECT t_game_cls.*,t_game.game_title_img as icon FROM t_game_cls_relation  ' +
+        var sql = 'SELECT t_game_cls.*,t_game.icon as icon FROM t_game_cls_relation  ' +
             'LEFT JOIN t_game ON t_game.id=t_game_cls_relation.`game_id` ' +
             'LEFT JOIN t_game_cls ON t_game_cls.`id`=t_game_cls_relation.`cls_id` ' +
             'WHERE t_game_cls.type =1 GROUP BY t_game_cls.`id` ';

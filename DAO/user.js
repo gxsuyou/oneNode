@@ -335,7 +335,7 @@ var user = {
         })
     },
     /**
-     * 删除即玩小游戏
+     * 删除收藏
      */
     getDelCollect: function (obj, callback) {
         var sql = "SELECT * FROM t_collect WHERE id=? "
@@ -348,6 +348,7 @@ var user = {
             }
         })
     }
+
 
 };
 module.exports = user;
