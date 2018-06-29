@@ -301,7 +301,7 @@ var user = {
             "left join t_user on t_game_comment.user_id=t_user.id \n" +
             "left join t_tip on t_game_comment.id=t_tip.tip_id \n" +
             "where t_game_comment.user_id=? group by t_game_comment.add_time  desc limit ?,10";
-        
+
         query(sql, [userId, (page - 1) * 10], function (result) {
             return callback(result)
         })
