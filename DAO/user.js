@@ -233,7 +233,7 @@ var user = {
     },
     // 获取用户资讯收藏
     getNewsCollect: function (userId, page, callback) {
-        var sql = "SELECT a.id,a.title,a.img,a.add_time,a.agree,a.game_id,a.browse,b.game_name,b.icon,b.game_recommend " +
+        var sql = "SELECT a.id,a.title,a.img,a.add_time,a.agree,a.game_id,a.browse,b.game_name,b.icon,b.game_recommend,c.id as coll_id " +
             "FROM t_collect as c " +
             "left join t_news AS a on a.id= c.target_id and c.user_id=?\n" +
             "LEFT JOIN t_game AS b ON a.`game_id`=b.`id` " +
@@ -244,7 +244,8 @@ var user = {
     },
     // 获取用户攻略收藏
     getStrategyCollect: function (userId, page, callback) {
-        var sql = 'select t_strategy.*,t_user.`nick_name`,t_user.portrait,t_admin.nike_name from t_collect  ' +
+        var sql = 'select t_strategy.*,t_user.`nick_name`,t_user.portrait,t_admin.nike_name,t_collect.id as coll_id ' +
+            'from t_collect  ' +
             'left join t_strategy on t_strategy.id=t_collect.target_id ' +
             'LEFT JOIN t_user ON t_user.id=t_strategy.`user_id` ' +
             'LEFT JOIN t_admin ON t_admin.id=t_strategy.`user_id` ' +
