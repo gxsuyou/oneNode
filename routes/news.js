@@ -133,6 +133,7 @@ router.get("/comment", function (req, res, next) {
     var date = new Date();
     if (req.query.targetCommentId) {
         var data = req.query;
+
         news.newsComment(data.targetCommentId, data.userId, data.series, data.content, date.Format('yyyy-MM-dd-HH-mm-SS'), data.targetUserId || 0, data.news_img, data.news_title, data.newsid, function (result) {
             if (result.insertId) {
                 if (data.series == 1) {
@@ -237,7 +238,7 @@ router.get("/getCommentByPage", function (req, res, next) {
 // 获取热门资讯评论
 router.get("/getHotNewsCommentByPage", function (req, res) {
     if (req.query.commentParentId) {
-        var page = req.query.page > 0 ? req.query.page : 1;
+        var page = req.query.page > 0 ? req.query.page : 1 ;
         news.getNewsCommentByPage(req.query.userId, req.query.commentParentId, page, function (result) {
             if (result.length) {
                 var data = result;
