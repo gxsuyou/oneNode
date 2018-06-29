@@ -79,7 +79,15 @@ var strategy = {
     },
     // 获取攻略详情
     getStrategyById: function (userId, strategyId, callback) {
-        var sql = "SELECT t_strategy.*,GROUP_CONCAT(t_strategy_img.src order by t_strategy_img.src desc) as imgList,t_user.`nick_name`,t_user.portrait,d.id as collect,t_strategy_like.`state` FROM t_strategy LEFT JOIN t_strategy_img ON t_strategy_img.strategy_id= t_strategy.id LEFT JOIN t_user ON t_user.id=t_strategy.`user_id` LEFT JOIN t_strategy_like ON t_strategy_like.`strategy_id`=t_strategy.`id` AND t_strategy_like.`user_id`=? LEFT JOIN t_collect AS d ON t_strategy.id=d.`target_id` AND d.`target_type`=2 AND d.`user_id`=?  WHERE t_strategy.id =? GROUP BY t_strategy.id";
+        var sql = "SELECT t_strategy.*," +
+            "GROUP_CONCAT(t_strategy_img.src order by t_strategy_img.src desc) as imgList,t_user.`nick_name`,t_user.portrait,d.id as collect,t_strategy_like.`state`,t_admin.nike_name " +
+            "FROM t_strategy " +
+            "LEFT JOIN t_strategy_img ON t_strategy_img.strategy_id= t_strategy.id " +
+            "LEFT JOIN t_user ON t_user.id=t_strategy.`user_id` " +
+            "LEFT JOIN t_admin ON t_admin.id=t_strategy.`user_id` " +
+            "LEFT JOIN t_strategy_like ON t_strategy_like.`strategy_id`=t_strategy.`id` AND t_strategy_like.`user_id`=? " +
+            "LEFT JOIN t_collect AS d ON t_strategy.id=d.`target_id` AND d.`target_type`=2 AND d.`user_id`=?  " +
+            "WHERE t_strategy.id =? GROUP BY t_strategy.id";
         query(sql, [userId, userId, strategyId], function (result) {
             return callback(result)
         })

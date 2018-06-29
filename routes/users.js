@@ -716,7 +716,6 @@ router.get('/getStrategyByUserId', function (req, res) {
 // 获取用户收藏
 router.get('/getCollectByUserId', function (req, res) {
     var data = req.query;
-    console.log(data.userId + data.page + data.type);
     if (data.userId && data.type && data.page) {
         if (data.type == 1) {
             user.getNewsCollect(data.userId, data.page, function (result) {

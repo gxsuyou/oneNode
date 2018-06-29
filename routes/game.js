@@ -56,18 +56,17 @@ router.get("/clsActive", function (req, res, next) {
 // 根据标签获取游戏
 router.get('/getGameByTag', function (req, res) {
     var data = req.query;
-    // console.log(data.page);
     var arr = new Array();
     if (data.tagId) {
         game.getGameByTag(data.tagId, data.sys, data.page, function (result) {
             var num = result.length;
-            // console.log(num);
             if (num > 0) {
                 new Promise(function (reslove, reject) {
                     result.forEach(function (v, k, array) {
                         game.getGameTags(v, data.page, function (tag_resulr) {
+                            var tagId = tag_resulr[0].tag_ids.substr(1)
+                            tag_resulr[0].tagId = tagId.substring(0, tagId.length - 1)
                             arr.push(tag_resulr[0]);
-                            console.log(num + "+" + k);
                             if (k == num - 1) {
                                 reslove(arr);
                             }
@@ -76,17 +75,15 @@ router.get('/getGameByTag', function (req, res) {
                         })
                     });
                 }).then(function (arr) {
-                        // console.log(typeof arr);
                         if (JSON.stringify(arr[0]) == "[]") {
                             res.json({state: 0})
                         } else {
-                            res.json({state: 1, game: arr})
+                            res.json({state: 1, gameList: arr})
                         }
                     })
             } else {
                 res.json({state: 0})
             }
-
         })
     } else {
         res.json({state: 0})
@@ -95,9 +92,7 @@ router.get('/getGameByTag', function (req, res) {
 // 游戏排行
 router.get("/getGameByMsg", function (req, res, next) {
     req = req.query;
-    // console.log(req);
     game.getGameByMsg(req.sys, req.type, req.sort, req.page, function (result) {
-        // console.log(result);
         res.json({state: 1, game: result})
     })
 });
