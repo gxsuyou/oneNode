@@ -818,6 +818,7 @@ router.get('/newMessage', function (req, res) {
                 res.json({state: 1, tip: result})
             });
         } else if (data.sort == 3) {
+            console.log(data)
             user.gameMessage(data.userId, data.page, function (results) {
 
                 var n = results.length;
