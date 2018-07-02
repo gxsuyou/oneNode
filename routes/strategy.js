@@ -36,7 +36,7 @@ router.post('/addStrategyMsg', function (req, res) {
         function find() {
             strategy.findGameName(data.gameName, function (result) {
                 //if (result[0]) {
-                data.addTime = date.Format('yyyy-MM-dd-hh-mm-ss')
+                data.addTime = date.Format('yyyy-MM-dd hh:mm:ss')
                 strategy.addStartegy(data, function (result) {
                     result.insertId ? res.json({state: 1, strategyId: result.insertId}) : res.json({state: 0})
                 })
@@ -150,7 +150,7 @@ router.get('/getStrategyById', function (req, res) {
             strategy.addBrowseNum(data.strategyId, function (result) {
                 strategy.getStrategyById(data.userId, data.strategyId, function (result) {
                     var newtime = result[0].add_time.substring(0, 10);
-                    result[0].add_time = newtime;
+                    //result[0].add_time = newtime;
                     res.json({state: 1, strategy: result[0]})
                 });
             });
@@ -232,7 +232,7 @@ router.get('/strategyComment', function (req, res) {
                     if (data.targetUserId == null) {
                         data.targetUserId = data.aid;
                     }
-                    strategy.strategyComment(content, data.userId, data.targetCommentId, data.targetUserId, data.series, date.Format('yyyy-MM-dd-hh-mm-ss'), data.target_img, data.targetid, data.target_title, function (result) {
+                    strategy.strategyComment(content, data.userId, data.targetCommentId, data.targetUserId, data.series, date.Format('yyyy-MM-dd hh:mm:ss'), data.target_img, data.targetid, data.target_title, function (result) {
                         //console.log(result);
                         result.insertId && strategy.addUserTip(result.insertId, data.targetUserId);
                         socketio.senMsg(data.targetUserId);
@@ -254,7 +254,7 @@ router.get('/strategyComment', function (req, res) {
                                 strategy.addCommentNum(result[0].tarId, function (result) {
                                     var date = new Date();
                                     var content = test(data.content);
-                                    strategy.strategyComment(content, data.userId, data.targetCommentId, data.targetUserId, data.series, date.Format('yyyy-MM-dd-hh-mm-ss'), data.target_img, data.targetid, data.target_title, function (result) {
+                                    strategy.strategyComment(content, data.userId, data.targetCommentId, data.targetUserId, data.series, date.Format('yyyy-MM-dd hh:mm:ss'), data.target_img, data.targetid, data.target_title, function (result) {
                                         result.insertId && strategy.addUserTip(result.insertId, data.targetUserId);
                                         socketio.senMsg(data.targetUserId);
                                         result.insertId ? res.json({
