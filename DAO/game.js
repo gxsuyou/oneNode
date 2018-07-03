@@ -29,26 +29,26 @@ var game = {
             return callback(result)
         })
     },
-    getActive: function (callback) {
-        var sql = "select * from t_activity where type=4 and active=1 and sys = 2 ORDER BY RAND() LIMIT 3";
-        query(sql, [], function (result) {
+    getActive: function (obj, callback) {
+        var sql = "select * from t_activity where type=4 and active=1 and sys = ? ORDER BY RAND() LIMIT 3";
+        query(sql, [obj.sys], function (result) {
             return callback(result)
         })
     },
     // 获取推荐位(2个)
-    getActiveLenOfTow: function (callback) {
-        var sql = "select t_activity.type as activeType,t_game.id,t_game.game_name,t_game.game_packagename,t_game.game_title_img from t_activity left join t_game on t_game.id= t_activity.game_id where t_activity.type=5 and t_activity.active=1 and t_game.sys = 2 ORDER BY RAND() LIMIT 2";
-        query(sql, [], function (result) {
+    getActiveLenOfTow: function (obj, callback) {
+        var sql = "select t_activity.type as activeType,t_game.id,t_game.game_name,t_game.game_packagename,t_game.game_title_img from t_activity left join t_game on t_game.id= t_activity.game_id where t_activity.type=5 and t_activity.active=1 and t_game.sys = ? ORDER BY RAND() LIMIT 2";
+        query(sql, [obj.sys], function (result) {
             return callback(result)
         })
     },
-    getActiveLenOfTen: function (callback) {
+    getActiveLenOfTen: function (obj, callback) {
         var sql = "SELECT GROUP_CONCAT(t_tag.`id`) AS tagIdList,GROUP_CONCAT(t_tag.`name`) AS tagList,t_activity.type AS activeType,t_game.id,t_game.game_name,t_game.icon,t_game.grade,t_game.game_packagename FROM t_activity \n" +
             "LEFT JOIN t_game ON t_game.id= t_activity.game_id \n" +
             "LEFT JOIN t_tag_relation ON t_tag_relation.`game_id`=t_game.`id`\n" +
             "LEFT JOIN t_tag ON t_tag_relation.`tag_id`=t_tag.`id`\n" +
-            "WHERE t_activity.type=6 AND t_activity.active=1 AND t_game.sys = 2  GROUP BY t_game.id LIMIT 10";
-        query(sql, [], function (result) {
+            "WHERE t_activity.type=6 AND t_activity.active=1 AND t_game.sys = ?  GROUP BY t_game.id LIMIT 10";
+        query(sql, [obj.sys], function (result) {
             return callback(result)
         })
     },
@@ -180,7 +180,12 @@ var game = {
         })
     },
     getGameLikeTag: function (gameId, callback) {
-        var sql = "SELECT t_game.id,t_game.`icon`,t_game.`grade`,t_game.game_name,GROUP_CONCAT(t_tag.`name`) AS tagList FROM t_tag_relation LEFT JOIN t_game ON t_tag_relation.`game_id`=t_game.`id` LEFT JOIN t_tag ON t_tag.`id`=t_tag_relation.`tag_id` WHERE t_tag_relation.`tag_id`=(SELECT t_tag.`id` FROM t_tag_relation LEFT JOIN t_tag ON t_tag.id=t_tag_relation.`tag_id` WHERE t_tag_relation.`game_id`=? ORDER BY RAND() LIMIT 1) GROUP BY t_game.id ORDER BY RAND() LIMIT 5";
+        var sql = "SELECT t_game.id,t_game.`icon`,t_game.`grade`,t_game.game_name,GROUP_CONCAT(t_tag.`name`) AS tagList " +
+            "FROM t_tag_relation " +
+            "LEFT JOIN t_game ON t_tag_relation.`game_id`=t_game.`id` " +
+            "LEFT JOIN t_tag ON t_tag.`id`=t_tag_relation.`tag_id` " +
+            "WHERE t_tag_relation.`tag_id`=(SELECT t_tag.`id` FROM t_tag_relation LEFT JOIN t_tag ON t_tag.id=t_tag_relation.`tag_id` WHERE t_tag_relation.`game_id`=? ORDER BY RAND() LIMIT 1) " +
+            "GROUP BY t_game.id ORDER BY RAND() LIMIT 5";
         query(sql, [gameId], function (result) {
             return callback(result)
         })
@@ -236,7 +241,7 @@ var game = {
     },
     // 获取专题
     getSubject: function (sys, callback) {
-        var sql = 'select id,img,title,detail from t_subject where active = 1 and sys = 2 limit 0,2';
+        var sql = 'select id,img,title,detail from t_subject where active = 1 and sys = ? limit 0,2';
         query(sql, [sys], function (result) {
             return callback(result)
         })
@@ -257,7 +262,10 @@ var game = {
         query(sql, [sys], function (result) {
             if (result.length) {
                 data[result[0].name] = result;
-                var sql = 'SELECT t_game.id AS gameId,t_game.game_name,t_game.`game_title_img`,t_game.`grade`,t_tag.`id` AS tagId,t_tag.`name` FROM (t_tag_relation LEFT JOIN t_tag ON t_tag_relation.`tag_id`=t_tag.`id`)  LEFT JOIN t_game ON t_tag_relation.`game_id`=t_game.`id` WHERE t_tag.`id`=(SELECT id FROM t_tag WHERE active=0 LIMIT 1,1) AND t_game.`sys`=? ORDER BY RAND() LIMIT 10';
+                var sql = 'SELECT t_game.id AS gameId,t_game.game_name,t_game.`game_title_img`,t_game.`grade`,t_tag.`id` AS tagId,t_tag.`name` ' +
+                    'FROM (t_tag_relation LEFT JOIN t_tag ON t_tag_relation.`tag_id`=t_tag.`id`)  ' +
+                    'LEFT JOIN t_game ON t_tag_relation.`game_id`=t_game.`id` ' +
+                    'WHERE t_tag.`id`=(SELECT id FROM t_tag WHERE active=0 LIMIT 1,1) AND t_game.`sys`=? ORDER BY RAND() LIMIT 10';
                 query(sql, [sys], function (result) {
                     if (result.length) {
                         data[result[0].name] = result;
@@ -284,36 +292,36 @@ var game = {
         })
     },
     // 获取游戏分类
-    getGameCls: function (callback) {
+    getGameCls: function (obj, callback) {
         var sql = 'SELECT t_game_cls.*,t_game.icon as icon FROM t_game_cls_relation  ' +
             'LEFT JOIN t_game ON t_game.id=t_game_cls_relation.`game_id` ' +
             'LEFT JOIN t_game_cls ON t_game_cls.`id`=t_game_cls_relation.`cls_id` ' +
-            'WHERE t_game_cls.type =1 GROUP BY t_game_cls.`id` ';
-        query(sql, [], function (result) {
+            'WHERE t_game_cls.type =1 AND t_game.sys=? GROUP BY t_game_cls.`id` ';
+        query(sql, [obj.sys], function (result) {
             return callback(result)
         })
     },
-    getAppCls: function (callback) {
+    getAppCls: function (obj, callback) {
         var sql = 'SELECT t_game_cls.*,t_game.icon FROM t_game_cls_relation  ' +
             'LEFT JOIN t_game ON t_game.id=t_game_cls_relation.`game_id` ' +
             'LEFT JOIN t_game_cls ON t_game_cls.`id`=t_game_cls_relation.`cls_id` ' +
-            'WHERE t_game_cls.type =2 GROUP BY t_game_cls.`id` ';
-        query(sql, [], function (result) {
+            'WHERE t_game_cls.type =2 AND t_game.sys=? GROUP BY t_game_cls.`id` ';
+        query(sql, [obj.sys], function (result) {
             return callback(result)
         })
     },
     // 根据分类获取游戏
-    getGameByCls: function (clsId, page, callback) {
+    getGameByCls: function (clsId, sys, page, callback) {
         var sql = 'SELECT a.id,a.icon,a.game_name,a.grade,' +
             'GROUP_CONCAT(t_tag.`name`) as tagNameList,' +
             'GROUP_CONCAT(t_tag.`id`) as tagIdList ' +
             'FROM (t_game_cls_relation LEFT JOIN t_game AS a ON a.id = t_game_cls_relation.game_id) ' +
             'LEFT JOIN t_tag_relation ON a.id = t_tag_relation.`game_id` ' +
             'LEFT JOIN t_tag ON t_tag.`id`=t_tag_relation.`tag_id`\n' +
-            ' WHERE t_game_cls_relation.cls_id=? GROUP BY a.`id` ORDER BY a.id DESC limit ?,20';
+            ' WHERE t_game_cls_relation.cls_id=? AND t_game.sys=? GROUP BY a.`id` ORDER BY a.id DESC limit ?,20';
         //var sql = "SELECT id,icon,game_name,sort,sort2,cls_ids,tag_ids FROM t_game " +
         //    "WHERE cls_ids LIKE '%," + clsId + ",%' ORDER BY game_download_num,sort,sort2 DESC LIMIT ?,20"
-        query(sql, [clsId, (page - 1) * 20], function (result) {
+        query(sql, [clsId, sys, (page - 1) * 20], function (result) {
             return callback(result)
         })
     },

@@ -115,7 +115,6 @@ router.get('/getStrategyByMsg', function (req, res) {
             })
         } else {
             strategy.getStrategyByMsg(data.sort, data.page, function (result) {
-                //console.log(result);
                 for (var i = 0; i < result.length; i++) {
                     var newtime = result[i].add_time.substring(0, 16);
                     result[i].add_time = newtime;

@@ -24,8 +24,18 @@ router.get('/addMyH5',function (req,res) {
        res.json({state:0})
    }
 });
+router.get('/searchByGameName', function (req, res) {
+    var data = req.query;
+    if (data.sys && data.msg && data.page) {
+        h5.searchByGameName(data.sys, data.msg, data.page, function (result) {
+            res.json({state: 1, newsList: result})
+        })
+    } else {
+        res.json({state: 0})
+    }
+});
 // 检测更新接口    mark -> 更新的版本号  
 router.get("/update",function (req,res,next) {
-    res.json({state:1,mark:'3.0.0'});
+    res.json({state:1,mark:'4.0.7'});
 });
 module.exports = router;

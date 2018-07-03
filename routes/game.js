@@ -44,7 +44,9 @@ router.get("/carousel", function (req, res, next) {
     })
 });
 router.get("/active", function (req, res, next) {
-    game.getActive(function (result) {
+    var data = req.query;
+
+    game.getActive(data, function (result) {
         result.length ? res.json({state: 1, active: result}) : res.json({state: 0})
     })
 });
@@ -205,11 +207,9 @@ router.get('/getGameCommentScore', function (req, res) {
     var data = req.query;
     if (data.gameId) {
         game.getGameCommentScore(data.gameId, function (result) {
-            console.log(result);
             res.json({state: 1, scoreList: result})
         })
     } else {
-        console.log(result);
         res.json({state: 0})
     }
 });
@@ -255,12 +255,14 @@ router.get('/comment', function (req, res, next) {
 
 });
 router.get('/getGameCls', function (req, res) {
-    game.getGameCls(function (result) {
+    var data = req.query;
+    game.getGameCls(data, function (result) {
         res.json({state: 1, cls: result})
     })
 });
 router.get('/getAppCls', function (req, res) {
-    game.getAppCls(function (result) {
+    var data = req.query;
+    game.getAppCls(data, function (result) {
         res.json({state: 1, cls: result})
     })
 });
@@ -268,8 +270,9 @@ router.get('/getAppCls', function (req, res) {
 router.get('/getGameByCls', function (req, res) {
     var data = req.query;
     var arr = new Array();
+    var sys = data.sys ? data.sys : 2;
     if (data.clsId && data.page) {
-        game.getGameByCls(data.clsId, data.page, function (result) {
+        game.getGameByCls(data.clsId, sys, data.page, function (result) {
             res.json({state: 1, gameList: result})
         })
     } else {
@@ -351,14 +354,16 @@ router.get('/addMyGame', function (req, res) {
 });
 // 获取推荐位(2个)
 router.get('/getActiveLenOfTow', function (req, res) {
-    game.getActiveLenOfTow(function (result) {
+    var data = req.query;
+    game.getActiveLenOfTow(data, function (result) {
 
         res.json({state: 1, game: result})
     })
 });
 // 获取推荐位(10个)
 router.get('/getActiveLenOfTen', function (req, res) {
-    game.getActiveLenOfTen(function (result) {
+    var data = req.query
+    game.getActiveLenOfTen(data, function (result) {
         res.json({state: 1, game: result})
     })
 });
