@@ -798,7 +798,7 @@ router.get('/newMessage', function (req, res) {
 
                 var n = result.length;
                 for (var i = 0; i < n; i++) {
-                    var newtime = result[i].add_time.substring(0, 10);
+                    var newtime = result[i].add_time.substring(0, 16);
                     result[i].add_time = newtime;
                 }
                 res.json({state: 1, tip: result})
@@ -811,7 +811,7 @@ router.get('/newMessage', function (req, res) {
                 var n = result.length;
 
                 for (var i = 0; i < n; i++) {
-                    var newtime = result[i].add_time.substring(0, 10);
+                    var newtime = result[i].add_time.substring(0, 16);
                     result[i].add_time = newtime;
                 }
                 res.json({state: 1, tip: result})
@@ -821,7 +821,7 @@ router.get('/newMessage', function (req, res) {
 
                 var n = results.length;
                 for (var i = 0; i < n; i++) {
-                    var newtime = results[i].add_time.substring(0, 10);
+                    var newtime = results[i].add_time.substring(0, 16);
                     results[i].add_time = newtime;
                 }
                 res.json({state: 1, tip: results})

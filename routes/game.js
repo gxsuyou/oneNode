@@ -191,7 +191,7 @@ router.get('/getNewsByGameId', function (req, res) {
         game.getNewsByGameId(data.gameId, function (result) {
             if (result.length) {
                 for (var i = 0, l = result.length; i < l; i++) {
-                    result[i].add_time = result[i].add_time.substring(0, 10)
+                    result[i].add_time = result[i].add_time.substring(0, 16)
                 }
             }
             res.json({state: 1, newsList: result})
@@ -368,9 +368,9 @@ router.get('/getStrategyByGameName', function (req, res) {
     if (data.gameName && data.page) {
         game.getStrategyByGameName(data.gameName, data.page, function (result) {
             for (var i = 0; i < result.length; i++) {
-                var newtime = result[i].add_time.substring(0, 10);
-
+                var newtime = result[i].add_time.substring(0, 16);
                 result[i].add_time = newtime;
+
                 if (!result[i].nick_name) {
                     result[i].nick_name = result[i].nike_name;
                 }

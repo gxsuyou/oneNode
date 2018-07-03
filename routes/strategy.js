@@ -104,8 +104,7 @@ router.get('/getStrategyByMsg', function (req, res) {
                 // console.log(result);
                 for (var i = 0; i < result.length; i++) {
 
-                    var newtime = result[i].add_time.substring(0, 10);
-
+                    var newtime = result[i].add_time.substring(0, 16);
                     result[i].add_time = newtime;
 
                     if (result[i].user_id == null) {
@@ -118,8 +117,7 @@ router.get('/getStrategyByMsg', function (req, res) {
             strategy.getStrategyByMsg(data.sort, data.page, function (result) {
                 //console.log(result);
                 for (var i = 0; i < result.length; i++) {
-                    var newtime = result[i].add_time.substring(0, 10);
-
+                    var newtime = result[i].add_time.substring(0, 16);
                     result[i].add_time = newtime;
                     if (result[i].nick_name == null) {
                         result[i].nick_name = result[i].nike_name;
@@ -149,8 +147,8 @@ router.get('/getStrategyById', function (req, res) {
         function add() {
             strategy.addBrowseNum(data.strategyId, function (result) {
                 strategy.getStrategyById(data.userId, data.strategyId, function (result) {
-                    var newtime = result[0].add_time.substring(0, 10);
-                    //result[0].add_time = newtime;
+                    var newtime = result[0].add_time.substring(0, 16);
+                    result[0].add_time = newtime;
                     res.json({state: 1, strategy: result[0]})
                 });
             });
@@ -389,8 +387,7 @@ router.get('/getStrategyByGameName', function (req, res) {
         if (data.sort == 'essence') {
             strategy.getEssenceStrategyByGameName(data.msg, data.page, function (result) {
                 for (var i = 0; i < result.length; i++) {
-                    var newtime = result[i].add_time.substring(0, 10);
-
+                    var newtime = result[i].add_time.substring(0, 16);
                     result[i].add_time = newtime;
                     var arr = [];
                     if (result[i].src != null) {
@@ -403,8 +400,7 @@ router.get('/getStrategyByGameName', function (req, res) {
         } else {
             strategy.getStrategyByGameName(data.msg, data.sort, data.page, function (result) {
                 for (var i = 0; i < result.length; i++) {
-                    var newtime = result[i].add_time.substring(0, 10);
-
+                    var newtime = result[i].add_time.substring(0, 16);
                     result[i].add_time = newtime;
                     var arr = [];
                     if (result[i].src != null) {

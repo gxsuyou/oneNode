@@ -44,7 +44,7 @@ router.get('/getNewsByPage', function (req, res, next) {
     var page = req.query.page > 0 ? req.query.page : 1;
     news.getNewsListByPage(page, function (result) {
         for (var i = 0; i < result.length; i++) {
-            var newtime = result[i].add_time.substring(0, 10);
+            var newtime = result[i].add_time.substring(0, 16);
             result[i].add_time = newtime;
         }
         result.length ? res.json({state: 1, news: result}) : res.json({state: 0})
@@ -76,11 +76,11 @@ router.get("/getNewsById", function (req, res, next) {
     if (req.query.id) {
         news.getNewsById(req.query.id, req.query.userId, function (result) {
             if (result.length) {
-                var str = result[0].add_time.substring(11, 16);
-                str = str.replace(/-/g, ':');
-                result[0].add_time = result[0].add_time.substring(0, 10);
-                result[0].add_time += " ";
-                result[0].add_time += str;
+                //var str = result[0].add_time.substring(11, 16);
+                //str = str.replace(/-/g, ':');
+                result[0].add_time = result[0].add_time.substring(0, 16);
+                //result[0].add_time += " ";
+                //result[0].add_time += str;
             }
             result.length ? res.json({state: 1, news: result[0]}) : res.json({state: 0})
         })
