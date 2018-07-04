@@ -321,7 +321,7 @@ var game = {
             ' WHERE t_game_cls_relation.cls_id=? GROUP BY a.`id` ORDER BY a.id DESC limit ?,20';
         //var sql = "SELECT id,icon,game_name,sort,sort2,cls_ids,tag_ids FROM t_game " +
         //    "WHERE cls_ids LIKE '%," + clsId + ",%' ORDER BY game_download_num,sort,sort2 DESC LIMIT ?,20"
-        query(sql, [clsId, sys, (page - 1) * 20], function (result) {
+        query(sql, [clsId, (page - 1) * 20], function (result) {
             return callback(result)
         })
     },
