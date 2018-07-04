@@ -318,7 +318,7 @@ var game = {
             'FROM (t_game_cls_relation LEFT JOIN t_game AS a ON a.id = t_game_cls_relation.game_id) ' +
             'LEFT JOIN t_tag_relation ON a.id = t_tag_relation.`game_id` ' +
             'LEFT JOIN t_tag ON t_tag.`id`=t_tag_relation.`tag_id`\n' +
-            ' WHERE t_game_cls_relation.cls_id=? AND t_game.sys=? GROUP BY a.`id` ORDER BY a.id DESC limit ?,20';
+            ' WHERE t_game_cls_relation.cls_id=? GROUP BY a.`id` ORDER BY a.id DESC limit ?,20';
         //var sql = "SELECT id,icon,game_name,sort,sort2,cls_ids,tag_ids FROM t_game " +
         //    "WHERE cls_ids LIKE '%," + clsId + ",%' ORDER BY game_download_num,sort,sort2 DESC LIMIT ?,20"
         query(sql, [clsId, sys, (page - 1) * 20], function (result) {
