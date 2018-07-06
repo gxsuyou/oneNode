@@ -768,7 +768,9 @@ router.get('/getGameByUserId', function (req, res) {
     var data = req.query;
     if (data.userId && data.page && data.type) {
         if (data.type == 3) {
-            user.getGameByUser(data.userId, data.page, function (result) {
+            var data = req.query;
+            data.sys = data.sys > 0 ? data.sys : 2;
+            user.getGameByUser(data.userId, data.sys, data.page, function (result) {
                 res.json({state: 1, gameList: result})
             })
         } else if (data.type == 4) {

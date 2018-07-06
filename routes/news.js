@@ -295,7 +295,9 @@ router.get("/getCommentById", function (req, res, next) {
     }
 });
 router.get("/getHeadGame", function (req, res) {
-    news.getNewsHeadGame(function (result) {
+    var data = req.query;
+    data.sys = data.sys > 0 ? data.sys : 2;
+    news.getNewsHeadGame(data, function (result) {
         result.length ? res.json({state: 1, game: result[0]}) : res.json({state: 0})
     })
 });

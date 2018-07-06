@@ -263,12 +263,13 @@ var user = {
         })
     },
     // 获取我的游戏
-    getGameByUser: function (userId, page, callback) {
+    getGameByUser: function (userId, sys, page, callback) {
         var sql = "SELECT t_game.*,GROUP_CONCAT(t_tag.name) AS tagList,GROUP_CONCAT(t_tag.id) AS tagId FROM t_collect \n" +
             "LEFT JOIN t_game ON t_game.`id`=t_collect.`target_id`\n" +
             "LEFT JOIN t_tag_relation ON t_tag_relation.game_id = t_game.id \n" +
-            "LEFT JOIN t_tag ON t_tag.`id`=t_tag_relation.`tag_id` WHERE t_collect.`user_id`=? AND t_collect.`target_type`=3 GROUP BY t_game.id  LIMIT ?,10";
-        query(sql, [userId, (page - 1) * 10], function (result) {
+            "LEFT JOIN t_tag ON t_tag.`id`=t_tag_relation.`tag_id` WHERE t_collect.`user_id`=? AND t_collect.`target_type`=3 AND t_game.sys=? " +
+            "GROUP BY t_game.id  LIMIT ?,10";
+        query(sql, [userId, sys, (page - 1) * 10], function (result) {
             return callback(result)
         })
     },

@@ -164,15 +164,17 @@ var news = {
         })
     },
     getNewsHeadGame: function (callbcak) {
-        var sql = "SELECT t_news_headgame.img,t_game.id,t_game.icon,t_game.game_name,t_game.grade,t_game.game_recommend FROM `t_news_headgame` left join t_game on t_news_headgame.game_id=t_game.id ORDER BY RAND() LIMIT 1";
-        query(sql, [], function (result) {
+        var sql = "SELECT t_news_headgame.img,t_game.id,t_game.icon,t_game.game_name,t_game.grade,t_game.game_recommend " +
+            "FROM `t_news_headgame` " +
+            "left join t_game on t_news_headgame.game_id=t_game.id WHERE t_game.sys=? ORDER BY RAND() LIMIT 1";
+        query(sql, [obj.sys], function (result) {
             return callbcak(result)
         })
     },
     getNewsSlideGame: function (obj, callbcak) {
         var sql = "SELECT t_game.id,t_game.grade,t_game.game_name,t_game.game_title_img " +
             "FROM `t_news_slidegame`  " +
-            "left join t_game on t_news_slidegame.game_id=t_game.id ORDER BY RAND() WHERE t_game.sys=? LIMIT 10";
+            "left join t_game on t_news_slidegame.game_id=t_game.id WHERE t_game.sys=? ORDER BY RAND() LIMIT 10";
         query(sql, [obj.sys], function (result) {
             return callbcak(result)
         })
