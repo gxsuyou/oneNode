@@ -56,13 +56,14 @@ router.get("/clsActive", function (req, res, next) {
 router.get('/getGameByTag', function (req, res) {
     var data = req.query;
     var arr = new Array();
+    data.sys = data.sys > 0 ? data.sys : 2;
     if (data.tagId) {
         game.getGameByTag(data.tagId, data.sys, data.page, function (result) {
             var num = result.length;
             if (num > 0) {
                 new Promise(function (reslove, reject) {
                     result.forEach(function (v, k, array) {
-                        game.getGameTags(v, data.page, function (tag_resulr) {
+                        game.getGameTags(v, data.sys, data.page, function (tag_resulr) {
                             var tagId = tag_resulr[0].tag_ids.substr(1)
                             tag_resulr[0].tagId = tagId.substring(0, tagId.length - 1)
                             arr.push(tag_resulr[0]);
@@ -322,6 +323,7 @@ router.get('/getSubjectById', function (req, res) {
 // 获取活动标签
 router.get('/getActiveTag', function (req, res) {
     var data = req.query;
+    data.sys = data.sys > 0 ? data.sys : 2;
     if (data.sys) {
         game.getActiveTag(data.sys, function (result) {
             res.json({state: 1, activeTagGame: result})
