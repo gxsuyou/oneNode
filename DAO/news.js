@@ -163,7 +163,7 @@ var news = {
             return callback(result)
         })
     },
-    getNewsHeadGame: function (callbcak) {
+    getNewsHeadGame: function (obj, callbcak) {
         var sql = "SELECT t_news_headgame.img,t_game.id,t_game.icon,t_game.game_name,t_game.grade,t_game.game_recommend " +
             "FROM `t_news_headgame` " +
             "left join t_game on t_news_headgame.game_id=t_game.id WHERE t_game.sys=? ORDER BY RAND() LIMIT 1";
