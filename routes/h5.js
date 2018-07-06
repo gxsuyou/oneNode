@@ -36,6 +36,6 @@ router.get('/searchByGameName', function (req, res) {
 });
 // 检测更新接口    mark -> 更新的版本号  
 router.get("/update",function (req,res,next) {
-    res.json({state:1,mark:'4.0.7'});
+    res.json({state:1,mark:'4.0.9'});
 });
 module.exports = router;

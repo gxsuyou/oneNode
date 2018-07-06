@@ -322,7 +322,6 @@ router.get('/getActiveTag', function (req, res) {
     var data = req.query;
     if (data.sys) {
         game.getActiveTag(data.sys, function (result) {
-            console.log(result);
             res.json({state: 1, activeTagGame: result})
         })
     } else {
