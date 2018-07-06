@@ -253,12 +253,14 @@ router.get('/comment', function (req, res, next) {
 });
 router.get('/getGameCls', function (req, res) {
     var data = req.query;
+    data.sys = data.sys > 0 ? data.sys : 2;
     game.getGameCls(data, function (result) {
         res.json({state: 1, cls: result})
     })
 });
 router.get('/getAppCls', function (req, res) {
     var data = req.query;
+    data.sys = data.sys > 0 ? data.sys : 2;
     game.getAppCls(data, function (result) {
         res.json({state: 1, cls: result})
     })
