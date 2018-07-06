@@ -37,7 +37,10 @@ var game = {
     },
     // 获取推荐位(2个)
     getActiveLenOfTow: function (obj, callback) {
-        var sql = "select t_activity.type as activeType,t_game.id,t_game.game_name,t_game.game_packagename,t_game.game_title_img from t_activity left join t_game on t_game.id= t_activity.game_id where t_activity.type=5 and t_activity.active=1 and t_game.sys = ? ORDER BY RAND() LIMIT 2";
+        var sql = "select t_activity.type as activeType,t_game.id,t_game.game_name,t_game.game_packagename,t_game.game_title_img " +
+            "from t_activity " +
+            "left join t_game on t_game.id= t_activity.game_id " +
+            "where t_activity.type=5 and t_activity.active=1 and t_game.sys = ? ORDER BY RAND() LIMIT 2";
         query(sql, [obj.sys], function (result) {
             return callback(result)
         })

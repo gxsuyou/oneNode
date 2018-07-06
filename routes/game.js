@@ -13,15 +13,12 @@ router.get('/getGameById', function (req, res, next) {
                 var nstr = mstr.replace(/\r\n/g, "<br/>" + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
                 result[0].game_detail = nstr;
             }
-
             result.length ? res.json({state: 1, gameDetail: result[0]}) : res.json({state: 0})
         })
     } else {
         res.json({state: 0})
     }
 });
-
-router.get('/updateGameBow')
 
 router.get('/getGameImgListById', function (req, res) {
     var data = req.query;

@@ -238,7 +238,7 @@ router.get("/getCommentByPage", function (req, res, next) {
 // 获取热门资讯评论
 router.get("/getHotNewsCommentByPage", function (req, res) {
     if (req.query.commentParentId) {
-        var page = req.query.page > 0 ? req.query.page : 1 ;
+        var page = req.query.page > 0 ? req.query.page : 1;
         news.getNewsCommentByPage(req.query.userId, req.query.commentParentId, page, function (result) {
             if (result.length) {
                 var data = result;
@@ -300,7 +300,9 @@ router.get("/getHeadGame", function (req, res) {
     })
 });
 router.get("/getSlideGame", function (req, res) {
-    news.getNewsSlideGame(function (result) {
+    var data = req.query;
+    data.sys = data.sys > 0 ? data.sys : 2;
+    news.getNewsSlideGame(data, function (result) {
         result.length ? res.json({state: 1, gameList: result}) : res.json({state: 0})
     })
 });
