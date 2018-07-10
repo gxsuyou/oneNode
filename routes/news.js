@@ -257,6 +257,7 @@ router.get("/getHotNewsCommentByPage", function (req, res) {
     }
 });
 router.get("/getNewsCommentTowByPage", function (req, res, next) {
+    var page = req.query.page > 0 ? req.query.page : 1
     news.getNewsCommentTowByPage(req.query.parentId, req.query.page, function (result) {
         if (result.length) {
             result.forEach(function (t) {
@@ -350,4 +351,5 @@ router.get('/cancelMessage', function (req, res) {
 function subdate(str) {
     return str.substring(0, 10);
 }
+
 module.exports = router;
