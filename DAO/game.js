@@ -182,14 +182,14 @@ var game = {
             return callback(result)
         })
     },
-    getGameLikeTag: function (gameId, callback) {
-        var sql = "SELECT t_game.id,t_game.`icon`,t_game.`grade`,t_game.game_name,GROUP_CONCAT(t_tag.`name`) AS tagList " +
+    getGameLikeTag: function (gameId, sys, callback) {
+        var sql = "SELECT t_game.id,t_game.`icon`,t_game.`grade`,t_game.game_name,GROUP_CONCAT(t_tag.`name`) AS tagList, t_game.sys " +
             "FROM t_tag_relation " +
             "LEFT JOIN t_game ON t_tag_relation.`game_id`=t_game.`id` " +
             "LEFT JOIN t_tag ON t_tag.`id`=t_tag_relation.`tag_id` " +
             "WHERE t_tag_relation.`tag_id`=(SELECT t_tag.`id` FROM t_tag_relation LEFT JOIN t_tag ON t_tag.id=t_tag_relation.`tag_id` WHERE t_tag_relation.`game_id`=? ORDER BY RAND() LIMIT 1) " +
-            "GROUP BY t_game.id ORDER BY RAND() LIMIT 5";
-        query(sql, [gameId], function (result) {
+            "AND t_game.sys =? GROUP BY t_game.id ORDER BY RAND() LIMIT 5";
+        query(sql, [gameId, sys], function (result) {
             return callback(result)
         })
     },

@@ -75,12 +75,12 @@ router.get('/getGameByTag', function (req, res) {
                         })
                     });
                 }).then(function (arr) {
-                        if (JSON.stringify(arr[0]) == "[]") {
-                            res.json({state: 0})
-                        } else {
-                            res.json({state: 1, gameList: arr})
-                        }
-                    })
+                    if (JSON.stringify(arr[0]) == "[]") {
+                        res.json({state: 0})
+                    } else {
+                        res.json({state: 1, gameList: arr})
+                    }
+                })
             } else {
                 res.json({state: 0})
             }
@@ -177,8 +177,9 @@ router.get('/unLikeComment', function (req, res) {
 });
 router.get('/getGameLikeTag', function (req, res) {
     var data = req.query;
+    data.sys = data.sys > 0 ? data.sys : 2;
     if (data.gameId) {
-        game.getGameLikeTag(data.gameId, function (result) {
+        game.getGameLikeTag(data.gameId, data.sys, function (result) {
             res.json({state: 1, gameList: result})
         })
     } else {
