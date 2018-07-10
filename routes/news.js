@@ -43,10 +43,6 @@ router.get("/addNewsBrowse", function (req, res, next) {
 router.get('/getNewsByPage', function (req, res, next) {
     var page = req.query.page > 0 ? req.query.page : 1;
     news.getNewsListByPage(page, function (result) {
-        for (var i = 0; i < result.length; i++) {
-            var newtime = result[i].add_time.substring(0, 16);
-            result[i].add_time = newtime;
-        }
         result.length ? res.json({state: 1, news: result}) : res.json({state: 0})
     })
 });
@@ -134,7 +130,7 @@ router.get("/comment", function (req, res, next) {
     if (req.query.targetCommentId) {
         var data = req.query;
 
-        news.newsComment(data.targetCommentId, data.userId, data.series, data.content, date.Format('yyyy-MM-dd-HH-mm-SS'), data.targetUserId || 0, data.news_img, data.news_title, data.newsid, function (result) {
+        news.newsComment(data.targetCommentId, data.userId, data.series, data.content, parseInt(date.getTime() / 1000), data.targetUserId || 0, data.news_img, data.news_title, data.newsid, function (result) {
             if (result.insertId) {
                 if (data.series == 1) {
                     news.addNewsComment(req.query.targetCommentId, function (result) {

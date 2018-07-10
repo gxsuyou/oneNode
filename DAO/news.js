@@ -8,7 +8,9 @@ var news = {
         // query(sql,[(page-1)*20],function (result) {
         //     return callback(result)
         // })
-        var sql = "SELECT a.id,a.title,a.img,a.add_time,a.agree,a.game_id,a.browse,b.game_name,b.icon,b.game_recommend FROM t_news AS a\n" +
+        var sql = "SELECT a.id,a.title,a.img,FROM_UNIXTIME(a.add_time,'%Y-%m-%d %H:%i') as add_time,a.agree,a.game_id,a.browse," +
+            "b.game_name,b.icon,b.game_recommend " +
+            "FROM t_news AS a\n" +
             "LEFT JOIN t_game AS b ON a.`game_id`=b.`id` order by a.up desc,a.add_time desc limit ?,5";
         query(sql, [(page - 1) * 5], function (result) {
             return callback(result)
@@ -16,11 +18,13 @@ var news = {
     },
     // 根据id获取资讯详情
     getNewsById: function (id, userId, callback) {
-        var sql = "SELECT a.id,a.img,a.title,a.add_time,a.add_user,a.agree,a.browse,a.comment,a.detail,a.game_id,a.sys,b.icon,b.game_name,c.state,d.id AS collect FROM t_news AS a\n" +
-            "            LEFT JOIN t_game AS b ON  (a.`game_id`=b.`id`)\n" +
-            "            LEFT JOIN t_like AS c ON a.id=c.parent_id AND c.like_type=11 AND c.like_user_id=? \n" +
-            "            LEFT JOIN t_collect AS d ON a.id=d.`target_id` AND d.`target_type`=1 AND d.`user_id`=?\n" +
-            "            WHERE a.id=? GROUP BY a.id";
+        var sql = "SELECT a.id,a.img,a.title,FROM_UNIXTIME(a.add_time,'%Y-%m-%d %H:%i') as add_time,a.add_user,a.agree,a.browse,a.comment,a.detail,a.game_id,a.sys," +
+            "b.icon,b.game_name,c.state,d.id AS collect " +
+            "FROM t_news AS a\n" +
+            " LEFT JOIN t_game AS b ON  (a.`game_id`=b.`id`)\n" +
+            " LEFT JOIN t_like AS c ON a.id=c.parent_id AND c.like_type=11 AND c.like_user_id=? \n" +
+            " LEFT JOIN t_collect AS d ON a.id=d.`target_id` AND d.`target_type`=1 AND d.`user_id`=?\n" +
+            " WHERE a.id=? GROUP BY a.id";
         query(sql, [userId, userId, id], function (result) {
             return callback(result);
         })
@@ -83,7 +87,9 @@ var news = {
     },
     //添加资讯评论
     newsComment: function (targetCommentId, userId, series, content, addTime, targetUserId, news_img, news_title, newsid, callback) {
-        var sql = "insert into t_news_comment (content,user_id,series,target_comment_id,add_time,target_user_id,news_img,news_title,newsid) values (?,?,?,?,?,?,?,?,?)";
+        var sql = "insert into t_news_comment " +
+            "(content,user_id,series,target_comment_id,add_time,target_user_id,news_img,news_title,newsid) " +
+            "values (?,?,?,?,?,?,?,?,?)";
         query(sql, [content, userId, series, targetCommentId, addTime, targetUserId, news_img, news_title, newsid], function (result) {
             return callback(result)
         })
