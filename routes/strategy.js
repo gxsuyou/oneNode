@@ -36,7 +36,8 @@ router.post('/addStrategyMsg', function (req, res) {
         function find() {
             strategy.findGameName(data.gameName, function (result) {
                 //if (result[0]) {
-                data.addTime = date.Format('yyyy-MM-dd hh:mm:ss')
+                // data.addTime = date.Format('yyyy-MM-dd hh:mm:ss')
+                data.addTime = parseInt(date.getTime() / 1000)
                 strategy.addStartegy(data, function (result) {
                     result.insertId ? res.json({state: 1, strategyId: result.insertId}) : res.json({state: 0})
                 })
@@ -52,21 +53,21 @@ router.post('/addStrategyMsg', function (req, res) {
     }
 });
 // 添加攻略图片
-router.get('/addStrategyImg', function (req, res) {
-    var data = req.query;
-    // 获取字符串的长度  截取到字符串最后一个元素
-    var len = data.img.length;
-    var lastNum = data.img.substring(len - 1, len);
-    // 拼接排序id  sort_id
-    var sort_id = data.strategyId + lastNum;
-    if (data.strategyId && data.img && sort_id) {
-        strategy.addStartegyImg(data.strategyId, data.img, sort_id, function (result) {
-            result.insertId ? res.json({state: 1}) : res.json({state: 0})
-        })
-    } else {
-        res.json({state: 0})
-    }
-});
+// router.get('/addStrategyImg', function (req, res) {
+//     var data = req.query;
+//     // 获取字符串的长度  截取到字符串最后一个元素
+//     var len = data.img.length;
+//     var lastNum = data.img.substring(len - 1, len);
+//     // 拼接排序id  sort_id
+//     var sort_id = data.strategyId + lastNum;
+//     if (data.strategyId && data.img && sort_id) {
+//         strategy.addStartegyImg(data.strategyId, data.img, sort_id, function (result) {
+//             result.insertId ? res.json({state: 1}) : res.json({state: 0})
+//         })
+//     } else {
+//         res.json({state: 0})
+//     }
+// });
 // 添加收藏
 router.get('/collect', function (req, res) {
     var data = req.query;
