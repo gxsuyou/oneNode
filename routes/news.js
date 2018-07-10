@@ -232,17 +232,11 @@ router.get("/getHotNewsCommentByPage", function (req, res) {
         news.getNewsCommentByPage(req.query.userId, req.query.commentParentId, page, function (result) {
             if (result.length) {
                 var data = result;
-                data.forEach(function (t) {
-                    t.add_time = subdate(t.add_time);
-                });
                 var len = result.length;
                 var index = 0;
 
                 function selectTow() {
                     news.getNewsCommentTow(result[index].id, function (result) {
-                        result.forEach(function (t) {
-                            t.add_time = subdate(t.add_time);
-                        });
                         data[index].towCommentList = result;
                         if (index < (len - 1)) {
                             index++;
