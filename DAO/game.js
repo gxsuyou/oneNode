@@ -23,9 +23,9 @@ var game = {
             return callback(result)
         })
     },
-    getCarousel: function (callback) {
-        var sql = "select * from t_activity where type=1 and active=1";
-        query(sql, [], function (result) {
+    getCarousel: function (sys, callback) {
+        var sql = "select * from t_activity where type=1 and active=1 AND sys=?";
+        query(sql, [sys], function (result) {
             return callback(result)
         })
     },
@@ -249,9 +249,9 @@ var game = {
             return callback(result)
         })
     },
-    getSubjectById: function (subjectId, callback) {
-        var sql = 'select id,img,title,detail from t_subject where id=?';
-        query(sql, [subjectId], function (result) {
+    getSubjectById: function (subjectId, sys, callback) {
+        var sql = 'select id,img,title,detail from t_subject where id=? AND sys=?';
+        query(sql, [subjectId, sys], function (result) {
             return callback(result)
         })
     },
@@ -321,10 +321,11 @@ var game = {
             'FROM (t_game_cls_relation LEFT JOIN t_game AS a ON a.id = t_game_cls_relation.game_id) ' +
             'LEFT JOIN t_tag_relation ON a.id = t_tag_relation.`game_id` ' +
             'LEFT JOIN t_tag ON t_tag.`id`=t_tag_relation.`tag_id`\n' +
-            ' WHERE t_game_cls_relation.cls_id=? GROUP BY a.`id` ORDER BY a.id DESC limit ?,20';
+            'LEFT JOIN t_game ON t_game.id=t_game_cls_relation.`game_id` ' +
+            ' WHERE t_game_cls_relation.cls_id=? AND t_game.sys=? GROUP BY a.`id` ORDER BY a.id DESC limit ?,20';
         //var sql = "SELECT id,icon,game_name,sort,sort2,cls_ids,tag_ids FROM t_game " +
         //    "WHERE cls_ids LIKE '%," + clsId + ",%' ORDER BY game_download_num,sort,sort2 DESC LIMIT ?,20"
-        query(sql, [clsId, (page - 1) * 20], function (result) {
+        query(sql, [clsId, sys, (page - 1) * 20], function (result) {
             return callback(result)
         })
     },

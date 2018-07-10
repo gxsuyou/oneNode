@@ -36,7 +36,9 @@ router.get('/edit', function (req, res, next) {
     });
 });
 router.get("/carousel", function (req, res, next) {
-    game.getCarousel(function (result) {
+    var data = req.query;
+    data.sys = data.sys > 0 ? data.sys : 2;
+    game.getCarousel(data.sys, function (result) {
         result.length ? res.json({state: 1, carousel: result}) : res.json({state: 0})
     })
 });
@@ -271,9 +273,9 @@ router.get('/getAppCls', function (req, res) {
 router.get('/getGameByCls', function (req, res) {
     var data = req.query;
     var arr = new Array();
-    var sys = data.sys ? data.sys : 2;
+    data.sys = data.sys > 0 ? data.sys : 2;
     if (data.clsId && data.page) {
-        game.getGameByCls(data.clsId, sys, data.page, function (result) {
+        game.getGameByCls(data.clsId, data.sys, data.page, function (result) {
             res.json({state: 1, gameList: result})
         })
     } else {
@@ -313,8 +315,9 @@ router.get('/getSubject', function (req, res) {
 });
 router.get('/getSubjectById', function (req, res) {
     var data = req.query;
+    data.sys = data.sys > 0 ? data.sys : 2;
     if (data.subjectId) {
-        game.getSubjectById(data.subjectId, function (result) {
+        game.getSubjectById(data.subjectId, data.sys, function (result) {
             result.length ? res.json({state: 1, subject: result[0]}) : res.json({state: 0})
         })
     } else {
