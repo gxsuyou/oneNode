@@ -103,10 +103,6 @@ router.get('/getStrategyByMsg', function (req, res) {
             strategy.getStrategyByEssence(data.page, function (result) {
                 // console.log(result);
                 for (var i = 0; i < result.length; i++) {
-
-                    var newtime = result[i].add_time.substring(0, 16);
-                    result[i].add_time = newtime;
-
                     if (result[i].user_id == null) {
                         result[i].nick_name = 'haode';
                     }
@@ -116,8 +112,6 @@ router.get('/getStrategyByMsg', function (req, res) {
         } else {
             strategy.getStrategyByMsg(data.sort, data.page, function (result) {
                 for (var i = 0; i < result.length; i++) {
-                    var newtime = result[i].add_time.substring(0, 16);
-                    result[i].add_time = newtime;
                     if (result[i].nick_name == null) {
                         result[i].nick_name = result[i].nike_name;
                     }
@@ -229,7 +223,7 @@ router.get('/strategyComment', function (req, res) {
                     if (data.targetUserId == null) {
                         data.targetUserId = data.aid;
                     }
-                    strategy.strategyComment(content, data.userId, data.targetCommentId, data.targetUserId, data.series, date.Format('yyyy-MM-dd hh:mm:ss'), data.target_img, data.targetid, data.target_title, function (result) {
+                    strategy.strategyComment(content, data.userId, data.targetCommentId, data.targetUserId, data.series, parseInt(date.getTime() / 1000), data.target_img, data.targetid, data.target_title, function (result) {
                         //console.log(result);
                         result.insertId && strategy.addUserTip(result.insertId, data.targetUserId);
                         socketio.senMsg(data.targetUserId);
@@ -286,16 +280,13 @@ router.get('/getStrategyCommentByPage', function (req, res) {
         strategy.getStrategyCommentByPage(data.userId, data.strategyId, data.page, data.sort, function (result) {
             if (result.length) {
                 var data = result;
-                data.forEach(function (t) {
-                    t.add_time = subdate(t.add_time);
-                });
                 var len = result.length;
                 var index = 0;
 
                 function selectTow() {
                     strategy.getStrategyCommentTow(result[index].id, function (result) {
                         result.forEach(function (t) {
-                            t.add_time = subdate(t.add_time);
+                            // t.add_time = subdate(t.add_time);
                         });
                         data[index].towCommentList = result;
                         if (index < (len - 1)) {
@@ -322,7 +313,7 @@ router.get('/getStrategyCommentTowByPage', function (req, res) {
         strategy.getStrategyCommentTowByPage(data.commentId, data.page, function (result) {
             if (result.length) {
                 result.forEach(function (t) {
-                    t.add_time = subdate(t.add_time);
+                    // t.add_time = subdate(t.add_time);
                 });
                 res.json({state: 1, comment: result})
             } else {
@@ -399,8 +390,6 @@ router.get('/getStrategyByGameName', function (req, res) {
         } else {
             strategy.getStrategyByGameName(data.msg, data.sort, data.page, function (result) {
                 for (var i = 0; i < result.length; i++) {
-                    var newtime = result[i].add_time.substring(0, 16);
-                    result[i].add_time = newtime;
                     var arr = [];
                     if (result[i].src != null) {
                         arr = result[i].src.split(',');

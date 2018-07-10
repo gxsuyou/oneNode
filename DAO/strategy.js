@@ -61,7 +61,7 @@ var strategy = {
     // 获取攻略列表                                          
 
     getStrategyByMsg: function (sort, page, callback) {
-        var sql = 'select t_strategy.*,t_user.nick_name,t_admin.nike_name,t_user.portrait \n' +
+        var sql = 'select t_strategy.*,FROM_UNIXTIME(t_strategy.add_time,\'%Y-%m-%d %H:%i\') as add_time,t_user.nick_name,t_admin.nike_name,t_user.portrait \n' +
             ' from t_strategy \n' +
             ' LEFT JOIN t_user ON t_user.id=t_strategy.`user_id`  \n' +
             ' left join t_admin on t_admin.id=t_strategy.user_id ' +
@@ -72,14 +72,16 @@ var strategy = {
     },
     // 获取精华攻略
     getStrategyByEssence: function (page, callback) {
-        var sql = "select t_strategy.*,t_strategy_img.src from t_strategy_img  left join t_strategy on t_strategy_img.strategy_id= t_strategy.id where essence = 1 group by t_strategy.id desc limit ?,10";
+        var sql = "select t_strategy.*,FROM_UNIXTIME(t_strategy.add_time,'%Y-%m-%d %H:%i') as add_time,t_strategy_img.src from t_strategy_img  " +
+            "left join t_strategy on t_strategy_img.strategy_id= t_strategy.id " +
+            "where essence = 1 group by t_strategy.id desc limit ?,10";
         query(sql, [((page - 1) * 10)], function (result) {
             return callback(result)
         })
     },
     // 获取攻略详情
     getStrategyById: function (userId, strategyId, callback) {
-        var sql = "SELECT t_strategy.*," +
+        var sql = "SELECT t_strategy.*,FROM_UNIXTIME(t_strategy.add_time,'%Y-%m-%d %H:%i') as add_time," +
             "GROUP_CONCAT(t_strategy_img.src order by t_strategy_img.src desc) as imgList,t_user.`nick_name`,t_user.portrait,d.id as collect,t_strategy_like.`state`,t_admin.nike_name " +
             "FROM t_strategy " +
             "LEFT JOIN t_strategy_img ON t_strategy_img.strategy_id= t_strategy.id " +
@@ -159,27 +161,34 @@ var strategy = {
     },
     // 获取攻略详情页评论接口
     getStrategyCommentByPage: function (userId, strategyId, page, sort, callback) {
-        var sql = "SELECT t_strategy_comment.id,t_strategy_comment.content,t_strategy_comment.add_time,t_strategy_comment.agree_num,t_strategy_comment.comment_num,t_user.nick_name,t_user.portrait, t_strategy_like.state  \n" +
-            "            FROM t_strategy_comment \n" +
-            "            LEFT JOIN t_user ON t_strategy_comment.user_id = t_user.id \n" +
-            "            LEFT JOIN t_strategy_like ON t_strategy_like.`strategy_id`=t_strategy_comment.`id` AND t_strategy_like.`user_id`=? WHERE t_strategy_comment.target_comment_id=? AND \n" +
-            "            t_strategy_comment.series=1  ORDER BY t_strategy_comment." + sort + " DESC  LIMIT ?,5";
+        var sql = "SELECT t_strategy_comment.id,t_strategy_comment.content,FROM_UNIXTIME(t_strategy_comment.add_time,'%Y-%m-%d %H:%i') as add_time," +
+            "t_strategy_comment.agree_num,t_strategy_comment.comment_num,t_user.nick_name,t_user.portrait, " +
+            "t_strategy_like.state  \n" +
+            "FROM t_strategy_comment \n" +
+            "LEFT JOIN t_user ON t_strategy_comment.user_id = t_user.id \n" +
+            "LEFT JOIN t_strategy_like ON t_strategy_like.`strategy_id`=t_strategy_comment.`id` AND t_strategy_like.`user_id`=? WHERE t_strategy_comment.target_comment_id=? AND \n" +
+            "t_strategy_comment.series=1  ORDER BY t_strategy_comment." + sort + " DESC  LIMIT ?,5";
         query(sql, [userId, strategyId, (page - 1) * 5], function (result) {
             return callback(result)
         })
     },
     // 获取攻略详情页评论接口中使用(获取一级评论的二级评论)
     getStrategyCommentTow: function (parentId, callback) {
-        var sql = "SELECT t_strategy_comment.content,t_strategy_comment.add_time,a.nick_name AS selfNickName,b.nick_name AS targetUserNickName FROM t_strategy_comment\n" +
+        var sql = "SELECT t_strategy_comment.content,FROM_UNIXTIME(t_strategy_comment.add_time,'%Y-%m-%d %H:%i') as add_time," +
+            "a.nick_name AS selfNickName, b.nick_name AS targetUserNickName " +
+            "FROM t_strategy_comment\n" +
             "LEFT  JOIN  t_user AS a ON t_strategy_comment.user_id=a.id \n" +
-            "LEFT  JOIN  t_user AS b ON t_strategy_comment.target_user_id=b.id WHERE t_strategy_comment.target_comment_id=? AND t_strategy_comment.series=2 limit 0,2";
+            "LEFT  JOIN  t_user AS b ON t_strategy_comment.target_user_id=b.id " +
+            "WHERE t_strategy_comment.target_comment_id=? AND t_strategy_comment.series=2 limit 0,2";
         query(sql, [parentId], function (result) {
             return callback(result)
         })
     },
     // 获取二级评论
     getStrategyCommentTowByPage: function (parentId, page, callback) {
-        var sql = "SELECT t_strategy_comment.id,t_strategy_comment.content,t_strategy_comment.add_time,a.nick_name AS selfNickName,a.portrait,b.nick_name AS targetUserNickName,a.id AS selfUserId FROM t_strategy_comment\n" +
+        var sql = "SELECT t_strategy_comment.id,t_strategy_comment.content,FROM_UNIXTIME(t_strategy_comment.add_time,'%Y-%m-%d %H:%i') as add_time," +
+            "a.nick_name AS selfNickName,a.portrait,b.nick_name AS targetUserNickName,a.id AS selfUserId " +
+            "FROM t_strategy_comment\n" +
             "LEFT  JOIN  t_user AS a ON t_strategy_comment.user_id=a.id \n" +
             "LEFT  JOIN  t_user AS b ON t_strategy_comment.target_user_id=b.id WHERE t_strategy_comment.`target_comment_id` =? AND t_strategy_comment.series=2 limit ?,10";
         query(sql, [parentId, (page - 1) * 10], function (result) {
@@ -188,7 +197,9 @@ var strategy = {
     },
     // 根据ID获取一级评论
     getCommentById: function (commentId, callback) {
-        var sql = "select t_strategy_comment.*,t_user.nick_name,t_user.portrait from t_strategy_comment left join t_user on t_strategy_comment.user_id = t_user.id where  t_strategy_comment.id=?";
+        var sql = "select t_strategy_comment.*,FROM_UNIXTIME(t_strategy_comment.add_time,'%Y-%m-%d %H:%i') as add_time,t_user.nick_name,t_user.portrait " +
+            "from t_strategy_comment " +
+            "left join t_user on t_strategy_comment.user_id = t_user.id where  t_strategy_comment.id=?";
         query(sql, [commentId], function (result) {
             return callback(result)
         })
@@ -216,7 +227,7 @@ var strategy = {
     },
     // 根据关游戏名字获取攻略
     getStrategyByGameName: function (gameName, sort, page, callback) {
-        var sql = "select t_strategy.*," +
+        var sql = "select t_strategy.*,FROM_UNIXTIME(t_strategy.add_time,'%Y-%m-%d %H:%i') as add_time," +
             "GROUP_CONCAT(t_strategy_img.src order by t_strategy_img.src desc) as src,t_user.`nick_name`,t_user.portrait,t_admin.nike_name " +
             "from t_strategy left join t_strategy_img on t_strategy_img.strategy_id= t_strategy.id " +
             "LEFT JOIN t_user ON t_user.id=t_strategy.`user_id` " +
@@ -227,7 +238,7 @@ var strategy = {
         })
     },
     getEssenceStrategyByGameName: function (gameName, page, callback) {
-        var sql = "select t_strategy.*,t_strategy_img.src from t_strategy " +
+        var sql = "select t_strategy.*,FROM_UNIXTIME(t_strategy.add_time,'%Y-%m-%d %H:%i') as add_time,t_strategy_img.src from t_strategy " +
             "left join t_strategy_img on t_strategy_img.strategy_id= t_strategy.id " +
             "where essence = 1 and t_strategy.game_name  =? group by t_strategy.id limit ?,10";
         query(sql, [gameName, (page - 1) * 10], function (result) {
@@ -249,7 +260,11 @@ var strategy = {
     },
     // 只看楼主
     getStrategyCommentByPageUser: function (userId, targetId, strategyId, page, callback) {
-        var sql = "SELECT t_strategy_comment.id,t_strategy_comment.img,t_strategy_comment.content,t_strategy_comment.add_time,t_strategy_comment.agree_num,t_strategy_comment.comment_num,t_user.nick_name,t_user.portrait, t_strategy_like.state  FROM t_strategy_comment \n" +
+        var sql = "SELECT t_strategy_comment.id,t_strategy_comment.img,t_strategy_comment.content," +
+            "t_strategy_comment.content,FROM_UNIXTIME(t_strategy_comment.add_time,'%Y-%m-%d %H:%i') as add_time," +
+            "t_strategy_comment.agree_num,t_strategy_comment.comment_num," +
+            "t_user.nick_name,t_user.portrait, t_strategy_like.state  " +
+            "FROM t_strategy_comment \n" +
             "LEFT JOIN t_user ON t_strategy_comment.user_id = t_user.id \n" +
             "LEFT JOIN t_strategy_like ON t_strategy_like.`strategy_id`=t_strategy_comment.`id` AND t_strategy_like.`user_id`=? \n" +
             "WHERE t_strategy_comment.user_id=? and t_strategy_comment.target_comment_id=? order by t_strategy_comment.id desc limit ?,5";

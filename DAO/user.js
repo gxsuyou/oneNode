@@ -267,7 +267,8 @@ var user = {
         var sql = "SELECT t_game.*,GROUP_CONCAT(t_tag.name) AS tagList,GROUP_CONCAT(t_tag.id) AS tagId FROM t_collect \n" +
             "LEFT JOIN t_game ON t_game.`id`=t_collect.`target_id`\n" +
             "LEFT JOIN t_tag_relation ON t_tag_relation.game_id = t_game.id \n" +
-            "LEFT JOIN t_tag ON t_tag.`id`=t_tag_relation.`tag_id` WHERE t_collect.`user_id`=? AND t_collect.`target_type`=3 AND t_game.sys=? " +
+            "LEFT JOIN t_tag ON t_tag.`id`=t_tag_relation.`tag_id` " +
+            "WHERE t_collect.`user_id`=? AND t_collect.`target_type`=3 AND t_game.sys=? " +
             "GROUP BY t_game.id  LIMIT ?,10";
         query(sql, [userId, sys, (page - 1) * 10], function (result) {
             return callback(result)
@@ -275,8 +276,11 @@ var user = {
     },
     //获取攻略新消息
     strategyMessage: function (userId, page, callback) {
-        var sql = "select t_strategy_comment.id,t_strategy_comment.target_img,t_strategy_comment.targetid,t_strategy_comment.target_title,t_strategy_comment.content as s_content,t_strategy_comment.series,t_strategy_comment.target_comment_id as parentId,t_strategy_comment.add_time,t_tip.type,t_tip.state, \n" +
-            "t_user.nick_name,t_user.portrait from  t_strategy_comment \n" +
+        var sql = "select t_strategy_comment.id,t_strategy_comment.target_img,t_strategy_comment.targetid," +
+            "t_strategy_comment.target_title,t_strategy_comment.content as s_content,t_strategy_comment.series," +
+            "t_strategy_comment.target_comment_id as parentId,FROM_UNIXTIME(t_strategy_comment.add_time,'%Y-%m-%d %H:%i') as add_time," +
+            "t_tip.type,t_tip.state,t_user.nick_name,t_user.portrait " +
+            "from  t_strategy_comment \n" +
             "left join t_tip ON t_tip.`tip_id`=t_strategy_comment.`id`\n" +
             "left join t_user ON t_strategy_comment.`user_id`=t_user.id \n" +
             "where  t_strategy_comment.target_user_id=? group by t_strategy_comment.add_time  desc limit ?,10";
