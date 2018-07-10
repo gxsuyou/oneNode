@@ -125,7 +125,8 @@ var news = {
     },
     // 获取资讯评论
     getNewsCommentByPage: function (userId, commentParentId, page, callback) {
-        var sql = "SELECT t_news_comment.*,t_user.nick_name,t_user.portrait, t_like.state  \n" +
+        var sql = "SELECT t_news_comment.*,FROM_UNIXTIME(t_news_comment.add_time,'%Y-%m-%d %H:%i') as add_time," +
+            "t_user.nick_name,t_user.portrait, t_like.state  \n" +
             "FROM t_news_comment  \n" +
             "LEFT JOIN t_user ON t_news_comment.user_id = t_user.id  \n" +
             "LEFT JOIN t_like ON t_news_comment.id=t_like.parent_id and t_like.like_user_id=? AND t_like.`like_type`=12 WHERE t_news_comment.target_comment_id=? AND \n" +
@@ -136,7 +137,7 @@ var news = {
     },
     // 获取热门资讯评论
     getHotNewsCommentByPage: function (userId, commentParentId, page, callback) {
-        var sql = "SELECT t_news_comment.*,t_user.nick_name,t_user.portrait, t_like.state  \n" +
+        var sql = "SELECT t_news_comment.*,FROM_UNIXTIME(t_news_comment.add_time,'%Y-%m-%d %H:%i') as add_time,t_user.nick_name,t_user.portrait, t_like.state  \n" +
             "FROM t_news_comment  \n" +
             "LEFT JOIN t_user ON t_news_comment.user_id = t_user.id  \n" +
             "LEFT JOIN t_like ON t_news_comment.id=t_like.parent_id and t_like.like_user_id=? AND t_like.`like_type`=12 WHERE t_news_comment.target_comment_id=? AND \n" +
@@ -146,14 +147,17 @@ var news = {
         })
     },
     getCommentById: function (id, callback) {
-        var sql = "select t_news_comment.*,t_user.nick_name,t_user.portrait " +
-            "from t_news_comment left join t_user on t_news_comment.user_id = t_user.id where  t_news_comment.id=?";
+        var sql = "select t_news_comment.*,FROM_UNIXTIME(t_news_comment.add_time,'%Y-%m-%d %H:%i') as add_time,t_user.nick_name,t_user.portrait " +
+            "from t_news_comment " +
+            "left join t_user on t_news_comment.user_id = t_user.id where  t_news_comment.id=?";
         query(sql, [id], function (result) {
             return callback(result)
         })
     },
     getNewsCommentTow: function (parentId, callback) {
-        var sql = "SELECT t_news_comment.content,t_news_comment.add_time,a.nick_name AS selfNickName,b.nick_name AS targetUserNickName FROM t_news_comment\n" +
+        var sql = "SELECT t_news_comment.content,FROM_UNIXTIME(t_news_comment.add_time,'%Y-%m-%d %H:%i') as add_time," +
+            "a.nick_name AS selfNickName,b.nick_name AS targetUserNickName " +
+            "FROM t_news_comment\n" +
             "LEFT  JOIN  t_user AS a ON t_news_comment.user_id=a.id \n" +
             "LEFT  JOIN  t_user AS b ON t_news_comment.target_user_id=b.id WHERE t_news_comment.target_comment_id=? AND t_news_comment.series=2 limit 0,2";
         query(sql, [parentId], function (result) {
@@ -162,7 +166,8 @@ var news = {
     },
     // 获取资讯的二级评论
     getNewsCommentTowByPage: function (parentId, page, callback) {
-        var sql = "SELECT t_news_comment.id,t_news_comment.content,t_news_comment.add_time,a.nick_name AS selfNickName,a.portrait,b.nick_name AS targetUserNickName,a.id AS selfUserId FROM t_news_comment\n" +
+        var sql = "SELECT t_news_comment.id,t_news_comment.content,FROM_UNIXTIME(t_news_comment.add_time,'%Y-%m-%d %H:%i') as add_time,a.nick_name AS selfNickName,a.portrait,b.nick_name AS targetUserNickName,a.id AS selfUserId " +
+            "FROM t_news_comment\n" +
             "LEFT  JOIN  t_user AS a ON t_news_comment.user_id=a.id \n" +
             "LEFT  JOIN  t_user AS b ON t_news_comment.target_user_id=b.id WHERE t_news_comment.`target_comment_id` =? AND t_news_comment.series=2 limit ?,10";
         query(sql, [parentId, (page - 1) * 10], function (result) {
