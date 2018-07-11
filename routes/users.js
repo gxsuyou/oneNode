@@ -439,18 +439,18 @@ router.get('/verify', function (req, result, next) {
     //     var content = qs.stringify(post_data);
     //     post(uri,content,sms_host);
     // }
-    function send_sms(uri, apikey, mobile, text, val) {
+    function send_sms(uri, apikey, mobile, text) {
         var post_data = {
             'apikey': apikey,
             'mobile': mobile,
             'text': text,
         };//这是需要提交的数据
         var content = qs.stringify(post_data);
-        post(uri, content, sms_host, val);
+        post(uri, content, sms_host);
     }
 
 
-    function post(uri, content, host, val, next) {
+    function post(uri, content, host, next) {
 
         var options = {
             hostname: host,
