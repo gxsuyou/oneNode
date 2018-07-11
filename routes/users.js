@@ -369,7 +369,7 @@ router.get('/game/comment', function (req, res, next) {
     var data = req.query;
     user.getUserCommentLen(data.gameId, data.userId, function (count) {
         if (count[0].count < 3) {
-            user.gameComment(data.userId, data.gameId, data.score, data.content, data.agree, date.Format('yyyy-MM-dd'), data.parentId, data.address, function (result) {
+            user.gameComment(data.userId, data.gameId, data.score, data.content, data.agree, parseInt(date.getTime() / 1000), data.parentId, data.address, function (result) {
                 if (result.insertId) {
                     user.getGameCommentScoreById(data.gameId, function (result) {
 
@@ -405,7 +405,7 @@ router.post('/reg', function (req, res, next) {
     if (ver && tel && sign) {
         if (ver == verify[tel]) {
             var date = new Date();
-            user.reg(tel, sign, date.Format('yyyy-MM-dd'), function (result) {
+            user.reg(tel, sign, parseInt(date.getTime() / 1000), function (result) {
                 result.insertId ? user.updateOnlyidById(result.insertId, function () {
                 }) : "";
                 res.json({state: result.insertId && 1 || result[0].id && 2 || 0, id: result.insertId || ""})
@@ -418,7 +418,7 @@ router.post('/reg', function (req, res, next) {
     }
 });
 router.get('/verify', function (req, result, next) {
-    var val = Math.floor(Math.random() * 900000) + 100000;
+    var val = Math.floor(Math.random() * 900000) + 100000;//验证码
     var apikey = 'f589b7ce8a38a90b9d8e2ce20e26c020';
 // 手机号码，多个号码用逗号隔开
     var mobile = req.query.tel;
@@ -427,8 +427,8 @@ router.get('/verify', function (req, result, next) {
 // 查询账户信息https地址
     var get_user_info_uri = '/v2/user/get.json';
 // 智能匹配模板发送https地址
-    var sms_host = 'sms.yunpian.com';
-    send_sms_uri = '/v2/sms/single_send.json';
+    var sms_host = 'sms.yunpian.com',
+        send_sms_uri = '/v2/sms/single_send.json';
 // 指定模板发送接口https地址
 //     query_user_info(get_user_info_uri,apikey);
     send_sms(send_sms_uri, apikey, mobile, text);
@@ -448,6 +448,7 @@ router.get('/verify', function (req, result, next) {
         var content = qs.stringify(post_data);
         post(uri, content, sms_host);
     }
+
 
     function post(uri, content, host, next) {
 
