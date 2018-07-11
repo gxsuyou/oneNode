@@ -69,8 +69,15 @@ var game = {
     },
     // 根据标签获取游戏
     getGameByTag: function (tagId, sys, page, callback) {
-        var sql = "SELECT tag_ids,id FROM t_game WHERE tag_ids LIKE'%," + tagId + ",%' AND sys=? ORDER BY id DESC LIMIT ?,20"
-        query(sql, [sys, (page - 1) * 20], function (result) {
+        // var sql = "SELECT tag_ids,id FROM t_game WHERE tag_ids LIKE'%," + tagId + ",%' AND sys=? ORDER BY id DESC LIMIT ?,20"
+        var sql = 'SELECT a.id,a.icon,a.game_name,a.grade,' +
+            'GROUP_CONCAT(t_tag.`name`) as tagNameList,' +
+            'GROUP_CONCAT(t_tag.`id`) as tagIdList ' +
+            'FROM (t_tag_relation LEFT JOIN t_game AS a ON a.id = t_tag_relation.game_id) ' +
+            'LEFT JOIN t_tag_relation ON a.id = t_tag_relation.`game_id` ' +
+            'LEFT JOIN t_tag ON t_tag.`id`=t_tag_relation.`tag_id`\n' +
+            ' WHERE t_tag_relation.tag_id=? AND a.sys=? GROUP BY a.`id` ORDER BY a.id DESC limit ?,20';
+        query(sql, [tagId, sys, (page - 1) * 20], function (result) {
             return callback(result)
         })
     },
@@ -337,14 +344,13 @@ var game = {
     },
     // 根据分类获取游戏
     getGameByCls: function (clsId, sys, page, callback) {
-        var sql = 'SELECT a.id,a.icon,a.game_name,a.grade,' +
-            'GROUP_CONCAT(t_tag.`name`) as tagNameList,' +
-            'GROUP_CONCAT(t_tag.`id`) as tagIdList ' +
+        var sql = 'SELECT a.id,a.icon,a.game_name,a.grade,a.game_title_img,a.sys,' +
+            'GROUP_CONCAT(t_tag.`name`) as tagList,' +
+            'GROUP_CONCAT(t_tag.`id`) as tagId ' +
             'FROM (t_game_cls_relation LEFT JOIN t_game AS a ON a.id = t_game_cls_relation.game_id) ' +
             'LEFT JOIN t_tag_relation ON a.id = t_tag_relation.`game_id` ' +
             'LEFT JOIN t_tag ON t_tag.`id`=t_tag_relation.`tag_id`\n' +
-            'LEFT JOIN t_game ON t_game.id=t_game_cls_relation.`game_id` ' +
-            ' WHERE t_game_cls_relation.cls_id=? AND t_game.sys=? GROUP BY a.`id` ORDER BY a.id DESC limit ?,20';
+            ' WHERE t_game_cls_relation.cls_id=? AND a.sys=? GROUP BY a.`id` ORDER BY a.id DESC limit ?,20';
         //var sql = "SELECT id,icon,game_name,sort,sort2,cls_ids,tag_ids FROM t_game " +
         //    "WHERE cls_ids LIKE '%," + clsId + ",%' ORDER BY game_download_num,sort,sort2 DESC LIMIT ?,20"
         query(sql, [clsId, sys, (page - 1) * 20], function (result) {
