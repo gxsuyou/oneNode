@@ -219,7 +219,12 @@ var user = {
         })
     },
     getStrategyByUserId: function (userId, page, callback) {
-        var sql = 'select t_strategy.*,t_strategy_img.src,t_user.`nick_name`,t_user.portrait from t_strategy left join t_strategy_img on t_strategy_img.strategy_id= t_strategy.id LEFT JOIN t_user ON t_user.id=t_strategy.`user_id` where t_strategy.`user_id`=? group by t_strategy.id order by add_time desc  limit ?,10';
+        var sql = 'select t_strategy.*,FROM_UNIXTIME(t_strategy.add_time,"%Y-%m-%d %H:%i") as add_time,' +
+            't_strategy_img.src,t_user.`nick_name`,t_user.portrait ' +
+            'from t_strategy ' +
+            'left join t_strategy_img on t_strategy_img.strategy_id= t_strategy.id ' +
+            'LEFT JOIN t_user ON t_user.id=t_strategy.`user_id` ' +
+            'where t_strategy.`user_id`=? group by t_strategy.id order by add_time desc  limit ?,10';
         query(sql, [userId, (page - 1) * 10], function (result) {
             return callback(result)
         })
@@ -233,7 +238,8 @@ var user = {
     },
     // 获取用户资讯收藏
     getNewsCollect: function (userId, page, callback) {
-        var sql = "SELECT a.id,a.title,a.img,a.add_time,a.agree,a.game_id,a.browse,b.game_name,b.icon,b.game_recommend,c.id as coll_id " +
+        var sql = "SELECT a.id,a.title,a.img,FROM_UNIXTIME(a.add_time,'%Y-%m-%d %H:%i') as add_time,a.agree," +
+            "a.game_id,a.browse,b.game_name,b.icon,b.game_recommend,c.id as coll_id " +
             "FROM t_collect as c " +
             "left join t_news AS a on a.id= c.target_id and c.user_id=?\n" +
             "LEFT JOIN t_game AS b ON a.`game_id`=b.`id` " +
@@ -244,7 +250,8 @@ var user = {
     },
     // 获取用户攻略收藏
     getStrategyCollect: function (userId, page, callback) {
-        var sql = 'select t_strategy.*,t_user.`nick_name`,t_user.portrait,t_admin.nike_name,t_collect.id as coll_id ' +
+        var sql = 'select t_strategy.*,FROM_UNIXTIME(t_strategy.add_time,"%Y-%m-%d %H:%i") as add_time,' +
+            't_user.`nick_name`,t_user.portrait,t_admin.nike_name,t_collect.id as coll_id ' +
             'from t_collect  ' +
             'left join t_strategy on t_strategy.id=t_collect.target_id ' +
             'LEFT JOIN t_user ON t_user.id=t_strategy.`user_id` ' +
@@ -292,7 +299,10 @@ var user = {
     },
     // 获取资讯新消息
     newsMessage: function (userId, page, callback) {
-        var sql = "select t_news_comment.id,t_news_comment.news_img,t_news_comment.newsid,t_news_comment.news_title,t_news_comment.content,t_news_comment.series,t_news_comment.target_comment_id as parentId,t_news_comment.add_time,t_tip.type,t_user.nick_name,t_user.portrait from t_news_comment \n" +
+        var sql = "select t_news_comment.id,t_news_comment.news_img,t_news_comment.newsid,t_news_comment.news_title," +
+            "t_news_comment.content,t_news_comment.series,t_news_comment.target_comment_id as parentId," +
+            "FROM_UNIXTIME(t_news_comment.add_time,'%Y-%m-%d %H:%i') as add_time,t_tip.type,t_user.nick_name, t_user.portrait " +
+            "from t_news_comment \n" +
             "left join t_user on t_news_comment.user_id=t_user.id \n" +
             "left join t_tip on t_news_comment.id=t_tip.tip_id \n" +
             "where t_news_comment.target_user_id=? group by t_news_comment.add_time  desc limit ?,10";
@@ -303,7 +313,10 @@ var user = {
     },
     // 获取游戏新消息
     gameMessage: function (userId, page, callback) {
-        var sql = "select t_game_comment.id,t_game_comment.game_name,t_game_comment.game_id,t_game_comment.content,t_game_comment.series,t_game_comment.parent_id as parentId,t_game_comment.add_time,t_tip.type,t_user.nick_name,t_user.portrait from t_game_comment \n" +
+        var sql = "select t_game_comment.id,t_game_comment.game_name,t_game_comment.game_id," +
+            "t_game_comment.content,t_game_comment.series,t_game_comment.parent_id as parentId," +
+            "FROM_UNIXTIME(t_game_comment.add_time,'%Y-%m-%d %H:%i') as add_time,t_tip.type,t_user.nick_name,t_user.portrait " +
+            "from t_game_comment \n" +
             "left join t_user on t_game_comment.user_id=t_user.id \n" +
             "left join t_tip on t_game_comment.id=t_tip.tip_id \n" +
             "where t_game_comment.user_id=? group by t_game_comment.add_time  desc limit ?,10";
