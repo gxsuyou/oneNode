@@ -59,7 +59,7 @@ router.get('/getGameByTag', function (req, res) {
     var data = req.query;
     data.sys = data.sys > 0 ? data.sys : 2;
     if (data.tagId && data.page) {
-        game.getGameByCls(data.tagId, data.sys, data.page, function (result) {
+        game.getGameByTag(data.tagId, data.sys, data.page, function (result) {
             res.json({state: 1, gameList: result})
         })
     } else {

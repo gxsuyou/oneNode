@@ -70,10 +70,10 @@ var game = {
     // 根据标签获取游戏
     getGameByTag: function (tagId, sys, page, callback) {
         // var sql = "SELECT tag_ids,id FROM t_game WHERE tag_ids LIKE'%," + tagId + ",%' AND sys=? ORDER BY id DESC LIMIT ?,20"
-        var sql = 'SELECT a.id,a.icon,a.game_name,a.grade,' +
-            'GROUP_CONCAT(t_tag.`name`) as tagNameList,' +
-            'GROUP_CONCAT(t_tag.`id`) as tagIdList ' +
-            'FROM (t_tag_relation LEFT JOIN t_game AS a ON a.id = t_tag_relation.game_id) ' +
+        var sql = 'SELECT a.id,a.icon,a.game_name,a.grade,a.game_title_img,' +
+            'GROUP_CONCAT(t_tag.`name`) as tagList,' +
+            'GROUP_CONCAT(t_tag.`id`) as tagId ' +
+            'FROM t_game AS a ' +
             'LEFT JOIN t_tag_relation ON a.id = t_tag_relation.`game_id` ' +
             'LEFT JOIN t_tag ON t_tag.`id`=t_tag_relation.`tag_id`\n' +
             ' WHERE t_tag_relation.tag_id=? AND a.sys=? GROUP BY a.`id` ORDER BY a.id DESC limit ?,20';
@@ -344,9 +344,9 @@ var game = {
     },
     // 根据分类获取游戏
     getGameByCls: function (clsId, sys, page, callback) {
-        var sql = 'SELECT a.id,a.icon,a.game_name,a.grade,a.game_title_img,a.sys,' +
-            'GROUP_CONCAT(t_tag.`name`) as tagList,' +
-            'GROUP_CONCAT(t_tag.`id`) as tagId ' +
+        var sql = 'SELECT a.id,a.icon,a.game_name,a.grade,' +
+            'GROUP_CONCAT(t_tag.`name`) as tagNameList,' +
+            'GROUP_CONCAT(t_tag.`id`) as tagIdList ' +
             'FROM (t_game_cls_relation LEFT JOIN t_game AS a ON a.id = t_game_cls_relation.game_id) ' +
             'LEFT JOIN t_tag_relation ON a.id = t_tag_relation.`game_id` ' +
             'LEFT JOIN t_tag ON t_tag.`id`=t_tag_relation.`tag_id`\n' +

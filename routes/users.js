@@ -186,6 +186,7 @@ function getUpToken(scope, key) {
     var putPolicy = new qiniu.rs.PutPolicy(options);
     return putPolicy.uploadToken(mac);
 }
+
 router.get('/getUptokenByMsg', function (req, res, next) {
     if (req.query.scope && req.query.key) {
         if (req.query.scope == 'img') {
@@ -206,6 +207,7 @@ router.get('/getUptokenByMsg', function (req, res, next) {
 function isReverse(text) {
     return text.split('').reverse().join('');
 }
+
 var verify = {};
 var date = new Date();
 Date.prototype.Format = function (formatStr) {
@@ -485,7 +487,7 @@ router.get('/verify', function (req, result, next) {
                 result.json({state: state});
             });
         });
-        req.write(content);
+        console.req.write(content);
         return req.end();
         // return next()
     }
@@ -784,6 +786,7 @@ router.get('/getGameByUserId', function (req, res) {
         res.json({state: 0})
     }
 });
+
 function subdate(str) {
     if (Object.prototype.toString.call(str) === "[object String]") {
         return str.substring(0, 10);
@@ -791,41 +794,21 @@ function subdate(str) {
         return str
     }
 }
+
 router.get('/newMessage', function (req, res) {
     var data = req.query;
     // console.log(data.type);
     if (data.userId > 0) {
         if (data.sort == 1) {
             user.newsMessage(data.userId, data.page, function (result) {
-
-                var n = result.length;
-                for (var i = 0; i < n; i++) {
-                    var newtime = result[i].add_time.substring(0, 16);
-                    result[i].add_time = newtime;
-                }
                 res.json({state: 1, tip: result})
-
-
             });
         } else if (data.sort == 2) {
             user.strategyMessage(data.userId, data.page, function (result) {
-                var arr = [];
-                var n = result.length;
-
-                for (var i = 0; i < n; i++) {
-                    var newtime = result[i].add_time.substring(0, 16);
-                    result[i].add_time = newtime;
-                }
                 res.json({state: 1, tip: result})
             });
         } else if (data.sort == 3) {
             user.gameMessage(data.userId, data.page, function (results) {
-
-                var n = results.length;
-                for (var i = 0; i < n; i++) {
-                    var newtime = results[i].add_time.substring(0, 16);
-                    results[i].add_time = newtime;
-                }
                 res.json({state: 1, tip: results})
             });
         }
