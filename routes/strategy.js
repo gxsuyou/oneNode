@@ -92,7 +92,8 @@ router.get('/unCollect', function (req, res) {
 });
 router.get('/getSearchGame', function (req, res) {
     var data = req.query;
-    strategy.getSearchGame(1, function (result) {
+    data.sys = data.sys > 0 ? data.sys : 2;
+    strategy.getSearchGame(data.sys, function (result) {
         result.length ? res.json({state: 1, gameList: result}) : res.json({state: 0})
     })
 });
@@ -510,4 +511,5 @@ function test(content) {
 function subdate(str) {
     return str.substring(0, 10);
 }
+
 module.exports = router;
