@@ -227,7 +227,7 @@ var game = {
     getOneCommentByCommentId: function (commentId, callback) {
         var sql = "SELECT t_game_comment.`id`,t_game_comment.`content`,FROM_UNIXTIME(t_game_comment.add_time,'%Y-%m-%d') as add_time," +
             "t_game_comment.`comment_num`,t_game_comment.`score`,t_game_comment.`agree`,t_user.id as uid," +
-            "t_user.`nick_name`,t_user.`portrait`,t_game.id as game_id " +
+            "t_user.`nick_name`,t_user.`portrait`,t_game.id as game_id,t_game.game_name " +
             "FROM t_game_comment \n" +
             "LEFT JOIN t_user  ON t_game_comment.`user_id`=t_user.id " +
             "LEFT JOIN t_game  ON t_game_comment.`game_id`=t_game.id " +
