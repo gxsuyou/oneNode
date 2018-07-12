@@ -216,11 +216,12 @@ router.get('/getCountLikeComment', function (req, res) {
 // 添加评论
 router.get('/strategyComment', function (req, res) {
     var data = req.query;
+    var date = new Date();
     if (data.content && data.targetCommentId && data.targetUserId && data.userId && data.series) {
+
         if (data.series == 1) {
             function addComment() {
                 strategy.addCommentNum(data.targetCommentId, function (result) {
-                    var date = new Date();
                     var content = test(data.content);
                     if (data.targetUserId == null) {
                         data.targetUserId = data.aid;
@@ -233,7 +234,6 @@ router.get('/strategyComment', function (req, res) {
                     });
                 });
             }
-
             addComment();
         }
         ;
@@ -245,9 +245,8 @@ router.get('/strategyComment', function (req, res) {
                             // console.log(result[0].tarId);
                             function addComment() {
                                 strategy.addCommentNum(result[0].tarId, function (result) {
-                                    var date = new Date();
                                     var content = test(data.content);
-                                    strategy.strategyComment(content, data.userId, data.targetCommentId, data.targetUserId, data.series, date.Format('yyyy-MM-dd hh:mm:ss'), data.target_img, data.targetid, data.target_title, function (result) {
+                                    strategy.strategyComment(content, data.userId, data.targetCommentId, data.targetUserId, data.series, parseInt(date.getTime() / 1000), data.target_img, data.targetid, data.target_title, function (result) {
                                         result.insertId && strategy.addUserTip(result.insertId, data.targetUserId);
                                         socketio.senMsg(data.targetUserId);
                                         result.insertId ? res.json({
