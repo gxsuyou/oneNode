@@ -348,9 +348,6 @@ router.get('/getStrategyByGameName', function (req, res) {
     if (data.gameName && data.page) {
         game.getStrategyByGameName(data.gameName, data.page, function (result) {
             for (var i = 0; i < result.length; i++) {
-                var newtime = result[i].add_time.substring(0, 16);
-                result[i].add_time = newtime;
-
                 if (!result[i].nick_name) {
                     result[i].nick_name = result[i].nike_name;
                 }
