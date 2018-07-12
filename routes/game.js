@@ -167,11 +167,6 @@ router.get('/getNewsByGameId', function (req, res) {
     var data = req.query;
     if (data.gameId) {
         game.getNewsByGameId(data.gameId, function (result) {
-            if (result.length) {
-                for (var i = 0, l = result.length; i < l; i++) {
-                    result[i].add_time = result[i].add_time.substring(0, 16)
-                }
-            }
             res.json({state: 1, newsList: result})
         })
     } else {
