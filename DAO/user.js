@@ -367,6 +367,13 @@ var user = {
                 })
             }
         })
+    },
+
+    hasNickName: function (obj, callback) {
+        var sql = "SELECT * FROM t_user WHERE nick_name=? "
+        query(sql, [obj], function (result) {
+            return callback(result)
+        })
     }
 
 
