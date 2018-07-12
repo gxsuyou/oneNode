@@ -42,12 +42,12 @@ var user = {
         })
     },
     // 注册
-    reg: function (tel, password, timeLogon, callback) {
+    reg: function (tel, password, timeLogon, img, callback) {
         var sqlUser = "select * from t_user where tel =?";
-        var sql = "INSERT INTO t_user (nick_name,password,portrait,coin,integral,achievement_point,sign,time_unlock,time_logon,tel) values (?,?,0,0,500,0,0,0,?,?)";
+        var sql = "INSERT INTO t_user (nick_name,password,portrait,coin,integral,achievement_point,sign,time_unlock,time_logon,tel) values (?,?,?,0,500,0,0,0,?,?)";
         query(sqlUser, [tel], function (result) {
             if (result.length <= 0) {
-                query(sql, [tel, password, timeLogon, tel], function (res) {
+                query(sql, [tel, password, img, timeLogon, tel], function (res) {
                     return callback(res);
                 })
             } else {
@@ -271,7 +271,8 @@ var user = {
     },
     // 获取我的游戏
     getGameByUser: function (userId, sys, page, callback) {
-        var sql = "SELECT t_game.*,GROUP_CONCAT(t_tag.name) AS tagList,GROUP_CONCAT(t_tag.id) AS tagId FROM t_collect \n" +
+        var sql = "SELECT t_game.*,GROUP_CONCAT(t_tag.name) AS tagList,GROUP_CONCAT(t_tag.id) AS tagId " +
+            "FROM t_collect \n" +
             "LEFT JOIN t_game ON t_game.`id`=t_collect.`target_id`\n" +
             "LEFT JOIN t_tag_relation ON t_tag_relation.game_id = t_game.id \n" +
             "LEFT JOIN t_tag ON t_tag.`id`=t_tag_relation.`tag_id` " +

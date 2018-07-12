@@ -405,7 +405,8 @@ router.post('/reg', function (req, res, next) {
     if (ver && tel && sign) {
         if (ver == verify[tel]) {
             var date = new Date();
-            user.reg(tel, sign, parseInt(date.getTime() / 1000), function (result) {
+            var img = "../../Public/image/morentouxiang.png"
+            user.reg(tel, sign, parseInt(date.getTime() / 1000), img, function (result) {
                 result.insertId ? user.updateOnlyidById(result.insertId, function () {
                 }) : "";
                 res.json({state: result.insertId && 1 || result[0].id && 2 || 0, id: result.insertId || ""})
