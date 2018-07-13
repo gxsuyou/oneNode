@@ -345,7 +345,7 @@ var game = {
     },
     // 根据分类获取游戏
     getGameByCls: function (clsId, sys, page, callback) {
-        var sql = 'SELECT a.id,a.icon,a.game_name,a.grade,' +
+        var sql = 'SELECT a.id,a.icon,a.game_name,a.grade,a.game_packagename,' +
             'GROUP_CONCAT(t_tag.`name`) as tagNameList,' +
             'GROUP_CONCAT(t_tag.`id`) as tagIdList ' +
             'FROM (t_game_cls_relation LEFT JOIN t_game AS a ON a.id = t_game_cls_relation.game_id) ' +
