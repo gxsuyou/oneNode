@@ -191,10 +191,10 @@ var news = {
         })
     },
     searchNewsByGameName: function (sys, msg, page, callback) {
-        var sql = "SELECT t_news.id,t_news.`title` " +
-            "FROM t_news\n" +
-            "LEFT JOIN t_game ON t_news.`game_id`=t_game.`id`\n" +
-            "WHERE (t_game.`game_name` LIKE '%" + msg + "%' AND t_game.sys=?) OR t_news.title LIKE '%" + msg + "%' " +
+        var sql = 'SELECT t_news.id,t_news.`title` ' +
+            'FROM t_news\n' +
+            'LEFT JOIN t_game ON t_news.`game_id`=t_game.`id`\n' +
+            'WHERE (t_game.`game_name` LIKE "%' + msg + '%" AND t_game.sys=?) OR t_news.title LIKE "%' + msg + '%" ' +
             "LIMIT ?,20";
         query(sql, [sys, (page - 1) * 20], function (result) {
             return callback(result)

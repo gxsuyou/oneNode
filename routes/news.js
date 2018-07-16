@@ -297,7 +297,7 @@ router.get('/searchNewsByGameName', function (req, res) {
     var data = req.query;
     if (data.sys && data.msg && data.page) {
         news.searchNewsByGameName(data.sys, data.msg, data.page, function (result) {
-            res.json({state: 1, newsList: result})
+            result.length ? res.json({state: 1, newsList: result}) : res.json({state: 0})
         })
     } else {
         res.json({state: 0})

@@ -372,7 +372,10 @@ var user = {
     hasNickName: function (obj, callback) {
         var sql = "SELECT * FROM t_user WHERE nick_name=? "
         query(sql, [obj], function (result) {
-            return callback(result)
+            var sql = "SELECT * FROM t_admin WHERE nike_name=? "
+            query(sql, [obj], function (admin_result) {
+                return callback({user: result, admin: admin_result})
+            })
         })
     }
 
