@@ -613,11 +613,11 @@ router.get("/getCoin", function (req, res, next) {
 router.get("/updateNickName", function (req, res, next) {
     if (req.query.id && req.query.nickName) {
         user.hasNickName(req.query.nickName, function (users) {
-            if (users[0].id == req.query.id) {
+            if (!users.length) {
                 user.updateNickName(req.query.id, req.query.nickName, function (result) {
                     result.affectedRows ? res.json({state: 1}) : res.json({state: 0})
                 })
-            } else if (!user) {
+            } else if (users[0].id == req.query.id) {
                 user.updateNickName(req.query.id, req.query.nickName, function (result) {
                     result.affectedRows ? res.json({state: 1}) : res.json({state: 0})
                 })
