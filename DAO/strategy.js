@@ -220,7 +220,7 @@ var strategy = {
     },
     // 根据关键词获取攻略游戏名字
     getStrategyGameNameByMsg: function (msg, callback) {
-        var sql = 'SELECT  t_strategy.id,t_strategy.user_id,t_strategy.title,t_strategy.game_name ' +
+        var sql = 'SELECT  t_strategy.id,t_strategy.title,t_strategy.game_name ' +
             'FROM t_strategy ' +
             'WHERE t_strategy.game_name LIKE "%' + msg + '%" OR t_strategy.title LIKE "%' + msg + '%" ' +
             'GROUP BY game_name LIMIT 0,10';
