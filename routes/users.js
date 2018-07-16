@@ -612,8 +612,8 @@ router.get("/getCoin", function (req, res, next) {
 });
 router.get("/updateNickName", function (req, res, next) {
     if (req.query.id && req.query.nickName) {
-        user.hasNickName(req.query.nickName, function (user) {
-            if (user[0].id == req.query.id) {
+        user.hasNickName(req.query.nickName, function (users) {
+            if (users[0].id == req.query.id) {
                 user.updateNickName(req.query.id, req.query.nickName, function (result) {
                     result.affectedRows ? res.json({state: 1}) : res.json({state: 0})
                 })
