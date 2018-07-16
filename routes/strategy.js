@@ -2,6 +2,10 @@ var express = require('express');
 var router = express.Router();
 var strategy = require('../DAO/strategy');
 var socketio = require('./socketio');
+
+var path = require('path');
+var fs = require('fs');
+
 Date.prototype.Format = function (formatStr) {
     var str = formatStr;
     var Week = ['日', '一', '二', '三', '四', '五', '六'];
@@ -408,7 +412,6 @@ router.get('/getStrategyByGameName', function (req, res) {
 router.get('/getStrategyGameNameByMsg', function (req, res) {
     var data = req.query;
     if (data.msg) {
-
         strategy.getStrategyGameNameByMsg(data.msg, function (result) {
             res.json({state: 1, gameName: result})
         })
