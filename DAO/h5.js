@@ -25,9 +25,11 @@ var h5 = {
             }
         })
     },
-    searchByGameName: function (msg, callback) {
-        var sql = "select * from t_h5 where name like '%" + msg + "%'  ORDER BY sort DESC limit 0,10";
-        query(sql, [], function (result) {
+    searchByGameName: function (msg, page, callback) {
+        var sql = "SELECT * FROM t_h5 " +
+            "WHERE `name` LIKE '%" + msg + "%' OR `commend` LIKE '%" + msg + "%' " +
+            "ORDER BY sort DESC limit 0,10";
+        query(sql, [(page - 1) * 10], function (result) {
             return callback(result)
         })
     }

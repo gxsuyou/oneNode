@@ -114,8 +114,9 @@ var game = {
     },
     // 根据关键词搜索游戏
     searchGameByMsg: function (sys, msg, sort, page, callback) {
-        var sql = "select id,game_name,icon,grade " +
-            "from t_game where sys=? and game_name like '%" + msg + "%'  ORDER BY " + sort + " DESC limit ?,20";
+        var sql = "SELECT id,game_name,icon,grade " +
+            "FROM t_game WHERE sys=? AND game_name LIKE '%" + msg + "%'  ORDER BY " + sort + " DESC LIMIT ?,20";
+        console.log(sql)
         query(sql, [sys, (page - 1) * 20], function (result) {
             return callback(result)
         })
