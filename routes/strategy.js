@@ -226,15 +226,17 @@ router.get('/strategyComment', function (req, res) {
         if (data.series == 1) {
             function addComment() {
                 strategy.addCommentNum(data.targetCommentId, function (result) {
-                    var content = test(data.content);
+                    // var content = test(data.content);
                     if (data.targetUserId == null) {
                         data.targetUserId = data.aid;
                     }
-                    strategy.strategyComment(content, data.userId, data.targetCommentId, data.targetUserId, data.series, parseInt(date.getTime() / 1000), data.target_img, data.targetid, data.target_title, function (result) {
-                        //console.log(result);
-                        result.insertId && strategy.addUserTip(result.insertId, data.targetUserId);
-                        socketio.senMsg(data.targetUserId);
-                        result.insertId ? res.json({state: 1, commentId: result.insertId}) : res.json({state: 0})
+                    strategy.getSensitive(data.content, function (contents) {
+                        strategy.strategyComment(contents, data.userId, data.targetCommentId, data.targetUserId, data.series, parseInt(date.getTime() / 1000), data.target_img, data.targetid, data.target_title, function (result) {
+                            //console.log(result);
+                            result.insertId && strategy.addUserTip(result.insertId, data.targetUserId);
+                            socketio.senMsg(data.targetUserId);
+                            result.insertId ? res.json({state: 1, commentId: result.insertId}) : res.json({state: 0})
+                        });
                     });
                 });
             }
@@ -250,15 +252,16 @@ router.get('/strategyComment', function (req, res) {
                             // console.log(result[0].tarId);
                             function addComment() {
                                 strategy.addCommentNum(result[0].tarId, function (result) {
-                                    var content = test(data.content);
-                                    strategy.strategyComment(content, data.userId, data.targetCommentId, data.targetUserId, data.series, parseInt(date.getTime() / 1000), data.target_img, data.targetid, data.target_title, function (result) {
-                                        result.insertId && strategy.addUserTip(result.insertId, data.targetUserId);
-                                        socketio.senMsg(data.targetUserId);
-                                        result.insertId ? res.json({
-                                            state: 1,
-                                            commentId: result.insertId
-                                        }) : res.json({state: 0})
-                                    });
+                                    strategy.getSensitive(data.content, function (contents) {
+                                        strategy.strategyComment(contents, data.userId, data.targetCommentId, data.targetUserId, data.series, parseInt(date.getTime() / 1000), data.target_img, data.targetid, data.target_title, function (result) {
+                                            result.insertId && strategy.addUserTip(result.insertId, data.targetUserId);
+                                            socketio.senMsg(data.targetUserId);
+                                            result.insertId ? res.json({
+                                                state: 1,
+                                                commentId: result.insertId
+                                            }) : res.json({state: 0})
+                                        });
+                                    })
                                 });
                             }
 
@@ -505,9 +508,11 @@ function test(content) {
                     content = content.replace(eval('/' + str + '/g'), '****');
                 }
             }
+            return content;
         });
+    } else {
+        return content;
     }
-    return content;
 }
 
 function subdate(str) {

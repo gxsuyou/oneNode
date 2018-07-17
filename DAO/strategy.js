@@ -1,4 +1,6 @@
 var query = require('../config/config');
+var path = require('path');
+var fs = require('fs');
 var strategy = {
     // 添加攻略信息
 
@@ -282,6 +284,26 @@ var strategy = {
             return callback(result);
         });
     },
+
+    getSensitive: function (obj, callback) {
+        var content = obj
+        if (content) {
+            var str = "";
+            fs.readFile(path.join(__dirname, '../sensitive.txt'), 'utf8', function (err, data) {
+                if (content.match(eval('/(' + data + ')/'))) {
+                    var newArr = data.split("|");
+                    for (var i in newArr) {
+                        str = newArr[i].substr(1);
+                        str = str.substring(0, str.length - 1);
+                        content = content.replace(eval('/' + str + '/g'), '****');
+                    }
+                }
+                return callback(content);
+            });
+        } else {
+            return callback(content);
+        }
+    }
 
 
 };
