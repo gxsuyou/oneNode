@@ -614,11 +614,11 @@ router.get("/updateNickName", function (req, res, next) {
     if (req.query.id && req.query.nickName) {
         user.hasNickName(req.query.nickName, function (users) {
             if (!users.user.length && !users.admin.length) {
+                console.log(req.query);
                 user.updateNickName(req.query.id, req.query.nickName, function (result) {
                     result.affectedRows ? res.json({state: 1}) : res.json({state: 0})
                 })
-            }
-            if (users.user.length) {
+            } else if (users.user.length) {
                 if (users.user[0].id == req.query.id && !users.admin.length) {
                     user.updateNickName(req.query.id, req.query.nickName, function (result) {
                         result.affectedRows ? res.json({state: 1}) : res.json({state: 0})
