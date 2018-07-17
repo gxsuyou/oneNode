@@ -133,24 +133,25 @@ router.get("/comment", function (req, res, next) {
     var date = new Date();
     if (req.query.targetCommentId) {
         var data = req.query;
-
-        news.newsComment(data.targetCommentId, data.userId, data.series, data.content, parseInt(date.getTime() / 1000), data.targetUserId || 0, data.news_img, data.news_title, data.newsid, function (result) {
-            if (result.insertId) {
-                if (data.series == 1) {
-                    news.addNewsComment(req.query.targetCommentId, function (result) {
-                        result.affectedRows ? res.json({state: 1}) : res.json({state: 0})
-                    })
+        news.getSensitive(data.content, function (content) {
+            news.newsComment(data.targetCommentId, data.userId, data.series, content, parseInt(date.getTime() / 1000), data.targetUserId || 0, data.news_img, data.news_title, data.newsid, function (result) {
+                if (result.insertId) {
+                    if (data.series == 1) {
+                        news.addNewsComment(req.query.targetCommentId, function (result) {
+                            result.affectedRows ? res.json({state: 1}) : res.json({state: 0})
+                        })
+                    } else {
+                        news.addUserTip(result.insertId, data.targetUserId);
+                        console.log('news' + data.targetUserId);
+                        socketio.senMsg(data.targetUserId);
+                        news.addNewsCommentComment(req.query.targetCommentId, function (result) {
+                            result.affectedRows ? res.json({state: 1}) : res.json({state: 0})
+                        })
+                    }
                 } else {
-                    news.addUserTip(result.insertId, data.targetUserId);
-                    console.log('news' + data.targetUserId);
-                    socketio.senMsg(data.targetUserId);
-                    news.addNewsCommentComment(req.query.targetCommentId, function (result) {
-                        result.affectedRows ? res.json({state: 1}) : res.json({state: 0})
-                    })
+                    res.json({state: 0})
                 }
-            } else {
-                res.json({state: 0})
-            }
+            })
         })
     }
 });
