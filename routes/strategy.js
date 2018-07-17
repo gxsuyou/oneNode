@@ -238,6 +238,7 @@ router.get('/strategyComment', function (req, res) {
                     });
                 });
             }
+
             addComment();
         }
         ;
@@ -494,18 +495,17 @@ router.get('/strategyDelete', function (req, res) {
 // });
 function test(content) {
     if (content) {
-        if (content.match(/([操你妈]|[我操]|[草泥马]|[操你妈逼]|[你妈逼]|[傻逼]|[鸡巴]|[你妈的])/)) {
-            var content = content.replace(/操你妈/g, '***');
-            var content = content.replace(/我操/g, '**');
-            var content = content.replace(/草泥马/g, '***');
-            var content = content.replace(/曹尼玛/g, '***');
-            var content = content.replace(/操你妈逼/g, '****');
-            var content = content.replace(/你妈逼/g, '***');
-            var content = content.replace(/傻逼/g, '**');
-            var content = content.replace(/鸡巴/g, '**');
-            var content = content.replace(/你妈的/g, '***');
-        }
-
+        var str = "";
+        fs.readFile(path.join(__dirname, '../sensitive.txt'), 'utf8', function (err, data) {
+            if (content.match(eval('/(' + data + ')/'))) {
+                var newArr = data.split("|");
+                for (var i in newArr) {
+                    str = newArr[i].substr(1);
+                    str = str.substring(0, a.length - 1);
+                    content = content.replace(eval('/' + str + '/g'), '****');
+                }
+            }
+        });
     }
     return content;
 }
