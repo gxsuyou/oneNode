@@ -2,6 +2,10 @@ var router = require('express').Router();
 var news = require("../DAO/news");
 var socketio = require('./socketio');
 var date = new Date();
+
+var path = require('path');
+var fs = require('fs');
+
 Date.prototype.Format = function (formatStr) {
     var str = formatStr;
     var Week = ['日', '一', '二', '三', '四', '五', '六'];
@@ -347,6 +351,23 @@ router.get('/cancelMessage', function (req, res) {
 
     }
 });
+
+function test(content) {
+    if (content) {
+        var str = "";
+        fs.readFile(path.join(__dirname, '../sensitive.txt'), 'utf8', function (err, data) {
+            if (content.match(eval('/(' + data + ')/'))) {
+                var newArr = data.split("|");
+                for (var i in newArr) {
+                    str = newArr[i].substr(1);
+                    str = str.substring(0, str.length - 1);
+                    content = content.replace(eval('/' + str + '/g'), '****');
+                }
+            }
+        });
+    }
+    return content;
+}
 
 function subdate(str) {
     return str.substring(0, 10);

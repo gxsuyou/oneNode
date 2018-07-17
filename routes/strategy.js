@@ -501,7 +501,7 @@ function test(content) {
                 var newArr = data.split("|");
                 for (var i in newArr) {
                     str = newArr[i].substr(1);
-                    str = str.substring(0, a.length - 1);
+                    str = str.substring(0, str.length - 1);
                     content = content.replace(eval('/' + str + '/g'), '****');
                 }
             }
