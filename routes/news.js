@@ -75,13 +75,6 @@ router.get("/updateNewsBrowse", function (req, res) {
 router.get("/getNewsById", function (req, res, next) {
     if (req.query.id) {
         news.getNewsById(req.query.id, req.query.userId, function (result) {
-            if (result.length) {
-                //var str = result[0].add_time.substring(11, 16);
-                //str = str.replace(/-/g, ':');
-                result[0].add_time = result[0].add_time.substring(0, 16);
-                //result[0].add_time += " ";
-                //result[0].add_time += str;
-            }
             result.length ? res.json({state: 1, news: result[0]}) : res.json({state: 0})
         })
     } else {
@@ -142,7 +135,6 @@ router.get("/comment", function (req, res, next) {
                         })
                     } else {
                         news.addUserTip(result.insertId, data.targetUserId);
-                        console.log('news' + data.targetUserId);
                         socketio.senMsg(data.targetUserId);
                         news.addNewsCommentComment(req.query.targetCommentId, function (result) {
                             result.affectedRows ? res.json({state: 1}) : res.json({state: 0})

@@ -846,7 +846,7 @@ router.get('/addFeedbackImg', function (req, res) {
     var data = req.query;
     if (data.feedbackId && data.img) {
         user.addFeedbackImg(data.feedbackId, data.img, function (result) {
-            console.log(result);
+            result.affectedRows ? res.json({state: 1}) : res.json({state: 0})
         })
     } else {
         res.json({state: 0})
