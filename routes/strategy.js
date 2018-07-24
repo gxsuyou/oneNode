@@ -146,8 +146,8 @@ router.get('/getStrategyById', function (req, res) {
         function add() {
             strategy.addBrowseNum(data.strategyId, function (result) {
                 strategy.getStrategyById(data.userId, data.strategyId, function (result) {
-                    var newtime = result[0].add_time.substring(0, 16);
-                    result[0].add_time = newtime;
+                    // var newtime = result[0].add_time.substring(0, 16);
+                    // result[0].add_time = newtime;
                     res.json({state: 1, strategy: result[0]})
                 });
             });
