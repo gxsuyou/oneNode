@@ -199,7 +199,6 @@ router.get("/getCommentUserById", function (req, res, next) {
 // 评论游戏接口
 router.get('/comment', function (req, res, next) {
     var data = req.query;
-    console.log(data);
     if (data.userId && data.gameId && data.content) {
         var date = new Date();
         game.gameComment(data.userId, data.gameId, data.score, data.content, parseInt(date.getTime() / 1000), data.parentId, data.series, data.targetUserId || null, data.game_name, data.game_title_img, function (result) {
