@@ -146,8 +146,6 @@ router.get('/getStrategyById', function (req, res) {
         function add() {
             strategy.addBrowseNum(data.strategyId, function (result) {
                 strategy.getStrategyById(data.userId, data.strategyId, function (result) {
-                    // var newtime = result[0].add_time.substring(0, 16);
-                    // result[0].add_time = newtime;
                     res.json({state: 1, strategy: result[0]})
                 });
             });
@@ -173,7 +171,6 @@ router.get('/addNum', function (req, res) {
                     });
                 });
             }
-
             num();
         } else if (data.numType == "agree_num") {// 添加点赞数
             function anum() {
@@ -185,7 +182,6 @@ router.get('/addNum', function (req, res) {
                     });
                 });
             }
-
             anum();
         } else {
             res.json({state: 0})
@@ -294,9 +290,6 @@ router.get('/getStrategyCommentByPage', function (req, res) {
 
                 function selectTow() {
                     strategy.getStrategyCommentTow(result[index].id, function (result) {
-                        result.forEach(function (t) {
-                            // t.add_time = subdate(t.add_time);
-                        });
                         data[index].towCommentList = result;
                         if (index < (len - 1)) {
                             index++;

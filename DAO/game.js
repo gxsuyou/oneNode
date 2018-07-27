@@ -69,7 +69,9 @@ var game = {
     },
     // 根据标签获取游戏
     getGameByTag: function (tagId, sys, page, callback) {
-        // var sql = "SELECT tag_ids,id FROM t_game WHERE tag_ids LIKE'%," + tagId + ",%' AND sys=? ORDER BY id DESC LIMIT ?,20"
+        // var sql = "SELECT tag_ids,id FROM t_game " +
+        //     "WHERE tag_ids LIKE'%," + tagId + ",%' AND sys=? " +
+        //     "ORDER BY id DESC LIMIT ?,20"
         var sql = 'SELECT a.id,a.icon,a.game_name,a.grade,a.game_title_img,a.game_packagename,' +
             'GROUP_CONCAT(t_tag.`name`) as tagList,' +
             'GROUP_CONCAT(t_tag.`id`) as tagId ' +
@@ -139,8 +141,9 @@ var game = {
             "t_game_comment.`comment_num`,t_game_comment.`score`,t_game_comment.`agree`,t_user.id as uid,t_user.`nick_name`,t_user.`portrait`,t_game_comment_like.state " +
             "FROM t_game_comment \n" +
             "LEFT JOIN t_game_comment_like on t_game_comment.`user_id`=t_game_comment_like.user_id and t_game_comment.id = t_game_comment_like.comment_id\n" +
-            "LEFT JOIN t_user\n" +
-            "ON t_game_comment.`user_id`=t_user.id WHERE t_game_comment.`game_id`=? and t_game_comment.series=1 ORDER BY t_game_comment.`id` DESC LIMIT ?,10";
+            "LEFT JOIN t_user ON t_game_comment.`user_id`=t_user.id " +
+            "WHERE t_game_comment.`game_id`=? and t_game_comment.series=1 " +
+            "ORDER BY t_game_comment.`id` DESC LIMIT ?,10";
         query(sql, [game_id, (page - 1) * 10], function (result) {
             return callback(result)
         })
@@ -170,8 +173,9 @@ var game = {
             "a.`nick_name` as selfNickName,a.`portrait`,b.nick_name as targetNickName " +
             "FROM t_game_comment \n" +
             "LEFT JOIN t_user as b on t_game_comment.target_user_id = b.id\n" +
-            "LEFT JOIN t_user as a\n" +
-            "ON t_game_comment.`user_id`=a.id WHERE t_game_comment.`parent_id`=? and t_game_comment.series=2 ORDER BY t_game_comment.`add_time` DESC LIMIT ?,10";
+            "LEFT JOIN t_user as a ON t_game_comment.`user_id`=a.id " +
+            "WHERE t_game_comment.`parent_id`=? and t_game_comment.series=2 " +
+            "ORDER BY t_game_comment.`add_time` DESC LIMIT ?,10";
         query(sql, [parentId, (page - 1) * 10], function (result) {
             return callback(result)
         })
@@ -251,6 +255,12 @@ var game = {
         score = score || 8;
         var sql = "INSERT into t_game_comment (user_id,game_id,score,content,add_time,parent_id,series,target_user_id,game_name,game_icon) values (?,?,?,?,?,?,?,?,?,?)";
         query(sql, [userId, gameId, score, content, addTime, parentId, series, targetUserId, game_name, game_title_img], function (result) {
+            if (parentId > 0) {
+                var set_sql = "update t_game_comment set comment_num=comment_num+1 where id =?";
+                query(set_sql, [parentId], function (set_result) {
+
+                })
+            }
             return callback(result)
         })
     },

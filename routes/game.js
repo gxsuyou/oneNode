@@ -68,8 +68,8 @@ router.get('/getGameByTag', function (req, res) {
 });
 // 游戏排行
 router.get("/getGameByMsg", function (req, res, next) {
-    req = req.query;
-    game.getGameByMsg(req.sys, req.type, req.sort, req.page, function (result) {
+    var data = req.query;
+    game.getGameByMsg(data.sys, data.type, data.sort, data.page, function (result) {
         res.json({state: 1, game: result})
     })
 });
@@ -199,9 +199,9 @@ router.get("/getCommentUserById", function (req, res, next) {
 // 评论游戏接口
 router.get('/comment', function (req, res, next) {
     var data = req.query;
+    console.log(data);
     if (data.userId && data.gameId && data.content) {
         var date = new Date();
-        //console.log(data);
         game.gameComment(data.userId, data.gameId, data.score, data.content, parseInt(date.getTime() / 1000), data.parentId, data.series, data.targetUserId || null, data.game_name, data.game_title_img, function (result) {
             if (result.insertId) {
                 data.targetUserId && game.addUserTip(result.insertId, data.targetUserId);
@@ -223,7 +223,6 @@ router.get('/comment', function (req, res, next) {
     } else {
         res.json({state: 0})
     }
-
 });
 router.get('/getGameCls', function (req, res) {
     var data = req.query;
