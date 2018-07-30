@@ -329,7 +329,7 @@ var game = {
             '\tON t_subject_relation.game_id=t_game.id)\n' +
             '\tLEFT JOIN t_tag_relation ON t_tag_relation.`game_id`=t_game.id) \n' +
             '\tLEFT JOIN t_tag ON t_tag_relation.`tag_id`=t_tag.`id`\n' +
-            '\tWHERE t_subject_relation.subject_id = ? AND t_game.sys=? GROUP BY t_game.id limit ?,20';
+            '\tWHERE t_subject_relation.subject_id = ? AND t_game.sys=? GROUP BY t_game.id ORDER BY t_subject_relation.id ASC  limit ?,20';
         query(sql, [subjectId, sys, (page - 1) * 20], function (result) {
             return callback(result)
         })
