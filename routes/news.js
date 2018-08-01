@@ -226,7 +226,8 @@ router.get("/getCommentByPage", function (req, res, next) {
 router.get("/getHotNewsCommentByPage", function (req, res) {
     if (req.query.commentParentId) {
         var page = req.query.page > 0 ? req.query.page : 1;
-        news.getNewsCommentByPage(req.query.userId, req.query.commentParentId, page, function (result) {
+        var type = req.query.type > 0 ? req.query.type : 2
+        news.getNewsCommentByPage(req.query.userId, req.query.commentParentId, page, type, function (result) {
             if (result.length) {
                 var data = result;
                 var len = result.length;
