@@ -215,9 +215,12 @@ var strategy = {
     // },
     // 取消点赞接口
     unLikeComment: function (commentId, userId, callback) {
-        var sql = 'delete from  t_strategy_like where strategy_id=? and user_id=?';
-        query(sql, [commentId, userId], function (result) {
-            return callback(result)
+        var sql = "update t_strategy_comment set agree_num=agree_num-1 where id =?";
+        query(sql, [commentId], function (result) {
+            var sql = 'delete from  t_strategy_like where strategy_id=? and user_id=?';
+            query(sql, [commentId, userId], function (result) {
+                return callback(result)
+            })
         })
     },
     // 根据关键词获取攻略游戏名字
