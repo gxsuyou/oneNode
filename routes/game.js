@@ -2,6 +2,47 @@ var router = require('express').Router();
 var game = require("../DAO/game");
 var bodyParser = require('body-parser');
 var socketio = require('./socketio');
+
+
+function formatMsgTime(timespan) {
+
+    var dateTime = new Date(timespan * 1000);
+
+    var year = dateTime.getFullYear();
+    var month = dateTime.getMonth() + 1;
+    var day = dateTime.getDate();
+    var hour = dateTime.getHours();
+    var minute = dateTime.getMinutes();
+    var second = dateTime.getSeconds();
+    var now = new Date();
+    var now_new = Date.parse(now.toDateString());  //typescript转换写法
+    var milliseconds = 0;
+    var timeSpanStr;
+
+    milliseconds = now_new - timespan * 1000;
+    if (milliseconds <= 1000 * 60 * 1) {
+        timeSpanStr = '刚刚';
+    }
+    else if (1000 * 60 * 1 < milliseconds && milliseconds <= 1000 * 60 * 60) {
+        timeSpanStr = Math.round((milliseconds / (1000 * 60))) + '分钟前';
+    }
+    else if (1000 * 60 * 60 * 1 < milliseconds && milliseconds <= 1000 * 60 * 60 * 24) {
+        timeSpanStr = Math.round(milliseconds / (1000 * 60 * 60)) + '小时前';
+    } else {
+        return {time: timespan};
+    }
+    // else if (1000 * 60 * 60 * 24 < milliseconds && milliseconds <= 1000 * 60 * 60 * 24 * 15) {
+    //     timeSpanStr = Math.round(milliseconds / (1000 * 60 * 60 * 24)) + '天前';
+    // }
+    // else if (milliseconds > 1000 * 60 * 60 * 24 * 15 && year == now.getFullYear()) {
+    //     timeSpanStr = month + '-' + day + ' ' + hour + ':' + minute;
+    // } else {
+    //     timeSpanStr = year + '-' + month + '-' + day + ' ' + hour + ':' + minute;
+    // }
+    return timeSpanStr;
+}
+
+
 // 获取游戏详情
 router.get('/getGameById', function (req, res, next) {
     var data = req.query;
@@ -165,8 +206,19 @@ router.get('/getGameLikeTag', function (req, res) {
 });
 router.get('/getNewsByGameId', function (req, res) {
     var data = req.query;
+    var date = new Date();
     if (data.gameId) {
         game.getNewsByGameId(data.gameId, function (result) {
+            // var newTime = formatMsgTime(result[0].add_time);
+            for (var i in result) {
+                var newTime = formatMsgTime(result[i].add_time);
+                result[i].add_time = newTime;
+                if (newTime.time) {
+                    var dateTime = new Date(newTime.time * 1000);
+                    result[i].add_time = dateTime.Format('yyyy-MM-dd HH:mm');
+                }
+            }
+
             res.json({state: 1, newsList: result})
         })
     } else {

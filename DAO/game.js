@@ -224,7 +224,7 @@ var game = {
         })
     },
     getNewsByGameId: function (gameId, callback) {
-        var sql = "select id,title,img,FROM_UNIXTIME(add_time,'%Y-%m-%d %H:%i') as add_time from t_news where game_id = ? ORDER BY RAND() LIMIT 5";
+        var sql = "select id,title,img,add_time from t_news where game_id = ? ORDER BY id DESC LIMIT 5";
         query(sql, [gameId], function (result) {
             return callback(result)
         })
