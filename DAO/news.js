@@ -133,6 +133,7 @@ var news = {
             "LEFT JOIN t_user ON t_news_comment.user_id = t_user.id  \n" +
             "LEFT JOIN t_like ON t_news_comment.id=t_like.parent_id and t_like.like_user_id=? AND t_like.`like_type`=12 WHERE t_news_comment.target_comment_id=? AND \n" +
             "t_news_comment.series=1 order by t_news_comment.add_time desc  LIMIT ?,5";
+
         query(sql, [userId, commentParentId, (page - 1) * 5], function (result) {
             return callback(result)
         })

@@ -77,8 +77,9 @@ var game = {
             'GROUP_CONCAT(t_tag.`id`) as tagId ' +
             'FROM t_game AS a ' +
             'LEFT JOIN t_tag_relation ON a.id = t_tag_relation.`game_id` ' +
-            'LEFT JOIN t_tag ON t_tag.`id`=t_tag_relation.`tag_id`\n' +
-            ' WHERE t_tag_relation.tag_id=? AND a.sys=? GROUP BY a.`id` ORDER BY a.id DESC limit ?,20';
+            'LEFT JOIN t_tag ON t_tag.`id`=t_tag_relation.`tag_id` ' +
+            'WHERE a.id IN(SELECT t_tag_relation.`game_id` FROM t_tag_relation WHERE tag_id=?) ' +
+            'AND a.sys=? GROUP BY a.`id` ORDER BY a.id DESC limit ?,20';
         query(sql, [tagId, sys, (page - 1) * 20], function (result) {
             return callback(result)
         })
@@ -223,7 +224,7 @@ var game = {
         })
     },
     getNewsByGameId: function (gameId, callback) {
-        var sql = "select id,title,img,add_time from t_news where game_id = ? ORDER BY RAND() LIMIT 5";
+        var sql = "select id,title,img,FROM_UNIXTIME(add_time,'%Y-%m-%d %H:%i') as add_time from t_news where game_id = ? ORDER BY RAND() LIMIT 5";
         query(sql, [gameId], function (result) {
             return callback(result)
         })
@@ -390,7 +391,7 @@ var game = {
     },
     // 根据游戏名字获取相关攻略
     getStrategyByGameName: function (gameName, page, callback) {
-        var sql = "SELECT a.*,b.nike_name,c.`nick_name`,c.portrait FROM t_strategy as a \n " +
+        var sql = "SELECT a.*,FROM_UNIXTIME(a.add_time,'%Y-%m-%d %H:%i') as add_time,b.nike_name,c.`nick_name`,c.portrait FROM t_strategy as a \n " +
             " LEFT JOIN t_admin AS b ON b.id = a.`user_id`\n " +
             " LEFT JOIN t_user AS c ON c.id=a.`user_id` " +
             " WHERE a.game_name  =? GROUP BY a.id  ORDER BY browse_num  DESC LIMIT ?,6";
