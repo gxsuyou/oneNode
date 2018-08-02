@@ -281,8 +281,9 @@ router.get('/comment', function (req, res, next) {
                         for (var i = 0; i < len; i++) {
                             allScore += result[i].score;
                         }
-                        game.updateGameScore(data.gameId, (allScore / len).toFixed(1), function (result) {
-                            result.affectedRows ? res.json({state: 1}) : res.json({state: 0})
+                        var newSorce = (allScore / len).toFixed(1);
+                        game.updateGameScore(data.gameId, newSorce, function (result) {
+                            result.affectedRows ? res.json({state: 1, score: newSorce}) : res.json({state: 0})
                         })
                     }
                 })
