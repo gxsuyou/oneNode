@@ -257,14 +257,14 @@ var game = {
     },
     // 评论游戏接口
     gameComment: function (obj, callback) {
-        parentId = parentId || 0;
+        var parentId = obj.parentId || 0;
         // 如果没有评分 默认为8分
         var score = obj.score || 8;
         if (obj.series > 1) {
             score = 0;
         }
         var sql = "INSERT into t_game_comment (user_id,game_id,score,content,add_time,parent_id,series,target_user_id,game_name,game_icon) values (?,?,?,?,?,?,?,?,?,?)";
-        query(sql, [obj.userId, obj.gameId, score, obj.content, obj.addTime, obj.parentId, obj.series, obj.targetUserId, obj.game_name, obj.game_title_img], function (result) {
+        query(sql, [obj.userId, obj.gameId, score, obj.content, obj.addTime, parentId, obj.series, obj.targetUserId, obj.game_name, obj.game_title_img], function (result) {
             if (parentId > 0) {
                 var set_sql = "update t_game_comment set comment_num=comment_num+1 where id =?";
                 query(set_sql, [parentId], function (set_result) {
