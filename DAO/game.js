@@ -15,6 +15,12 @@ var game = {
             return callback(result)
         })
     },
+    getGameMsgById: function (gameId, callback) {
+        var sql = "SELECT * FROM t_game WHERE id = ?"
+        query(sql, [gameId], function (result) {
+            return callback(result);
+        })
+    },
     getGameImgListById: function (gameId, callback) {
         var sql = 'select img_src from t_game_img where game_id=?';
         query(sql, [gameId], function (result) {
@@ -151,7 +157,7 @@ var game = {
     },
     getCommentUserById: function (obj, callback) {
         var sql = "SELECT *,FROM_UNIXTIME(t_game_comment.add_time,'%Y-%m-%d') as add_time " +
-            "FROM t_game_comment WHERE user_id=? AND game_id=? AND series > 0 ORDER BY id DESC LIMIT 0,1"
+            "FROM t_game_comment WHERE user_id=? AND game_id=? AND score > 0 ORDER BY id DESC LIMIT 0,1"
         query(sql, [obj.user_id, obj.game_id], function (result) {
             return callback(result)
         })
@@ -223,9 +229,9 @@ var game = {
             return callback(result)
         })
     },
-    getNewsByGameId: function (gameId, callback) {
-        var sql = "select id,title,img,add_time from t_news where game_id = ? ORDER BY id DESC LIMIT 5";
-        query(sql, [gameId], function (result) {
+    getNewsByGameId: function (obj, callback) {
+        var sql = "select id,title,img,add_time from t_news where game_name = ? ORDER BY id DESC LIMIT 5";
+        query(sql, [obj], function (result) {
             return callback(result)
         })
     },
@@ -244,18 +250,21 @@ var game = {
     // 获取游戏评分数据
     getGameCommentScore: function (gameId, callback) {
         var sql = "SELECT score,COUNT(*) AS num FROM t_game_comment " +
-            "WHERE game_id=? and score >0 GROUP BY score order by score desc";
+            "WHERE game_id=? and score > 0 GROUP BY score order by score desc";
         query(sql, [gameId], function (result) {
             return callback(result)
         })
     },
     // 评论游戏接口
-    gameComment: function (userId, gameId, score, content, addTime, parentId, series, targetUserId, game_name, game_title_img, callback) {
+    gameComment: function (obj, callback) {
         parentId = parentId || 0;
         // 如果没有评分 默认为8分
-        score = score || 8;
+        var score = obj.score || 8;
+        if (obj.series > 1) {
+            score = 0;
+        }
         var sql = "INSERT into t_game_comment (user_id,game_id,score,content,add_time,parent_id,series,target_user_id,game_name,game_icon) values (?,?,?,?,?,?,?,?,?,?)";
-        query(sql, [userId, gameId, score, content, addTime, parentId, series, targetUserId, game_name, game_title_img], function (result) {
+        query(sql, [obj.userId, obj.gameId, score, obj.content, obj.addTime, obj.parentId, obj.series, obj.targetUserId, obj.game_name, obj.game_title_img], function (result) {
             if (parentId > 0) {
                 var set_sql = "update t_game_comment set comment_num=comment_num+1 where id =?";
                 query(set_sql, [parentId], function (set_result) {

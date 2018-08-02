@@ -206,20 +206,25 @@ router.get('/getGameLikeTag', function (req, res) {
 });
 router.get('/getNewsByGameId', function (req, res) {
     var data = req.query;
-    var date = new Date();
     if (data.gameId) {
-        game.getNewsByGameId(data.gameId, function (result) {
-            // var newTime = formatMsgTime(result[0].add_time);
-            for (var i in result) {
-                var newTime = formatMsgTime(result[i].add_time);
-                result[i].add_time = newTime;
-                if (newTime.time) {
-                    var dateTime = new Date(newTime.time * 1000);
-                    result[i].add_time = dateTime.Format('yyyy-MM-dd HH:mm');
-                }
-            }
+        game.getGameMsgById(data.gameId, function (game_result) {
+            if (game_result.length) {
+                game.getNewsByGameId(game_result[0].game_name, function (result) {
+                    // var newTime = formatMsgTime(result[0].add_time);
+                    for (var i in result) {
+                        var newTime = formatMsgTime(result[i].add_time);
+                        result[i].add_time = newTime;
+                        if (newTime.time) {
+                            var dateTime = new Date(newTime.time * 1000);
+                            result[i].add_time = dateTime.Format('yyyy-MM-dd HH:mm');
+                        }
+                    }
 
-            res.json({state: 1, newsList: result})
+                    res.json({state: 1, newsList: result})
+                })
+            } else {
+                res.json({state: 0})
+            }
         })
     } else {
         res.json({state: 0})
@@ -253,7 +258,19 @@ router.get('/comment', function (req, res, next) {
     var data = req.query;
     if (data.userId && data.gameId && data.content) {
         var date = new Date();
-        game.gameComment(data.userId, data.gameId, data.score, data.content, parseInt(date.getTime() / 1000), data.parentId, data.series, data.targetUserId || null, data.game_name, data.game_title_img, function (result) {
+        var objArr = {
+            userId: data.userId,
+            gameId: data.gameId,
+            score: data.score,
+            content: data.content,
+            addTime: parseInt(date.getTime() / 1000),
+            parentId: data.parentId,
+            series: data.series,
+            targetUserId: data.targetUserId || null,
+            game_name: data.game_name,
+            game_title_img: data.game_title_img,
+        }
+        game.gameComment(objArr, function (result) {
             if (result.insertId) {
                 data.targetUserId && game.addUserTip(result.insertId, data.targetUserId);
                 data.targetUserId && socketio.senMsg(data.targetUserId);
