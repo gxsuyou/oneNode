@@ -151,7 +151,7 @@ var game = {
     },
     getCommentUserById: function (obj, callback) {
         var sql = "SELECT *,FROM_UNIXTIME(t_game_comment.add_time,'%Y-%m-%d') as add_time " +
-            "FROM t_game_comment WHERE user_id=? AND game_id=? ORDER BY id DESC LIMIT 0,1"
+            "FROM t_game_comment WHERE user_id=? AND game_id=? AND series > 0 ORDER BY id DESC LIMIT 0,1"
         query(sql, [obj.user_id, obj.game_id], function (result) {
             return callback(result)
         })
