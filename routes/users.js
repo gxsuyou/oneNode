@@ -816,15 +816,15 @@ router.get('/newMessage', function (req, res) {
     // console.log(data.type);
     if (data.userId > 0) {
         if (data.sort == 1) {
-            user.newsMessage(data.userId, data.page, function (result) {
+            user.newsMessage(data.userId, data.sort, data.page, function (result) {
                 res.json({state: 1, tip: result})
             });
         } else if (data.sort == 2) {
-            user.strategyMessage(data.userId, data.page, function (result) {
+            user.strategyMessage(data.userId, data.sort, data.page, function (result) {
                 res.json({state: 1, tip: result})
             });
         } else if (data.sort == 3) {
-            user.gameMessage(data.userId, data.page, function (results) {
+            user.gameMessage(data.userId, data.sort, data.page, function (results) {
                 res.json({state: 1, tip: results})
             });
         }

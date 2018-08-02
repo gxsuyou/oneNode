@@ -283,7 +283,7 @@ var user = {
         })
     },
     //获取攻略新消息
-    strategyMessage: function (userId, page, callback) {
+    strategyMessage: function (userId, sort, page, callback) {
         var sql = "select t_strategy_comment.id,t_strategy_comment.target_img,t_strategy_comment.targetid," +
             "t_strategy_comment.target_title,t_strategy_comment.content as s_content,t_strategy_comment.series," +
             "t_strategy_comment.target_comment_id as parentId,FROM_UNIXTIME(t_strategy_comment.add_time,'%Y-%m-%d %H:%i') as add_time," +
@@ -291,38 +291,40 @@ var user = {
             "from  t_strategy_comment \n" +
             "left join t_tip ON t_tip.`tip_id`=t_strategy_comment.`id`\n" +
             "left join t_user ON t_strategy_comment.`user_id`=t_user.id \n" +
-            "where  t_strategy_comment.target_user_id=? group by t_strategy_comment.add_time  desc limit ?,10";
+            "where  t_strategy_comment.target_user_id=? AND tip.type=? " +
+            "group by t_strategy_comment.add_time  desc limit ?,10";
 
-        query(sql, [userId, (page - 1) * 10], function (result) {
+        query(sql, [userId, sort, (page - 1) * 10], function (result) {
             return callback(result)
         })
 
     },
     // 获取资讯新消息
-    newsMessage: function (userId, page, callback) {
+    newsMessage: function (userId, sort, page, callback) {
         var sql = "select t_news_comment.id,t_news_comment.news_img,t_news_comment.newsid,t_news_comment.news_title," +
             "t_news_comment.content,t_news_comment.series,t_news_comment.target_comment_id as parentId," +
             "FROM_UNIXTIME(t_news_comment.add_time,'%Y-%m-%d %H:%i') as add_time,t_tip.type,t_user.nick_name, t_user.portrait " +
             "from t_news_comment \n" +
             "left join t_user on t_news_comment.user_id=t_user.id \n" +
             "left join t_tip on t_news_comment.id=t_tip.tip_id \n" +
-            "where t_news_comment.target_user_id=? group by t_news_comment.add_time  desc limit ?,10";
-        query(sql, [userId, (page - 1) * 10], function (result) {
+            "where t_news_comment.target_user_id=? AND tip.type=? " +
+            "group by t_news_comment.add_time  desc limit ?,10";
+        query(sql, [userId, sort, (page - 1) * 10], function (result) {
             return callback(result)
         })
 
     },
     // 获取游戏新消息
-    gameMessage: function (userId, page, callback) {
+    gameMessage: function (userId, sort, page, callback) {
         var sql = "select t_game_comment.id,t_game_comment.game_name,t_game_comment.game_id," +
             "t_game_comment.content,t_game_comment.series,t_game_comment.parent_id as parentId," +
             "FROM_UNIXTIME(t_game_comment.add_time,'%Y-%m-%d %H:%i') as add_time,t_tip.type,t_user.nick_name,t_user.portrait " +
             "from t_game_comment \n" +
             "left join t_user on t_game_comment.user_id=t_user.id \n" +
             "left join t_tip on t_game_comment.id=t_tip.tip_id \n" +
-            "where t_game_comment.user_id=? group by t_game_comment.add_time  desc limit ?,10";
+            "where t_game_comment.user_id=? AND sort=? group by t_game_comment.add_time  desc limit ?,10";
 
-        query(sql, [userId, (page - 1) * 10], function (result) {
+        query(sql, [userId, sort, (page - 1) * 10], function (result) {
             return callback(result)
         })
 
