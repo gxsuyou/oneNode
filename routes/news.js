@@ -194,7 +194,6 @@ router.get("/getLikeState", function (req, res, next) {
 });
 // 获取资讯评论
 router.get("/getCommentByPage", function (req, res, next) {
-    console.log(req.query)
     if (req.query.commentParentId) {
         news.getNewsCommentByPage(req.query.userId, req.query.commentParentId, req.query.page, 1, function (result) {
             if (result.length) {
