@@ -194,9 +194,9 @@ router.get("/getLikeState", function (req, res, next) {
 });
 // 获取资讯评论
 router.get("/getCommentByPage", function (req, res, next) {
+    console.log(req.query)
     if (req.query.commentParentId) {
-        var type = req.query.type > 0 ? req.query.type : 2
-        news.getNewsCommentByPage(req.query.userId, req.query.commentParentId, req.query.page, type, function (result) {
+        news.getNewsCommentByPage(req.query.userId, req.query.commentParentId, req.query.page, 1, function (result) {
             if (result.length) {
                 var data = result;
                 var len = result.length;
@@ -227,8 +227,7 @@ router.get("/getCommentByPage", function (req, res, next) {
 router.get("/getHotNewsCommentByPage", function (req, res) {
     if (req.query.commentParentId) {
         var page = req.query.page > 0 ? req.query.page : 1;
-        var type = req.query.type > 0 ? req.query.type : 2
-        news.getNewsCommentByPage(req.query.userId, req.query.commentParentId, page, type, function (result) {
+        news.getNewsCommentByPage(req.query.userId, req.query.commentParentId, page, 2, function (result) {
             if (result.length) {
                 var data = result;
                 var len = result.length;
