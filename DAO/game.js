@@ -399,7 +399,7 @@ var game = {
         })
     },
     addUserTip: function (targetId, userId, callback) {
-        var sql = 'insert into t_tip(tip_id,user_id,type) values (?,?,1)';
+        var sql = 'insert into t_tip(tip_id,user_id,type) values (?,?,3)';
         query(sql, [targetId, userId], function () {
 
         })
