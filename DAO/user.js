@@ -291,10 +291,10 @@ var user = {
             "from  t_strategy_comment \n" +
             "left join t_tip ON t_tip.`tip_id`=t_strategy_comment.`id`\n" +
             "left join t_user ON t_strategy_comment.`user_id`=t_user.id \n" +
-            "where  t_strategy_comment.target_user_id=? AND t_tip.type=? " +
+            "where  t_strategy_comment.target_user_id=? " +
             "group by t_strategy_comment.add_time  desc limit ?,10";
 
-        query(sql, [userId, sort, (page - 1) * 10], function (result) {
+        query(sql, [userId, (page - 1) * 10], function (result) {
             return callback(result)
         })
 
@@ -307,9 +307,9 @@ var user = {
             "from t_news_comment \n" +
             "left join t_user on t_news_comment.user_id=t_user.id \n" +
             "left join t_tip on t_news_comment.id=t_tip.tip_id \n" +
-            "where t_news_comment.target_user_id=? AND t_tip.type=? " +
+            "where t_news_comment.target_user_id=? " +
             "group by t_news_comment.add_time  desc limit ?,10";
-        query(sql, [userId, sort, (page - 1) * 10], function (result) {
+        query(sql, [userId, (page - 1) * 10], function (result) {
             return callback(result)
         })
 
@@ -322,10 +322,10 @@ var user = {
             "from t_game_comment \n" +
             "left join t_user on t_game_comment.user_id=t_user.id \n" +
             "left join t_tip on t_game_comment.id=t_tip.tip_id \n" +
-            "where t_game_comment.to_user=? AND t_game_comment.series = 2 AND (t_tip.type=? OR t_tip.type IS NULL) " +
+            "where t_game_comment.to_user=? AND t_game_comment.series = 2 " +
             "group by t_game_comment.add_time  desc limit ?,10 ";
 
-        query(sql, [userId, sort, (page - 1) * 10], function (result) {
+        query(sql, [userId, (page - 1) * 10], function (result) {
             return callback(result)
         })
 
