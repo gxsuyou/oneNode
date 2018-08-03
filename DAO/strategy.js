@@ -188,7 +188,7 @@ var strategy = {
     },
     // 获取二级评论
     getStrategyCommentTowByPage: function (parentId, page, callback) {
-        var sql = "SELECT t_strategy_comment.id,t_strategy_comment.content,FROM_UNIXTIME(t_strategy_comment.add_time,'%Y-%m-%d %H:%i') as add_time," +
+        var sql = "SELECT t_strategy_comment.id,t_strategy_comment.content,t_strategy_comment.img,FROM_UNIXTIME(t_strategy_comment.add_time,'%Y-%m-%d %H:%i') as add_time," +
             "a.nick_name AS selfNickName,a.portrait,b.nick_name AS targetUserNickName,a.id AS selfUserId " +
             "FROM t_strategy_comment\n" +
             "LEFT  JOIN  t_user AS a ON t_strategy_comment.user_id=a.id \n" +
