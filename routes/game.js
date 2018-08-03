@@ -198,6 +198,12 @@ router.get('/getGameLikeTag', function (req, res) {
     data.sys = data.sys > 0 ? data.sys : 2;
     if (data.gameId) {
         game.getGameLikeTag(data.gameId, data.sys, function (result) {
+            for (var i in result) {
+                if (result[i].tagList.indexOf(",") != -1) {
+                    result[i].tagList = result[i].tagList.substr(0, result[i].tagList.indexOf(","))
+                }
+            }
+
             res.json({state: 1, gameList: result})
         })
     } else {
