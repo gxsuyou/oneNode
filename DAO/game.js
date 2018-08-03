@@ -255,6 +255,12 @@ var game = {
             return callback(result)
         })
     },
+    hasGameCommentParent: function (obj, callback) {
+        var sql = "SELECT * FROM t_game_comment WHERE id=?";
+        query(sql, [obj], function (result) {
+            return callback(result)
+        })
+    },
     // 评论游戏接口
     gameComment: function (obj, callback) {
         var parentId = obj.parentId || 0;
@@ -263,8 +269,8 @@ var game = {
         if (obj.series > 1) {
             score = 0;
         }
-        var sql = "INSERT into t_game_comment (user_id,game_id,score,content,add_time,parent_id,series,target_user_id,game_name,game_icon) values (?,?,?,?,?,?,?,?,?,?)";
-        query(sql, [obj.userId, obj.gameId, score, obj.content, obj.addTime, parentId, obj.series, obj.targetUserId, obj.game_name, obj.game_title_img], function (result) {
+        var sql = "INSERT into t_game_comment (user_id,to_user,game_id,score,content,add_time,parent_id,series,target_user_id,game_name,game_icon) values (?,?,?,?,?,?,?,?,?,?,?)";
+        query(sql, [obj.userId, obj.toUser, obj.gameId, score, obj.content, obj.addTime, parentId, obj.series, obj.targetUserId, obj.game_name, obj.game_title_img], function (result) {
             if (parentId > 0) {
                 var set_sql = "update t_game_comment set comment_num=comment_num+1 where id =?";
                 query(set_sql, [parentId], function (set_result) {

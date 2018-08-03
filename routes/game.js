@@ -270,24 +270,32 @@ router.get('/comment', function (req, res, next) {
             game_name: data.game_name,
             game_title_img: data.game_title_img,
         }
-        game.gameComment(objArr, function (result) {
-            if (result.insertId) {
-                data.targetUserId && game.addUserTip(result.insertId, data.targetUserId);
-                data.targetUserId && socketio.senMsg(data.targetUserId);
-                game.getGameCommentScoreById(data.gameId, function (result) {
-                    if (result.length > 0) {
-                        var len = result.length;
-                        var allScore = 0;
-                        for (var i = 0; i < len; i++) {
-                            allScore += result[i].score;
-                        }
-                        var newSorce = (allScore / len).toFixed(1);
-                        game.updateGameScore(data.gameId, newSorce, function (result) {
-                            result.affectedRows ? res.json({state: 1, score: newSorce}) : res.json({state: 0})
-                        })
-                    }
-                })
+        game.hasGameCommentParent(data.parentId, function (p_result) {
+            if (p_result.length) {
+                objArr.toUser = p_result[0].user_id;
+            } else {
+                objArr.toUser = 0;
             }
+            game.gameComment(objArr, function (result) {
+                if (result.insertId) {
+                    data.targetUserId && game.addUserTip(result.insertId, data.targetUserId);
+                    data.targetUserId && socketio.senMsg(data.targetUserId);
+                    game.getGameCommentScoreById(data.gameId, function (result) {
+                        if (result.length > 0) {
+                            var len = result.length;
+                            var allScore = 0;
+                            for (var i = 0; i < len; i++) {
+                                allScore += result[i].score;
+                            }
+                            var newSorce = (allScore / len).toFixed(1);
+                            game.updateGameScore(data.gameId, newSorce, function (result) {
+                                result.affectedRows ? res.json({state: 1, score: newSorce}) : res.json({state: 0})
+                            })
+                        }
+                    })
+                }
+            })
+
         })
     } else {
         res.json({state: 0})

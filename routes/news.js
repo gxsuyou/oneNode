@@ -1,6 +1,7 @@
 var router = require('express').Router();
 var news = require("../DAO/news");
 var socketio = require('./socketio');
+var common = require("../DAO/common");
 var date = new Date();
 
 var path = require('path');
@@ -321,17 +322,6 @@ router.get('/unCollect', function (req, res) {
     }
 });
 // 阅读新通知  改变通知阅读状态
-// router.get('/cancelMessage',function (req,res) {
-//     var data = req.query;
-//     if(data.commentId){
-//         news.readMessage(data.commentId,function (result) {
-//             socketio.cancelMsg(data.commentId);
-//             result.affectedRows ? res.json({state:1}) : res.json({state:0})
-//         })
-//     } else {
-//         res.json({state:0})
-//     }
-// });
 router.get('/cancelMessage', function (req, res) {
     var data = req.query;
     if (data.userId) {
@@ -344,6 +334,16 @@ router.get('/cancelMessage', function (req, res) {
 
     }
 });
+
+router.get("/getTip", function (req, res, next) {
+    if (req.query.userId) {
+        common.hasNewTip(req.query.userId, function (result) {
+            result[0].num > 0 ? res.json({state: 1}) : res.json({state: 0})
+        })
+    } else {
+        res.json({state: 0})
+    }
+})
 
 function test(content) {
     if (content) {

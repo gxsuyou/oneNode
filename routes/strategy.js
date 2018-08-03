@@ -287,7 +287,6 @@ router.get('/getStrategyCommentByPage', function (req, res) {
                 var data = result;
                 var len = result.length;
                 var index = 0;
-
                 function selectTow() {
                     strategy.getStrategyCommentTow(result[index].id, function (result) {
                         data[index].towCommentList = result;
