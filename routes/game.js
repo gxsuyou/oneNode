@@ -278,8 +278,8 @@ router.get('/comment', function (req, res, next) {
             }
             game.gameComment(objArr, function (result) {
                 if (result.insertId) {
-                    data.targetUserId && game.addUserTip(result.insertId, data.targetUserId);
-                    data.targetUserId && socketio.senMsg(data.targetUserId);
+                    if (objArr.toUser > 0) game.addUserTip(result.insertId, objArr.toUser);
+                    if (objArr.toUser > 0) socketio.senMsg(objArr.toUser);
                     game.getGameCommentScoreById(data.gameId, function (result) {
                         if (result.length > 0) {
                             var len = result.length;
