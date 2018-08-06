@@ -218,7 +218,7 @@ var strategy = {
         var sql = "SELECT* FROM t_strategy_comment WHERE id =?";
         query(sql, [commentId], function (result) {
             var agree_num = result[0].agree_num - 1;
-            agree_num = agree_num < 0 ? 0 : agree_num;
+            agree_num = agree_num <= 0 ? 0 : agree_num;
 
             var sql = "update t_strategy_comment set agree_num=? where id =?";
             query(sql, [commentId, agree_num], function (result2) {
