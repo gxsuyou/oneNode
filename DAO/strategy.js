@@ -215,11 +215,19 @@ var strategy = {
     // },
     // 取消点赞接口
     unLikeComment: function (commentId, userId, callback) {
-        var sql = "update t_strategy_comment set agree_num=agree_num-1 where id =?";
+        var sql = "SELECT* FROM t_strategy_comment WHERE id =?";
         query(sql, [commentId], function (result) {
+            var agree_num = result[0].agree_num - 1;
+            agree_num = agree_num < 0 ? 0 : agree_num;
+
+            var sql = "update t_strategy_comment set agree_num=? where id =?";
+            query(sql, [commentId, agree_num], function (result2) {
+
+            });
+
             var sql = 'delete from  t_strategy_like where strategy_id=? and user_id=?';
-            query(sql, [commentId, userId], function (result) {
-                return callback(result)
+            query(sql, [commentId, userId], function (result3) {
+                return callback(result3)
             })
         })
     },
@@ -282,10 +290,23 @@ var strategy = {
     },
     // 我的作品删除
     strategyDelete: function (strategyId, callback) {
-        var sql = "delete from t_strategy where id=?";
-        query(sql, [strategyId], function (result) {
-            return callback(result);
-        });
+        var hasStrategy = "SELECT * FROM t_strategy WHERE id=?"
+        query(hasStrategy, [strategyId], function (strategy) {
+            var tip = "delete from t_tip where tip_id=? AND type=2 AND user_id = ?";
+            query(tip, [strategyId, strategy[0].user_id], function (result1) {
+
+            });
+
+            var sql_com = "delete from t_strategy_comment where targetid=? ";
+            query(sql_com, [strategyId], function (result2) {
+
+            });
+
+            var sql = "delete from t_strategy where id=?";
+            query(sql, [strategyId], function (result3) {
+                return callback(result3);
+            });
+        })
     },
 
     getSensitive: function (obj, callback) {
