@@ -46,17 +46,37 @@ function formatMsgTime(timespan) {
 // 获取游戏详情
 router.get('/getGameById', function (req, res, next) {
     var data = req.query;
-    data.sys = data.sys > 0 ? data.sys : 2;
     if (data.gameId) {
-        game.getDetailById(data.gameId, function (result) {
-            if (result[0].game_detail != null) {
-                var str = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + result[0].game_detail;
-                var mstr = str.replace(/\t/g, "&nbsp;");
-                var nstr = mstr.replace(/\r\n/g, "<br/>" + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-                result[0].game_detail = nstr;
-            }
-            result.length ? res.json({state: 1, gameDetail: result[0]}) : res.json({state: 0})
-        })
+        if (data.sys > 0) {
+            data.sys = data.sys > 0 ? data.sys : 2;
+            game.getGameMsgById(data.gameId, function (gameInfo) {
+                game.getGameMsgByIdSys(gameInfo[0].game_name, data.sys, function (gameInfoSys) {
+                    if (gameInfoSys.length) {
+                        game.getDetailById(data.gameId, function (result) {
+                            if (result[0].game_detail != null) {
+                                var str = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + result[0].game_detail;
+                                var mstr = str.replace(/\t/g, "&nbsp;");
+                                var nstr = mstr.replace(/\r\n/g, "<br/>" + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+                                result[0].game_detail = nstr;
+                            }
+                            result.length ? res.json({state: 1, gameDetail: result[0]}) : res.json({state: 0})
+                        })
+                    } else {
+                        res.json({state: 0})
+                    }
+                })
+            })
+        } else {
+            game.getDetailById(data.gameId, function (result) {
+                if (result[0].game_detail != null) {
+                    var str = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + result[0].game_detail;
+                    var mstr = str.replace(/\t/g, "&nbsp;");
+                    var nstr = mstr.replace(/\r\n/g, "<br/>" + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+                    result[0].game_detail = nstr;
+                }
+                result.length ? res.json({state: 1, gameDetail: result[0]}) : res.json({state: 0})
+            })
+        }
     } else {
         res.json({state: 0})
     }
