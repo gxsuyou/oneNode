@@ -171,6 +171,7 @@ router.get('/addNum', function (req, res) {
                     });
                 });
             }
+
             num();
         } else if (data.numType == "agree_num") {// 添加点赞数
             function anum() {
@@ -182,6 +183,7 @@ router.get('/addNum', function (req, res) {
                     });
                 });
             }
+
             anum();
         } else {
             res.json({state: 0})
@@ -222,13 +224,11 @@ router.get('/strategyComment', function (req, res) {
         if (data.series == 1) {
             function addComment() {
                 strategy.addCommentNum(data.targetCommentId, function (result) {
-                    // var content = test(data.content);
                     if (data.targetUserId == null) {
                         data.targetUserId = data.aid;
                     }
                     strategy.getSensitive(data.content, function (contents) {
                         strategy.strategyComment(contents, data.userId, data.targetCommentId, data.targetUserId, data.series, parseInt(date.getTime() / 1000), data.target_img, data.targetid, data.target_title, function (result) {
-                            //console.log(result);
                             result.insertId && strategy.addUserTip(result.insertId, data.targetUserId);
                             socketio.senMsg(data.targetUserId);
                             result.insertId ? res.json({state: 1, commentId: result.insertId}) : res.json({state: 0})
@@ -241,36 +241,24 @@ router.get('/strategyComment', function (req, res) {
         }
         ;
         if (data.series == 2) {
-            function addFirstComment() {
-                strategy.addFirstCommentNum(data.targetCommentId, function (result) {
-                    function getstrategyid() {
-                        strategy.getStrategyId(data.targetCommentId, function (result) {
-                            // console.log(result[0].tarId);
-                            function addComment() {
-                                strategy.addCommentNum(result[0].tarId, function (result) {
-                                    strategy.getSensitive(data.content, function (contents) {
-                                        strategy.strategyComment(contents, data.userId, data.targetCommentId, data.targetUserId, data.series, parseInt(date.getTime() / 1000), data.target_img, data.targetid, data.target_title, function (result) {
-                                            result.insertId && strategy.addUserTip(result.insertId, data.targetUserId);
-                                            socketio.senMsg(data.targetUserId);
-                                            result.insertId ? res.json({
-                                                state: 1,
-                                                commentId: result.insertId
-                                            }) : res.json({state: 0})
-                                        });
-                                    })
-                                });
-                            }
-
-                            addComment();
-                        });
+            function getstrategyid() {
+                strategy.addCommentNums(data.targetCommentId, function (result) {
+                    function addComment() {
+                        strategy.getSensitive(data.content, function (contents) {
+                            strategy.strategyComment(contents, data.userId, data.targetCommentId, data.targetUserId, data.series, parseInt(date.getTime() / 1000), data.target_img, data.targetid, data.target_title, function (result) {
+                                result.insertId && strategy.addUserTip(result.insertId, data.targetUserId);
+                                socketio.senMsg(data.targetUserId);
+                                result.insertId ? res.json({
+                                    state: 1,
+                                    commentId: result.insertId
+                                }) : res.json({state: 0})
+                            });
+                        })
                     }
-
-                    getstrategyid();
-
-                })
+                    addComment();
+                });
             }
-
-            addFirstComment();
+            getstrategyid();
         }
 
     } else {
@@ -287,6 +275,7 @@ router.get('/getStrategyCommentByPage', function (req, res) {
                 var data = result;
                 var len = result.length;
                 var index = 0;
+
                 function selectTow() {
                     strategy.getStrategyCommentTow(result[index].id, function (result) {
                         data[index].towCommentList = result;
@@ -313,9 +302,6 @@ router.get('/getStrategyCommentTowByPage', function (req, res) {
     if (data.commentId && data.page) {
         strategy.getStrategyCommentTowByPage(data.commentId, data.page, function (result) {
             if (result.length) {
-                result.forEach(function (t) {
-                    // t.add_time = subdate(t.add_time);
-                });
                 res.json({state: 1, comment: result})
             } else {
                 res.json({state: 1, comment: result})

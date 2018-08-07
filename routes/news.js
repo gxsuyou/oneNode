@@ -256,7 +256,7 @@ router.get("/getHotNewsCommentByPage", function (req, res) {
 });
 router.get("/getNewsCommentTowByPage", function (req, res, next) {
     var page = req.query.page > 0 ? req.query.page : 1
-    news.getNewsCommentTowByPage(req.query.parentId, req.query.page, function (result) {
+    news.getNewsCommentTowByPage(req.query.parentId, page, function (result) {
         if (result.length) {
             result.forEach(function (t) {
                 t.add_time = subdate(t.add_time);

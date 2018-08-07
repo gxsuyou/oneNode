@@ -813,7 +813,6 @@ function subdate(str) {
 
 router.get('/newMessage', function (req, res) {
     var data = req.query;
-    // console.log(data.type);
     if (data.userId > 0) {
         if (data.sort == 1) {
             user.newsMessage(data.userId, data.sort, data.page, function (result) {

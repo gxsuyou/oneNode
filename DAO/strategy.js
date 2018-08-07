@@ -132,6 +132,28 @@ var strategy = {
             return callback(result);
         })
     },
+
+    //添加攻略评论数AND根据一级评论id查询出攻略id
+    addCommentNums: function (targetCommentId, callback) {
+        /**一级评论里面的攻略id
+         * */
+        var sql = "select target_comment_id as tarId from t_strategy_comment where id=?";
+        query(sql, [targetCommentId], function (result) {
+            var sql = "update t_strategy_comment set comment_num=comment_num+1 where id=?";
+            query(sql, [targetCommentId], function (up_result) {//添加一级评论数
+
+            });
+
+            var sql = "update t_strategy set comment_num=comment_num+1 where id =?";
+            query(sql, [result[0].tarId], function (up_result2) {//添加攻略评论数
+
+            })
+
+            return callback(result);
+        })
+    },
+
+
     // 添加攻略点赞数
     addAgreeNum: function (commentId, callback) {
         var sql = "update t_strategy_comment set agree_num=agree_num+1 where id =?";
