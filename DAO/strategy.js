@@ -313,21 +313,28 @@ var strategy = {
     // 我的作品删除
     strategyDelete: function (strategyId, callback) {
         var hasStrategy = "SELECT * FROM t_strategy WHERE id=?"
-        query(hasStrategy, [strategyId], function (strategy) {
-            var tip = "delete from t_tip where tip_id=? AND type=2 AND user_id = ?";
-            query(tip, [strategyId, strategy[0].user_id], function (result1) {
+        query(hasStrategy, [strategyId], function (strategy) {//查询当前的攻略
+            if (strategy) {
+                var getComment = "SELECT * FROM t_strategy_comment WHERE targetid=? ";
+                query(getComment, [strategyId], function (comments) {//查询与当前攻略的所有评论
+                    for (var i in comments) {//删除tip表中tip_id与t_strategy_comment表中关联的id数据
+                        var tip = "delete from t_tip where tip_id=? AND type=2";
+                        query(tip, [comments[i].id], function (result1) {
 
-            });
+                        });
+                    }
+                })
 
-            var sql_com = "delete from t_strategy_comment where targetid=? ";
-            query(sql_com, [strategyId], function (result2) {
+                var sql_com = "delete from t_strategy_comment where targetid=? ";
+                query(sql_com, [strategyId], function (result2) {//删除评论数据
 
-            });
+                });
 
-            var sql = "delete from t_strategy where id=?";
-            query(sql, [strategyId], function (result3) {
-                return callback(result3);
-            });
+                var sql = "delete from t_strategy where id=?";
+                query(sql, [strategyId], function (result3) {//删除攻略
+                    return callback(result3);
+                });
+            }
         })
     },
 

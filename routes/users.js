@@ -672,7 +672,6 @@ router.post("/updateHead", function (req, res, next) {
         //         // console.log(jsonBody.dirSurplusDay);
         //     }
         // });
-
     }
 });
 router.get("/getUserMsgById", function (req, res, next) {

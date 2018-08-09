@@ -229,13 +229,6 @@ var user = {
             return callback(result)
         })
     },
-
-    getStrategyUser: function (userId, callback) {
-        var sql = "SELECT nike_name FROM t_admin WHERE id =?";
-        query(sql, [userId], function (result) {
-            return callback(result)
-        })
-    },
     // 获取用户资讯收藏
     getNewsCollect: function (userId, page, callback) {
         var sql = "SELECT a.id,a.title,a.img,FROM_UNIXTIME(a.add_time,'%Y-%m-%d %H:%i') as add_time,a.agree," +
@@ -330,13 +323,6 @@ var user = {
         })
 
     },
-    //获取游戏
-    // getGameByMsg:function(gameId,callback){
-    //     var sql = "select game_title_img as gimg from t_game where id=?";
-    //     query(sql,[gameId],function(result){
-    //         return callback(result);
-    //     });
-    // },
     // 添加意见反馈信息
     addFeedbackMsg: function (userId, content, callback) {
         var sql = 'insert into t_feedback (detail,user_id) values (?,?)';

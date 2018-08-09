@@ -40,7 +40,6 @@ router.post('/addStrategyMsg', function (req, res) {
         function find() {
             strategy.findGameName(data.gameName, function (result) {
                 //if (result[0]) {
-                // data.addTime = date.Format('yyyy-MM-dd hh:mm:ss')
                 data.addTime = parseInt(date.getTime() / 1000)
                 strategy.addStartegy(data, function (result) {
                     result.insertId ? res.json({state: 1, strategyId: result.insertId}) : res.json({state: 0})
@@ -107,7 +106,6 @@ router.get('/getStrategyByMsg', function (req, res) {
     if (data.sort && data.page) {
         if (data.sort == 'essence') {
             strategy.getStrategyByEssence(data.page, function (result) {
-                // console.log(result);
                 for (var i = 0; i < result.length; i++) {
                     if (result[i].user_id == null) {
                         result[i].nick_name = 'haode';
@@ -165,7 +163,6 @@ router.get('/addNum', function (req, res) {
             function num() {
                 strategy.countComment(data.strategyId, function (result) {
                     var num = result[0].num;
-                    // console.log(num);
                     strategy.addNum(num, data.strategyId, data.numType, function (result) {
                         res.json({state: 1})
                     });
@@ -177,7 +174,6 @@ router.get('/addNum', function (req, res) {
             function anum() {
                 strategy.getCountLikeComment(data.strategyId, function (result) {
                     var anum = result[0].lnum + 1;
-                    //console.log(anum);
                     strategy.addNum(anum, data.strategyId, data.numType, function (result) {
                         res.json({state: 3})
                     });
@@ -204,16 +200,16 @@ router.get('/updateStrategyCommentImg', function (req, res) {
     }
 });
 // 获取攻略点赞数
-router.get('/getCountLikeComment', function (req, res) {
-    var data = req.query;
-    if (data.strategyId) {
-        strategy.getCountLikeComment(data.strategyId, function (result) {
-            res.json({state: 1, lnum: result});
-        });
-    } else {
-        res.json({state: 0})
-    }
-});
+// router.get('/getCountLikeComment', function (req, res) {
+//     var data = req.query;
+//     if (data.strategyId) {
+//         strategy.getCountLikeComment(data.strategyId, function (result) {
+//             res.json({state: 1, lnum: result});
+//         });
+//     } else {
+//         res.json({state: 0})
+//     }
+// });
 
 // 添加评论
 router.get('/strategyComment', function (req, res) {
@@ -457,7 +453,6 @@ router.get('/strategyDelete', function (req, res) {
     var strategyId = req.query.strategyId;
     if (strategyId) {
         strategy.strategyDelete(strategyId, function (result) {
-
             if (result.affectedRows > 0) {
                 res.json({state: 1});
             } else {
