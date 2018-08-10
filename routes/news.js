@@ -136,7 +136,7 @@ router.get("/comment",function (req,res,next) {
                    })
                }else {
                    news.addUserTip(result.insertId,data.targetUserId);
-                   console.log('news'+data.targetUserId);
+                   // console.log('news'+data.targetUserId);
                    socketio.senMsg(data.targetUserId);
                    news.addNewsCommentComment(req.query.targetCommentId,function (result) {
                        result.affectedRows ? res.json({state:1}) : res.json({state:0})
