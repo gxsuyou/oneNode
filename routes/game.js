@@ -467,12 +467,15 @@ router.get("/checkGameSys",function(req,res){
    var data=req.query;
    if(req.query.gameName&&req.query.sys){
      game.checkGameSys(req.query.gameName,req.query.sys,function(result){
-       res.json({state:1,id:result[0].id})
+       if(result.length>0){
+         res.json({state:1,id:result[0].id})
+       }else{
+           res.json({state: 0})
+       }
      });
    }else{
       res.json({state: 0})
    }
-
 })
 
 
