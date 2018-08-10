@@ -1,3 +1,14 @@
 node_modules/
 config/
 resource/
+/game
+/goods
+/news
+/active
+/.idea
+/routes/game2 - 副本.js
+/routes/game2.js
+/routes/game1 - 副本.js
+/DAO/game2 - 副本.js
+/DAO/game2.js
+/DAO/game1 - 副本.js
