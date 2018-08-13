@@ -157,7 +157,7 @@ router.get("/getGameCommentById", function (req, res, next) {
 router.get('/getGameHotComment', function (req, res) {
     var data = req.query;
     if (data.gameId) {
-        game.getGameHotComment(data.gameId, function (result) {
+        game.getGameHotComment(data.gameId, data.userId, function (result) {
             res.json({state: 1, comment: result})
         })
     } else {
@@ -365,7 +365,7 @@ router.get("/searchGameByMsg", function (req, res, next) {
     }
 });
 router.get("/likeGameComment", function (req, res, next) {
-    console.log(req.query);
+    // console.log(req.query);
     // game.like(req.query.)
 });
 router.get("/addDownloadNum", function (req, res, next) {
@@ -463,21 +463,20 @@ router.get('/getStrategyByGameName', function (req, res) {
 });
 
 
-router.get("/checkGameSys",function(req,res){
-   var data=req.query;
-   if(req.query.gameName&&req.query.sys){
-     game.checkGameSys(req.query.gameName,req.query.sys,function(result){
-       if(result.length>0){
-         res.json({state:1,id:result[0].id})
-       }else{
-           res.json({state: 0})
-       }
-     });
-   }else{
-      res.json({state: 0})
-   }
+router.get("/checkGameSys", function (req, res) {
+    var data = req.query;
+    if (req.query.gameName && req.query.sys) {
+        game.checkGameSys(req.query.gameName, req.query.sys, function (result) {
+            if (result.length > 0) {
+                res.json({state: 1, id: result[0].id})
+            } else {
+                res.json({state: 0})
+            }
+        });
+    } else {
+        res.json({state: 0})
+    }
 })
-
 
 
 module.exports = router;

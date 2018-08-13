@@ -304,7 +304,7 @@ router.get("/sign", function (req, res, next) {
                                     });
                                     break;
                                 case 1:
-                                    console.log(id);
+                                    // console.log(id);
                                     user.selectUserCoin(id, function (result) {
 
                                         user.updateUserCoin(id, result[0].coin + index.value, function (result) {
@@ -648,7 +648,7 @@ router.get('/updateBirthday', function (req, res) {
     }
 });
 router.post("/updateHead", function (req, res, next) {
-    console.log(req.body);
+    // console.log(req.body);
     if (req.body.id && req.body.head) {
         user.updateHead(req.body.head, req.body.id, function (result) {
             result.affectedRows ? res.json({state: 1}) : res.json({state: 0})
@@ -771,11 +771,11 @@ router.get('/getCollectByUserId', function (req, res) {
                 res.json({state: 1, strategyList: result})
             })
         } else {
-            console.log(3)
+            // console.log(3)
             res.json({state: 0})
         }
     } else {
-        console.log(4)
+        // console.log(4)
         res.json({state: 0})
     }
 });

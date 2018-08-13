@@ -440,7 +440,6 @@ router.get('/login',function (req,res,next) {
     res.render('index');
 });
 router.get('/add/user',function (req,res,next) {
-    console.log(req.query.type);
     admin.addUser(req.query.name,req.query.password,req.query.type,req.query.comment,function (result) {
         result.affectedRows?res.json({state:1}):res.json({state:0});
     })
