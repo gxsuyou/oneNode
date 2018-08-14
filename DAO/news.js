@@ -128,6 +128,8 @@ var news = {
     // 获取资讯评论
     getNewsCommentByPage: function (userId, commentParentId, page, type, callback) {
         var typeSort = type == 1 ? "t_news_comment.add_time desc" : "t_news_comment.agree desc"
+        // console.log(type);
+        // console.log(typeSort);
         var sql = "SELECT t_news_comment.*,FROM_UNIXTIME(t_news_comment.add_time,'%Y-%m-%d %H:%i') as add_time," +
             "t_user.nick_name,t_user.portrait, t_like.state  \n" +
             "FROM t_news_comment  \n" +
