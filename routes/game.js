@@ -147,7 +147,7 @@ router.get("/clsIconActive", function (req, res, next) {
 });
 router.get("/getGameCommentById", function (req, res, next) {
     if (req.query.gameId) {
-        game.getGameCommentById(req.query.gameId, req.query.page, function (result) {
+        game.getGameCommentById(req.query.gameId, req.query.userId, req.query.page, function (result) {
             res.json({state: 1, comment: result})
         })
     } else {
@@ -202,13 +202,8 @@ router.get('/likeComment', function (req, res) {
 router.get('/unLikeComment', function (req, res) {
     var data = req.query;
     if (data.commentId && data.userId) {
-        game.unLikeComment(data.commentId, data.userId, function (result) {
-            if (result.affectedRows) {
-                game.minusCommmentLikeNum(data.commentId, function () {
-
-                })
-            }
-            res.json({state: 1})
+        game.minusCommmentLikeNum(data.commentId, data.userId, function (result) {
+            result.affectedRows ? res.json({state: 1}) : res.json({state: 0})
         })
     } else {
         res.json({state: 0})

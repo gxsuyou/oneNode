@@ -243,7 +243,7 @@ var strategy = {
             agree_num = agree_num <= 0 ? 0 : agree_num;
 
             var sql = "update t_strategy_comment set agree_num=? where id =?";
-            query(sql, [commentId, agree_num], function (result2) {
+            query(sql, [agree_num, commentId], function (result2) {
 
             });
 

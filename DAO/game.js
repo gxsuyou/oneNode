@@ -149,15 +149,15 @@ var game = {
             return callback(result)
         })
     },
-    getGameCommentById: function (game_id, page, callback) {
+    getGameCommentById: function (game_id, userId, page, callback) {
         var sql = "SELECT t_game_comment.`id`,t_game_comment.`content`,FROM_UNIXTIME(t_game_comment.add_time,'%Y-%m-%d') as add_time," +
             "t_game_comment.`comment_num`,t_game_comment.`score`,t_game_comment.`agree`,t_user.id as uid,t_user.`nick_name`,t_user.`portrait`,t_game_comment_like.state " +
             "FROM t_game_comment \n" +
-            "LEFT JOIN t_game_comment_like on t_game_comment.`user_id`=t_game_comment_like.user_id and t_game_comment.id = t_game_comment_like.comment_id\n" +
+            "LEFT JOIN t_game_comment_like on t_game_comment_like.user_id = ? and t_game_comment.id = t_game_comment_like.comment_id\n" +
             "LEFT JOIN t_user ON t_game_comment.`user_id`=t_user.id " +
             "WHERE t_game_comment.`game_id`=? and t_game_comment.series=1 " +
             "ORDER BY t_game_comment.`id` DESC LIMIT ?,10";
-        query(sql, [game_id, (page - 1) * 10], function (result) {
+        query(sql, [userId, game_id, (page - 1) * 10], function (result) {
             return callback(result)
         })
     },
@@ -218,10 +218,21 @@ var game = {
             return callback(result)
         })
     },
-    minusCommmentLikeNum: function (commentId, callback) {
-        var sql = "update t_game_comment set agree=agree-1 where id=?";
+    minusCommmentLikeNum: function (commentId, userId, callback) {
+        var sql = "SELECT* FROM t_game_comment WHERE id =?";
         query(sql, [commentId], function (result) {
-            return callback(result)
+            var agree_num = result[0].agree - 1;
+            agree_num = agree_num <= 0 ? 0 : agree_num;
+
+            var sql = "update t_game_comment set agree=? where id =?";
+            query(sql, [agree_num, commentId], function (result2) {
+
+            });
+
+            var sql = 'delete from t_game_comment_like  where comment_id=? and user_id=?';
+            query(sql, [commentId, userId], function (result3) {
+                return callback(result3)
+            })
         })
     },
     getGameLikeTag: function (gameId, sys, callback) {
