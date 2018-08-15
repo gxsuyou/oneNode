@@ -270,7 +270,7 @@ var user = {
             "LEFT JOIN t_tag_relation ON t_tag_relation.game_id = t_game.id \n" +
             "LEFT JOIN t_tag ON t_tag.`id`=t_tag_relation.`tag_id` " +
             "WHERE t_collect.`user_id`=? AND t_collect.`target_type`=3 AND t_game.sys=? " +
-            "GROUP BY t_game.id  LIMIT ?,10";
+            "GROUP BY t_game.id ";
         query(sql, [userId, sys, (page - 1) * 10], function (result) {
             return callback(result)
         })
