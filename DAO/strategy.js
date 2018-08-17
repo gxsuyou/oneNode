@@ -258,7 +258,7 @@ var strategy = {
         var sql = 'SELECT  t_strategy.id,t_strategy.title,t_strategy.game_name ' +
             'FROM t_strategy ' +
             'WHERE t_strategy.game_name LIKE "%' + msg + '%" OR t_strategy.title LIKE "%' + msg + '%" ' +
-            'GROUP BY game_name LIMIT 0,10';
+            'LIMIT 0,10';
         query(sql, [], function (result) {
             return callback(result)
         })
