@@ -15,6 +15,7 @@ var store = require('./routes/store');
 var news = require('./routes/news');
 var h5 = require('./routes/h5');
 var strategy = require('./routes/strategy');
+var common = require('./routes/common');
 var app = express();
 app.all('*', function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
@@ -49,6 +50,7 @@ app.use('/store', store);
 app.use("/news", news);
 app.use("/h5", h5);
 app.use('/strategy', strategy)
+app.use('/common', common)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -75,4 +77,5 @@ app.use(haltOnTimedout);
 function haltOnTimedout(req, res, next) {
     if (!req.timedout) next()
 }
+
 module.exports = app;
