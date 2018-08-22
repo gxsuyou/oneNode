@@ -415,6 +415,29 @@ var game = {
             }
         })
     },
+    addMyGameIos: function (gameId, userId, sys, callback) {
+        var sql = "SELECT * FROM t_collect WHERE user_id=? AND sys=? AND target_type=3 ORDER BY id ASC "
+        query(sql, [userId, 1], function (all_result) {
+            if (all_result.length >= 10) {
+                var del_sql = "DELETE FROM t_collect WHERE id=?";
+                query(del_sql, [all_result[0].id], function () {
+
+                });
+            }
+            var sel_sql = 'select id from t_collect where target_id=? and user_id=? and target_type=? AND sys=?';
+            query(sel_sql, [gameId, userId, 3, 1], function (result) {
+                if (!result.length) {
+                    var sql = 'insert into t_collect (target_id,user_id,sys,target_type) values (?,?,?,?)';
+                    query(sql, [gameId, userId, sys, 3], function (result) {
+                        return callback(result)
+                    })
+                } else {
+                    return callback(result)
+                }
+            })
+
+        })
+    },
     addUserTip: function (targetId, userId, callback) {
         var sql = 'insert into t_tip(tip_id,user_id,type) values (?,?,3)';
         query(sql, [targetId, userId], function () {

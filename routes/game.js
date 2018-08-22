@@ -425,6 +425,16 @@ router.get('/addMyGame', function (req, res) {
         res.json({state: 0})
     }
 });
+router.get('/addMyGameIos', function (req, res) {
+    var data = req.query;
+    if (data.userId && data.gameId && data.sys) {
+        game.addMyGameIos(data.gameId, data.userId, data.sys, function (result) {
+            res.json({state: 1})
+        })
+    } else {
+        res.json({state: 0})
+    }
+});
 // 获取推荐位(2个)
 router.get('/getActiveLenOfTow', function (req, res) {
     var data = req.query;

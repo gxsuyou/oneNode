@@ -17,6 +17,12 @@ var user = {
             }
         })
     },
+    // uplogin: function (id, time, callback) {
+    //     var sql = "UPDATE t_user SET login_time=? WHERE id=?"
+    //     query(sql, [time, id], function (result) {
+    //         return callback(result)
+    //     })
+    // },
     gameComment: function (userId, gameId, score, content, agree, addTime, parentId, address, callback) {
         var sql = "INSERT INTO t_game_recommend (user_id,game_id,score,content,agree,add_time,parent_id,address) values (?,?,?,?,?,?,?,?)";
         query(sql, [userId, gameId, score, content, agree, addTime, parentId, address], function (result) {
@@ -189,6 +195,12 @@ var user = {
     },
     getUserMsgById: function (id, callback) {
         var sql = "select id,nick_name,portrait,coin,integral,tel,sign,new_sign,channel,sex,pay,only_id,birthday,head_add  from t_user where id=?";
+        query(sql, [id], function (result) {
+            return callback(result)
+        })
+    },
+    getGameCollect: function (id, callback) {
+        var sql = "SELECT * FROM t_collect WHERE user_id=? AND target_type=3";
         query(sql, [id], function (result) {
             return callback(result)
         })

@@ -356,12 +356,17 @@ router.get("/getSign", function (req, res, next) {
 
 //登录
 router.post('/login', function (req, res, next) {
+//    var date = new Date();
+//    var nowTime = date.getTime() / 1000;//当前登陆时间
     var password = req.body.password;
     var md5 = crypto.createHash('md5');
     md5.update(password);
     var sign = md5.digest('hex');
     sign = isReverse(sign);
     user.login(req.body.tel, sign, function (result) {
+//        user.uplogin(result[0].id, nowTime, function () {
+//
+//        })
         res.json({state: result.length == 0 ? 0 : 1, user: result[0]})
     })
 });
@@ -674,10 +679,15 @@ router.post("/updateHead", function (req, res, next) {
         // });
     }
 });
+/**
+ * 我的信息
+ */
 router.get("/getUserMsgById", function (req, res, next) {
     if (req.query.id) {
         user.getUserMsgById(req.query.id, function (result) {
-            result.length ? res.json({state: 1, user: result[0]}) : res.json({state: 0})
+            user.getGameCollect(req.query.id, function (coll) {
+                result.length ? res.json({state: 1, user: result[0], gameColl: coll}) : res.json({state: 0})
+            })
         })
     }
 });
@@ -782,7 +792,7 @@ router.get('/getCollectByUserId', function (req, res) {
 // 获取我的游戏
 router.get('/getGameByUserId', function (req, res) {
     var data = req.query;
-    if (data.userId && data.page && data.type) {
+    if (data.userId && data.type) {
         if (data.type == 3) {
             var data = req.query;
             data.sys = data.sys > 0 ? data.sys : 2;
