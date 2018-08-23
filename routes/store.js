@@ -25,8 +25,6 @@ router.get("/goodTypeDetail",function (req,res,next) {
    }
 });
 
-
-
 router.get("/goodsById",function (req,res,next) {
     if(req.query.id){
         store.getGoodById(req.query.id,function (result) {

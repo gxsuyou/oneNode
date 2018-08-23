@@ -19,7 +19,7 @@ function formatMsgTime(timespan) {
     var milliseconds = 0;
     var timeSpanStr;
 
-    milliseconds = now_new - timespan * 1000;
+    milliseconds = now.getTime() - Number(timespan) * 1000;
     if (milliseconds <= 1000 * 60 * 1) {
         timeSpanStr = '刚刚';
     }
