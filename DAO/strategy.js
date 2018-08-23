@@ -96,6 +96,12 @@ var strategy = {
             return callback(result)
         })
     },
+    getCommentNum: function (strategyId, callback) {
+        var sql = "SELECT id,comment_num FROM t_strategy WHERE id=?"
+        query(sql, [strategyId], function (result) {
+            callback(result);
+        })
+    },
     // 添加攻略（浏览 || 点赞 || 评论）数
     addNum: function (num, strategyId, numType, callback) {
         var sql = 'update t_strategy set ' + numType + '=? where id =?';

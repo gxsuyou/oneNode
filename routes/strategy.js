@@ -154,6 +154,17 @@ router.get('/getStrategyById', function (req, res) {
         res.json({state: 0})
     }
 });
+
+router.get('/getStrategyNum', function (req, res) {
+    var data = req.query;
+    if (data.strategyId) {
+        strategy.getCommentNum(data.strategyId, function (result) {
+            res.json({strategy: result[0]})
+        });
+    } else {
+        res.json({state: 0})
+    }
+})
 // 添加攻略（浏览 || 点赞 || 评论）数
 router.get('/addNum', function (req, res) {
     var data = req.query;
@@ -251,9 +262,11 @@ router.get('/strategyComment', function (req, res) {
                             });
                         })
                     }
+
                     addComment();
                 });
             }
+
             getstrategyid();
         }
 
