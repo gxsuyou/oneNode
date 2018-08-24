@@ -335,6 +335,7 @@ router.get('/cancelMessage', function (req, res) {
 });
 
 router.get("/getTip", function (req, res, next) {
+    var date = new Date()
     var nowTime = date.getTime() / 1000;
     var start = date.setHours(0, 0, 0, 0) / 1000;
     var end = start + 86400 - 1;
