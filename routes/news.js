@@ -338,6 +338,7 @@ router.get("/getTip", function (req, res, next) {
     var nowTime = date.getTime() / 1000;
     var start = date.setHours(0, 0, 0, 0) / 1000;
     var end = start + 86400 - 1;
+    console.log(parseInt(nowTime));
     if (req.query.userId) {
         common.hasNewTip(req.query.userId, function (result) {
             common.getUserLogAdd(req.query.userId, start, end, parseInt(nowTime), function () {
