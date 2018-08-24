@@ -335,16 +335,20 @@ router.get('/cancelMessage', function (req, res) {
 });
 
 router.get("/getTip", function (req, res, next) {
+    var start = date.setHours(0, 0, 0, 0) / 1000;
+    var end = start + 86400 - 1;
+    var nowTime = date.getTime() / 1000;
     if (req.query.userId) {
         common.hasNewTip(req.query.userId, function (result) {
+            common.getUserLogAdd(req.query.userId, start, end, nowTime, nowTime, function () {
+
+            })
             result[0].num > 0 ? res.json({state: 1}) : res.json({state: 0})
         })
     } else {
         res.json({state: 0})
     }
 })
-
-
 
 
 function test(content) {

@@ -24,17 +24,20 @@ var common = {
             return callback(result);
         })
     },
-    hasUserLog: function (obj, callback) {
-        var sql = "SELECT * FROM t_all_activity_log WHERE user_id=? AND start_time BETWEEN" + obj.start + " AND " + obj.end + " AND type=2"
-        query(sql, [obj.uid], function (result) {
-            return callback(result);
+    getUserLogAdd: function (userId, start, end, nowTime, callback) {
+        var sql = "SELECT * FROM t_all_activity_log " +
+            "WHERE user_id=? AND type=2 AND start_time BETWEEN " + start + " AND " + end
+        query(sql, [userId], function (userInfo) {
+            if (userInfo.length) {
+                return callback(userInfo);
+            } else {
+                var addSql = "INSERT INTO t_all_activity_log (`user_id`,`start_time`,`type`,`sys`) VALUES (?,?,2,0)";
+                query(addSql, [userId, nowTime], function (result) {
+                    return callback(result);
+                })
+
+            }
         })
-    },
-    getUserLogAdd: function (obj, callback) {
-        var sql = "INSERT INTO t_all_activity_log (`user_id`,`start_time`,`type`,`sys`) VALUES (?,?,2,0)";
-        query(sql, [obj.uid, obj.addTime], function (result) {
-            return callback(result);
-        })
-    },
+    }
 };
 module.exports = common;
