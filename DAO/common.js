@@ -1,5 +1,18 @@
 var query = require('../config/config');
+var crypto = require('crypto');
 var common = {
+    /**
+     * md5加密
+     * @param pwd
+     * @returns {PromiseLike<ArrayBuffer>}
+     */
+    pwdMd5: function (pwd) {
+        var md5 = crypto.createHash('md5');
+        //var result =
+        var pwd = md5.update(pwd).digest('hex')
+        return pwd;
+        //return callback(result)
+    },
     hasNewTip: function (userId, callback) {
         var sql = 'SELECT COUNT(id) AS num FROM t_tip WHERE user_id=? AND state=0';
         query(sql, [userId], function (result) {

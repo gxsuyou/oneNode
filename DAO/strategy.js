@@ -63,7 +63,7 @@ var strategy = {
     // 获取攻略列表                                          
 
     getStrategyByMsg: function (sort, page, callback) {
-        var sql = 'select t_strategy.*,FROM_UNIXTIME(t_strategy.add_time,\'%Y-%m-%d %H:%i\') as add_time,t_user.nick_name,t_admin.nike_name,t_user.portrait \n' +
+        var sql = 'select t_strategy.*,FROM_UNIXTIME(t_strategy.add_time,"%Y-%m-%d %H:%i") as add_time,t_user.nick_name,t_admin.nike_name,t_user.portrait \n' +
             ' from t_strategy \n' +
             ' LEFT JOIN t_user ON t_user.id=t_strategy.`user_id`  \n' +
             ' left join t_admin on t_admin.id=t_strategy.user_id ' +
@@ -74,9 +74,11 @@ var strategy = {
     },
     // 获取精华攻略
     getStrategyByEssence: function (page, callback) {
-        var sql = "select t_strategy.*,FROM_UNIXTIME(t_strategy.add_time,'%Y-%m-%d %H:%i') as add_time,t_strategy_img.src from t_strategy_img  " +
-            "left join t_strategy on t_strategy_img.strategy_id= t_strategy.id " +
-            "where essence = 1 group by t_strategy.id desc limit ?,10";
+        var sql = "SELECT t_strategy.*,FROM_UNIXTIME(t_strategy.add_time,'%Y-%m-%d %H:%i') as add_time,t_user.nick_name,t_admin.nike_name,t_user.portrait " +
+            " FROM t_strategy  " +
+            " LEFT JOIN t_user ON t_user.id=t_strategy.`user_id`  \n" +
+            " LEFT JOIN t_admin ON t_admin.id=t_strategy.user_id " +
+            " WHERE essence = 1 group by t_strategy.id desc limit ?,10";
         query(sql, [((page - 1) * 10)], function (result) {
             return callback(result)
         })
@@ -191,7 +193,7 @@ var strategy = {
     },
     // 获取攻略详情页评论接口
     getStrategyCommentByPage: function (userId, strategyId, page, sort, callback) {
-        var sql = "SELECT t_strategy_comment.id,t_strategy_comment.content,FROM_UNIXTIME(t_strategy_comment.add_time,'%Y-%m-%d %H:%i') as add_time,t_strategy_comment.img," +
+        var sql = "SELECT t_strategy_comment.id,t_strategy_comment.user_id,t_strategy_comment.content,FROM_UNIXTIME(t_strategy_comment.add_time,'%Y-%m-%d %H:%i') as add_time,t_strategy_comment.img," +
             "t_strategy_comment.agree_num,t_strategy_comment.comment_num,t_user.nick_name,t_user.portrait, " +
             "t_strategy_like.state  \n" +
             "FROM t_strategy_comment \n" +
@@ -204,7 +206,7 @@ var strategy = {
     },
     // 获取攻略详情页评论接口中使用(获取一级评论的二级评论)
     getStrategyCommentTow: function (parentId, callback) {
-        var sql = "SELECT t_strategy_comment.content,FROM_UNIXTIME(t_strategy_comment.add_time,'%Y-%m-%d %H:%i') as add_time," +
+        var sql = "SELECT t_strategy_comment.id,t_strategy_comment.user_id,t_strategy_comment.content,FROM_UNIXTIME(t_strategy_comment.add_time,'%Y-%m-%d %H:%i') as add_time," +
             "a.nick_name AS selfNickName, b.nick_name AS targetUserNickName " +
             "FROM t_strategy_comment\n" +
             "LEFT  JOIN  t_user AS a ON t_strategy_comment.user_id=a.id \n" +
@@ -216,7 +218,7 @@ var strategy = {
     },
     // 获取二级评论
     getStrategyCommentTowByPage: function (parentId, page, callback) {
-        var sql = "SELECT t_strategy_comment.id,t_strategy_comment.content,t_strategy_comment.img,FROM_UNIXTIME(t_strategy_comment.add_time,'%Y-%m-%d %H:%i') as add_time," +
+        var sql = "SELECT t_strategy_comment.id,t_strategy_comment.user_id,t_strategy_comment.content,t_strategy_comment.img,FROM_UNIXTIME(t_strategy_comment.add_time,'%Y-%m-%d %H:%i') as add_time," +
             "a.nick_name AS selfNickName,a.portrait,b.nick_name AS targetUserNickName,a.id AS selfUserId " +
             "FROM t_strategy_comment\n" +
             "LEFT  JOIN  t_user AS a ON t_strategy_comment.user_id=a.id \n" +
@@ -260,12 +262,25 @@ var strategy = {
         })
     },
     // 根据关键词获取攻略游戏名字
-    getStrategyGameNameByMsg: function (msg, callback) {
+    getStrategyGameNameByMsg: function (uid, msg, callback) {
         var sql = 'SELECT  t_strategy.id,t_strategy.title,t_strategy.game_name ' +
             'FROM t_strategy ' +
             'WHERE t_strategy.game_name LIKE "%' + msg + '%" OR t_strategy.title LIKE "%' + msg + '%" ' +
             'LIMIT 0,10';
         query(sql, [], function (result) {
+
+            if (uid > 0) {
+                var del_log = "DELETE t_search_log WHERE user_id=? AND title=? AND types=3"
+                query(del_log, [uid, msg], function () {
+
+                });
+
+                var add_log = "INSERT INTO t_search_log (`user_id`,`title`,`types`) VALUES (?,?,3)";
+                query(add_log, [uid, msg], function () {
+
+                })
+            }
+
             return callback(result)
         })
     },
@@ -304,7 +319,7 @@ var strategy = {
     },
     // 只看楼主
     getStrategyCommentByPageUser: function (userId, targetId, strategyId, page, callback) {
-        var sql = "SELECT t_strategy_comment.id,t_strategy_comment.img,t_strategy_comment.content," +
+        var sql = "SELECT t_strategy_comment.id,t_strategy_comment.user_id,t_strategy_comment.img,t_strategy_comment.content," +
             "t_strategy_comment.content,FROM_UNIXTIME(t_strategy_comment.add_time,'%Y-%m-%d %H:%i') as add_time," +
             "t_strategy_comment.agree_num,t_strategy_comment.comment_num," +
             "t_user.nick_name,t_user.portrait, t_strategy_like.state  " +
@@ -362,6 +377,71 @@ var strategy = {
         } else {
             return callback(content);
         }
+    },
+
+    delMyComment: function (obj, callback) {
+        var getMySql = "SELECT * FROM t_strategy_comment WHERE id=? AND user_id=?"
+        query(getMySql, [obj.id, obj.uid], function (my_result) {
+            if (my_result.length) {
+                var targetid = my_result[0].targetid;
+                if (my_result[0].series == 1) {
+                    var find_series2 = "SELECT * FROM t_strategy_comment WHERE target_comment_id=? AND series=2"
+                    query(find_series2, [obj.id], function (resList) {
+                        if (resList.length) {
+                            for (var i in resList) {
+                                var deltip1 = "DELETE FROM t_tip WHERE tip_id=? AND type=2"
+                                query(deltip1, [resList[i].id], function () {
+
+                                })
+                            }
+                            var delsql1 = "DELETE FROM   t_strategy_comment WHERE target_comment_id=? AND series=2"
+                            query(delsql1, [obj.id], function () {
+
+                            })
+                        }
+                    })
+
+                    var delsql2 = "DELETE FROM   t_strategy_like WHERE strategy_id=? "
+                    query(delsql2, [obj.id], function (result) {
+
+                    })
+
+                    var delsql2 = "DELETE FROM   t_strategy_comment WHERE id=? AND series=1"
+                    query(delsql2, [obj.id], function (result) {
+                        var count = "SELECT count(*) FROM t_strategy_comment WHERE targetid=?"
+                        query(count, [targetid], function (count) {
+                            var set = "UPDATE t_strategy SET comment_num=? WHERE id=?"
+                            query(set, [count[0].count, targetid], function (newData) {
+
+                            })
+                        })
+
+                        return callback(result)
+                    })
+                } else {
+                    var deltip1 = "DELETE FROM   t_tip WHERE tip_id=? AND type=2"
+                    query(deltip1, [obj.id], function () {
+
+                    })
+
+                    var delsql = "DELETE FROM t_strategy_comment WHERE id=? AND series=2"
+                    query(delsql, [obj.id], function (result) {
+                        var count = "SELECT count(*) FROM t_strategy_comment WHERE targetid=?"
+                        query(count, [my_result[0].targetid], function (count) {
+                            var set = "UPDATE t_strategy SET comment_num=? WHERE id=?"
+                            query(set, [count[0].count, my_result[0].targetid], function (newData) {
+
+                            })
+                        })
+
+
+                        return callback(result)
+                    })
+                }
+            } else {
+                return callback(my_result)
+            }
+        })
     }
 
 

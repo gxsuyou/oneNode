@@ -293,7 +293,8 @@ router.get("/getSlideGame", function (req, res) {
 router.get('/searchNewsByGameName', function (req, res) {
     var data = req.query;
     if (data.sys && data.msg && data.page) {
-        news.searchNewsByGameName(data.sys, data.msg, data.page, function (result) {
+        data.uid = data.uid > 0 ? data.uid : 0;
+        news.searchNewsByGameName(data.uid, data.sys, data.msg, data.page, function (result) {
             result.length ? res.json({state: 1, newsList: result}) : res.json({state: 0})
         })
     } else {
@@ -349,6 +350,16 @@ router.get("/getTip", function (req, res, next) {
         })
     } else {
         res.json({state: 0})
+    }
+})
+
+
+router.get("/delMyComment", function (req, res, next) {
+    var data = req.query;
+    if (data.uid && data.id) {
+        news.delMyComment(data, function (result) {
+            result.affectedRows ? res.json({state: 1}) : res.json({state: 0})
+        })
     }
 })
 

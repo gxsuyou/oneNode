@@ -27,9 +27,11 @@ router.get('/addMyH5', function (req, res) {
 router.get('/searchByGameName', function (req, res) {
     var data = req.query;
     if (data.msg && data.page) {
-        h5.searchByGameName(data.msg, data.page, function (result) {
-            res.json({state: 1, gameList: result})
-        })
+        data.uid = data.uid > 0 ? data.uid : 0;
+        h5.searchByGameName(data.uid, data.msg, data.page, function (result) {
+                res.json({state: 1, gameList: result})
+            }
+        )
     } else {
         res.json({state: 0})
     }

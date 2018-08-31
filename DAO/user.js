@@ -2,9 +2,12 @@
  * Created by Administrator on 2016/12/15.
  */
 var query = require('../config/config');
+var common = require('../DAO/common');
 
 var user = {
     login: function (user_tel, password, callback) {
+        // var pwd = common.pwdMd5(password)
+        // console.log(pwd);
         var sql = "select id,nick_name,portrait,coin,integral,achievement_point,time_logon,tel,pay from t_user where tel=? and password=?";
         query(sql, [user_tel, password], function (result) {
             if (result.length > 0) {
@@ -49,11 +52,20 @@ var user = {
     },
     // 注册
     reg: function (tel, password, timeLogon, img, callback) {
+        var date = new Date();
+        var month = date.getMonth() + 1
+        var day = date.getDate()
+        var H = date.getHours()
+        var M = date.getMinutes()
+
         var sqlUser = "select * from t_user where tel =?";
+        var nick_name = "ONE_" + month + day + H + M + "_" + Math.floor(Math.random() * 99999);
         var sql = "INSERT INTO t_user (nick_name,password,portrait,coin,integral,achievement_point,sign,time_unlock,time_logon,tel) values (?,?,?,0,500,0,0,0,?,?)";
         query(sqlUser, [tel], function (result) {
             if (result.length <= 0) {
-                query(sql, [tel, password, img, timeLogon, tel], function (res) {
+                // var pwd = common.pwdMd5(password)
+                query(sql, [nick_name, password, img, timeLogon, tel], function (res) {
+                    console.log(res)
                     return callback(res);
                 })
             } else {
@@ -376,6 +388,42 @@ var user = {
             var sql = "SELECT * FROM t_admin WHERE nike_name=? "
             query(sql, [obj], function (admin_result) {
                 return callback({user: result, admin: admin_result})
+            })
+        })
+    },
+    getMsg: function (obj, callback) {
+        var sql = "SELECT * FROM t_tip WHERE user_id=? AND type<4 AND state=0"
+        query(sql, [obj.uid, obj.type], function (result) {
+            return callback(result)
+        })
+    },
+    getReading: function (obj, callback) {
+        var sql = "UPDATE t_tip SET state=1 WHERE user_id=? AND type=?"
+        query(sql, [obj.uid, obj.type], function (result) {
+            return callback(result)
+        })
+    },
+
+    getNotice: function (obj, callback) {
+        var sql = "SELECT * FROM t_feedback WHERE types=? ORDER BY id DESC LIMIT 1"
+        query(sql, [obj.types], function (last) {
+            var count = "SELECT t_feedback.*,t_tip.user_id as uid " +
+                "FROM t_feedback LEFT JOIN t_tip ON t_tip.tip_id=t_feedback.id AND t_tip.user_id=? " +
+                "WHERE t_feedback.types=?"
+            query(count, [obj.uid, obj.types], function (result) {
+                var newArr = [];
+                for (var i in result) {
+                    if (result[i].uid > 0) continue;
+                    newArr.push(result[i])
+
+                }
+
+                var arr = {
+                    last: last[0],
+                    newMsg: newArr,
+                    newNum: newArr.length
+                }
+                return callback(arr)
             })
         })
     }

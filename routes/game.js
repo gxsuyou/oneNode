@@ -354,7 +354,8 @@ router.get('/getGameByCls', function (req, res) {
 router.get("/searchGameByMsg", function (req, res, next) {
     if (req.query.msg && req.query.sys) {
         var data = req.query;
-        game.searchGameByMsg(data.sys, data.msg, data.sort, data.page, function (result) {
+        data.uid = data.uid > 0 ? data.uid : 0;
+        game.searchGameByMsg(data.uid, data.sys, data.msg, data.sort, data.page, function (result) {
             result.length ? res.json({state: 1, game: result}) : res.json({state: 0})
         })
     }
@@ -471,7 +472,7 @@ router.get('/getStrategyByGameName', function (req, res) {
 router.get("/checkGameSys", function (req, res) {
     var data = req.query;
     if (req.query.gameName && req.query.sys) {
-        game.checkGameSys(req.query.gameName, req.query.sys, function (result) {
+        game.checkGameSys(data.gameName, data.sys, function (result) {
             if (result.length > 0) {
                 res.json({state: 1, id: result[0].id})
             } else {
@@ -480,6 +481,15 @@ router.get("/checkGameSys", function (req, res) {
         });
     } else {
         res.json({state: 0})
+    }
+})
+
+router.get("/delMyComment", function (req, res, next) {
+    var data = req.query;
+    if (data.uid && data.id) {
+        game.delMyComment(data, function (result) {
+            result.affectedRows ? res.json({state: 1}) : res.json({state: 0})
+        })
     }
 })
 

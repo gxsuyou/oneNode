@@ -353,6 +353,7 @@ router.get("/getSign", function (req, res, next) {
         result.length ? res.json({state: 1, user: result[0]}) : res.json({state: 0})
     })
 });
+// var md5 = crypto.createHash('md5');
 
 //登录
 router.post('/login', function (req, res, next) {
@@ -363,6 +364,7 @@ router.post('/login', function (req, res, next) {
     md5.update(password);
     var sign = md5.digest('hex');
     sign = isReverse(sign);
+
     user.login(req.body.tel, sign, function (result) {
 //        user.uplogin(result[0].id, nowTime, function () {
 //
@@ -407,7 +409,7 @@ router.post('/reg', function (req, res, next) {
     md5.update(password);
     var sign = md5.digest('hex');
     sign = isReverse(sign);
-    if (ver && tel && sign) {
+    if (ver && tel && password) {
         if (ver == verify[tel]) {
             var date = new Date();
             var img = "../../Public/image/morentouxiang.png"
@@ -894,6 +896,58 @@ router.get("/getDelCollect", function (req, res, next) {
         res.json({state: 0});
     }
 });
+
+router.get("/getMassage", function (req, res, next) {
+    var data = req.query;
+    if (data.uid) {
+        user.getMsg(data, function (result) {
+            var arr = {};
+            var num1 = 0;
+            var num2 = 0;
+            var num3 = 0;
+            for (var i in result) {
+
+                if (result[i].type == 1) {
+                    num1++
+                } else if (result[i].type == 2) {
+                    num2++
+                } else {
+                    num3++
+                }
+            }
+            arr = {
+                num1: num1,
+                num2: num2,
+                num3: num3,
+            }
+            res.json(arr);
+        })
+    }
+})
+
+router.get("/getReading", function (req, res, next) {
+    var data = req.query;
+    if (data.uid) {
+        data.type = data.type > 0 ? data.type : 1;
+        user.getReading(data, function (result) {
+            result.affectedRows ? res.json({state: 1}) : res.json({state: 0});
+        })
+    }
+})
+
+
+router.get("/notice", function (req, res, next) {
+    var data = req.query;
+    if (data.uid) {
+        function notice() {
+            user.getNotice(data, function (result) {
+                res.json(result);
+            })
+        }
+
+        notice()
+    }
+})
 
 // router.get("/edit");
 module.exports = router;

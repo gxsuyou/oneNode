@@ -171,7 +171,7 @@ var news = {
     },
     // 获取资讯的二级评论
     getNewsCommentTowByPage: function (parentId, page, callback) {
-        var sql = "SELECT t_news_comment.id,t_news_comment.content,FROM_UNIXTIME(t_news_comment.add_time,'%Y-%m-%d %H:%i') as add_time,a.nick_name AS selfNickName,a.portrait,b.nick_name AS targetUserNickName,a.id AS selfUserId " +
+        var sql = "SELECT t_news_comment.id,t_news_comment.user_id,t_news_comment.content,FROM_UNIXTIME(t_news_comment.add_time,'%Y-%m-%d %H:%i') as add_time,a.nick_name AS selfNickName,a.portrait,b.nick_name AS targetUserNickName,a.id AS selfUserId " +
             "FROM t_news_comment\n" +
             "LEFT  JOIN  t_user AS a ON t_news_comment.user_id=a.id \n" +
             "LEFT  JOIN  t_user AS b ON t_news_comment.target_user_id=b.id WHERE t_news_comment.`target_comment_id` =? AND t_news_comment.series=2 limit ?,10";
@@ -195,13 +195,25 @@ var news = {
             return callbcak(result)
         })
     },
-    searchNewsByGameName: function (sys, msg, page, callback) {
+    searchNewsByGameName: function (uid, sys, msg, page, callback) {
         var sql = 'SELECT t_news.id,t_news.`title` ' +
             'FROM t_news\n' +
             'LEFT JOIN t_game ON t_news.`game_id`=t_game.`id`\n' +
             'WHERE (t_game.`game_name` LIKE "%' + msg + '%" AND t_game.sys=?) OR t_news.title LIKE "%' + msg + '%" ' +
             "LIMIT ?,20";
         query(sql, [sys, (page - 1) * 20], function (result) {
+            if (uid > 0) {
+                var del_log = "DELETE t_search_log WHERE user_id=? AND title=? AND types=1"
+                query(del_log, [uid, msg], function () {
+
+                });
+
+                var add_log = "INSERT INTO t_search_log (`user_id`,`title`,`types`) VALUES (?,?,1)";
+                query(add_log, [uid, msg], function () {
+
+                })
+            }
+
             return callback(result)
         })
     },
@@ -248,6 +260,68 @@ var news = {
         } else {
             return callback(content);
         }
+    },
+    delMyComment: function (obj, callback) {
+        var getMySql = "SELECT * FROM t_news_comment WHERE id=? AND user_id=?"
+        query(getMySql, [obj.id, obj.uid], function (my_result) {
+            if (my_result.length) {
+                var newsId = my_result[0].newsid;
+                if (my_result[0].series == 1) {
+                    var find_series2 = "SELECT * FROM t_news_comment WHERE target_comment_id=? AND series=2"
+                    query(find_series2, [obj.id], function (resList) {
+                        if (resList.length) {
+                            for (var i in resList) {
+                                var deltip1 = "DELETE FROM t_tip WHERE tip_id=? AND type=1"
+                                query(deltip1, [resList[i].id], function () {
+
+                                })
+                            }
+
+                            var delsql1 = "DELETE FROM t_news_comment WHERE target_comment_id=? AND series=2"
+                            query(delsql1, [obj.id], function () {
+
+                            })
+                        }
+                    })
+
+
+                    var delsql2 = "DELETE FROM  t_news_comment WHERE id=? AND series=1"
+                    query(delsql2, [obj.id], function (result) {
+
+                        var count = "SELECT count(*) FROM t_news_comment WHERE newsid=?"
+                        query(count, [newsId], function (count) {
+                            var set = "UPDATE t_news SET comment=? WHERE id=?"
+                            query(set, [count[0].count, newsId], function (newData) {
+
+                            })
+                        })
+
+                        return callback(result)
+                    })
+                } else {
+                    var deltip1 = "DELETE FROM  t_tip WHERE tip_id=? AND type=1"
+                    query(deltip1, [obj.id], function () {
+
+                    })
+
+                    var delsql = "DELETE FROM  t_news_comment WHERE id=? AND series=2"
+                    query(delsql, [obj.id], function (result) {
+
+                        var count = "SELECT count(*) FROM t_news_comment WHERE newsid=?"
+                        query(count, [newsId], function (count) {
+                            var set = "UPDATE t_news SET comment=? WHERE id=?"
+                            query(set, [count[0].count, newsId], function (newData) {
+
+                            })
+                        })
+
+                        return callback(result)
+                    })
+                }
+            } else {
+                return callback(my_result)
+            }
+        })
     }
 
 };

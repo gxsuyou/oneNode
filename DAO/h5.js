@@ -25,11 +25,22 @@ var h5 = {
             }
         })
     },
-    searchByGameName: function (msg, page, callback) {
+    searchByGameName: function (uid, msg, page, callback) {
         var sql = "SELECT * FROM t_h5 " +
             "WHERE `name` LIKE '%" + msg + "%' OR `commend` LIKE '%" + msg + "%' " +
             "ORDER BY sort DESC limit 0,10";
         query(sql, [(page - 1) * 10], function (result) {
+            if (uid > 0) {
+                var del_log = "DELETE t_search_log WHERE user_id=? AND title=? AND types=4"
+                query(del_log, [uid, msg], function () {
+
+                });
+
+                var add_log = "INSERT INTO t_search_log (`user_id`,`title`,`types`) VALUES (?,?,4)";
+                query(add_log, [uid, msg], function () {
+
+                })
+            }
             return callback(result)
         })
     }

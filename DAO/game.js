@@ -6,7 +6,7 @@ var game = {
         var sql = 'SELECT t_game.game_download_ios,t_game.game_download_ios2,t_game.game_packagename,t_game.game_download_andriod,' +
             't_game.`game_name`,t_game.game_size,t_game.game_download_num,t_game.game_version,FROM_UNIXTIME(t_game.game_update_date,"%Y-%m-%d") as game_update_date,' +
             't_game.game_detail,t_game.`game_title_img`,t_game.`game_company`,t_game.`icon`,t_game.`grade`,' +
-            'GROUP_CONCAT(t_tag.name) AS tagList ' +
+            'GROUP_CONCAT(t_tag.name) AS tagList,GROUP_CONCAT(t_tag.id) AS tagId ' +
             'FROM t_game \n' +
             'LEFT JOIN t_tag_relation ON t_tag_relation.`game_id`=t_game.`id`\n' +
             'LEFT JOIN t_tag ON t_tag_relation.`tag_id`=t_tag.`id`\n' +
@@ -40,7 +40,7 @@ var game = {
         })
     },
     getCarousel: function (sys, callback) {
-        var sql = "select * from t_activity where type=1 and active=1 AND sys=?";
+        var sql = "select * from t_activity where type=1 and active=1 AND sys=? ORDER BY sort DESC";
         query(sql, [sys], function (result) {
             return callback(result)
         })
@@ -128,10 +128,23 @@ var game = {
         }
     },
     // 根据关键词搜索游戏
-    searchGameByMsg: function (sys, msg, sort, page, callback) {
+    searchGameByMsg: function (uid, sys, msg, sort, page, callback) {
         var sql = 'SELECT id,game_name,icon,grade ' +
-            'FROM t_game WHERE sys=? AND game_name LIKE "%' + msg + '%"  ORDER BY "' + sort + '" DESC LIMIT ?,20';
+            'FROM t_game WHERE sys=? AND game_name LIKE "%' + msg + '%"  ' +
+            'ORDER BY "' + sort + '" DESC LIMIT ?,20';
         query(sql, [sys, (page - 1) * 20], function (result) {
+            if (uid > 0) {
+                var del_log = "DELETE t_search_log WHERE user_id=? AND title=? AND types=2"
+                query(del_log, [uid, msg], function () {
+
+                });
+
+                var add_log = "INSERT INTO t_search_log (`user_id`,`title`,`types`) VALUES (?,?,2)";
+                query(add_log, [uid, msg], function () {
+
+                })
+            }
+
             return callback(result)
         })
     },
@@ -150,7 +163,7 @@ var game = {
         })
     },
     getGameCommentById: function (game_id, userId, page, callback) {
-        var sql = "SELECT t_game_comment.`id`,t_game_comment.`content`,FROM_UNIXTIME(t_game_comment.add_time,'%Y-%m-%d') as add_time," +
+        var sql = "SELECT t_game_comment.`id`,t_game_comment.`user_id`,t_game_comment.`content`,FROM_UNIXTIME(t_game_comment.add_time,'%Y-%m-%d') as add_time," +
             "t_game_comment.`comment_num`,t_game_comment.`score`,t_game_comment.`agree`,t_user.id as uid,t_user.`nick_name`,t_user.`portrait`,t_game_comment_like.state " +
             "FROM t_game_comment \n" +
             "LEFT JOIN t_game_comment_like on t_game_comment_like.user_id = ? and t_game_comment.id = t_game_comment_like.comment_id\n" +
@@ -169,7 +182,7 @@ var game = {
         })
     },
     getGameHotComment: function (gameId, userId, callback) {
-        var sql = "SELECT t_game_comment.`id`,t_game_comment.`content`,FROM_UNIXTIME(t_game_comment.add_time,'%Y-%m-%d') as add_time," +
+        var sql = "SELECT t_game_comment.`id`,t_game_comment.`user_id`,t_game_comment.`user_id`,t_game_comment.`content`,FROM_UNIXTIME(t_game_comment.add_time,'%Y-%m-%d') as add_time," +
             "t_game_comment.`comment_num`,t_game_comment.`score`,t_game_comment.`agree`,t_user.id as uid,t_user.`nick_name`," +
             "t_user.`portrait`,t_game_comment_like.state " +
             "FROM t_game_comment \n" +
@@ -181,7 +194,7 @@ var game = {
         })
     },
     getGameTowComment: function (parentId, page, callback) {
-        var sql = "SELECT t_game_comment.`id`,t_game_comment.`content`,FROM_UNIXTIME(t_game_comment.add_time,'%Y-%m-%d') as add_time," +
+        var sql = "SELECT t_game_comment.`id`,t_game_comment.`user_id`,t_game_comment.`content`,FROM_UNIXTIME(t_game_comment.add_time,'%Y-%m-%d') as add_time," +
             "t_game_comment.`comment_num`,t_game_comment.`score`,t_game_comment.`agree`,a.id as uid," +
             "a.`nick_name` as selfNickName,a.`portrait`,b.nick_name as targetNickName " +
             "FROM t_game_comment \n" +
@@ -457,6 +470,53 @@ var game = {
         var sql = "SELECT * FROM t_game WHERE game_name = ? AND sys=?"
         query(sql, [gameName, sys], function (res) {
             return callback(res);
+        })
+    },
+
+    delMyComment: function (obj, callback) {
+        var getMySql = "SELECT * FROM t_game_comment WHERE id=? AND user_id=?"
+        query(getMySql, [obj.id, obj.uid], function (my_result) {
+            if (my_result.length) {
+                if (my_result[0].series == 1) {
+                    var find_series2 = "SELECT * FROM t_game_comment WHERE parent_id=? AND series=2"
+                    query(find_series2, [obj.id], function (resList) {
+                        if (resList.length) {
+                            for (var i in resList) {
+                                var deltip1 = "DELETE FROM t_tip WHERE tip_id=? AND type=3"
+                                query(deltip1, [resList[i].id], function () {
+
+                                })
+                            }
+                            var delsql1 = "DELETE FROM   t_game_comment WHERE parent_id=? AND series=2"
+                            query(delsql1, [obj.id], function () {
+
+                            })
+                        }
+                    })
+
+                    var delsql2 = "DELETE FROM   t_game_comment_like WHERE comment_id=? "
+                    query(delsql2, [obj.id], function (result) {
+
+                    })
+
+                    var delsql2 = "DELETE FROM   t_game_comment WHERE id=? AND series=1"
+                    query(delsql2, [obj.id], function (result) {
+                        return callback(result)
+                    })
+                } else {
+                    var deltip1 = "DELETE FROM   t_tip WHERE tip_id=? AND type=3"
+                    query(deltip1, [obj.id], function () {
+
+                    })
+
+                    var delsql = "DELETE FROM t_game_comment WHERE id=? AND series=2"
+                    query(delsql, [obj.id], function (result) {
+                        return callback(result)
+                    })
+                }
+            } else {
+                return callback(my_result)
+            }
         })
     }
 };

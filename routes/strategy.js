@@ -107,8 +107,8 @@ router.get('/getStrategyByMsg', function (req, res) {
         if (data.sort == 'essence') {
             strategy.getStrategyByEssence(data.page, function (result) {
                 for (var i = 0; i < result.length; i++) {
-                    if (result[i].user_id == null) {
-                        result[i].nick_name = 'haode';
+                    if (result[i].nick_name == null) {
+                        result[i].nick_name = result[i].nike_name;
                     }
                 }
                 res.json({state: 1, strategy: result})
@@ -373,8 +373,6 @@ router.get('/getStrategyByGameName', function (req, res) {
         if (data.sort == 'essence') {
             strategy.getEssenceStrategyByGameName(data.msg, data.page, function (result) {
                 for (var i = 0; i < result.length; i++) {
-                    var newtime = result[i].add_time.substring(0, 16);
-                    result[i].add_time = newtime;
                     var arr = [];
                     if (result[i].src != null) {
                         arr = result[i].src.split(',');
@@ -403,7 +401,8 @@ router.get('/getStrategyByGameName', function (req, res) {
 router.get('/getStrategyGameNameByMsg', function (req, res) {
     var data = req.query;
     if (data.msg) {
-        strategy.getStrategyGameNameByMsg(data.msg, function (result) {
+        data.uid = data.uid > 0 ? data.uid : 0;
+        strategy.getStrategyGameNameByMsg(data.uid, data.msg, function (result) {
             res.json({state: 1, gameName: result})
         })
     } else {
@@ -477,6 +476,16 @@ router.get('/strategyDelete', function (req, res) {
         res.json({state: 0});
     }
 });
+
+router.get("/delMyComment", function (req, res, next) {
+    var data = req.query;
+    if (data.uid && data.id) {
+        strategy.delMyComment(data, function (result) {
+            result.affectedRows ? res.json({state: 1}) : res.json({state: 0})
+        })
+    }
+})
+
 // 限制不文明词语
 // router.get('/test',function(req,res){
 //     var con = req.query.content;
