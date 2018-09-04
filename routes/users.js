@@ -936,18 +936,127 @@ router.get("/getReading", function (req, res, next) {
 })
 
 
+router.get("/noticeAdd", function (req, res, next) {
+    var data = req.query;
+    var date = new Date();
+    var start = date.setHours(0, 0, 0, 0) / 1000;
+    var end = Number(start) + 86400 - 1;
+    var getTime = date.getTime() / 1000;
+    if (data.uid) {
+        var arr = {
+            uid: data.uid,
+            start: start,
+            end: end,
+            types: data.type
+        };
+        user.getNoticeDay(arr, data.uid, getTime, function (result) {
+
+        });
+
+        res.json({state: 1});
+    }
+});
+
 router.get("/notice", function (req, res, next) {
     var data = req.query;
     if (data.uid) {
-        function notice() {
-            user.getNotice(data, function (result) {
-                res.json(result);
-            })
-        }
+        var date = new Date();
+        var start = date.setHours(0, 0, 0, 0) / 1000;
+        var end = Number(start) + 86400 - 1;
+        var arr = {
+            uid: data.uid,
+            start: start,
+            end: end,
+            type: data.type
+        };
+        user.getNotice(arr, function (result) {
+            var arr = {};
+            var num4 = 0;
+            var num5 = 0;
+            var num6 = 0;
+            var num7 = 0;
+            var all = result;
 
-        notice()
+            var detail4 = "";
+            var add_time4 = "";
+            var detail5 = "";
+            var add_time5 = "";
+            var detail6 = "";
+            var add_time6 = "";
+            var detail7 = "";
+            var add_time7 = "";
+
+            for (var i in all) {
+                if (all[i].b_state == 0 || all[i].b_state == null) {
+                    if (all[i].types == 4) {
+                        detail4 = all[i].detail;
+                        add_time4 = all[i].addTime;
+                        num4++
+                    } else if (all[i].types == 5) {
+                        detail5 = all[i].detail;
+                        add_time5 = all[i].addTime;
+                        num5++
+                    } else if (all[i].types == 6) {
+                        detail6 = all[i].detail;
+                        add_time6 = all[i].addTime;
+                        num6++
+                    } else if (all[i].types == 7) {
+                        detail7 = all[i].detail;
+                        add_time7 = all[i].addTime;
+                        num7++
+                    }
+                } else if (all[i].b_state == 1) {
+                    if (all[i].types == 4) {
+                        detail4 = all[i].detail;
+                        add_time4 = all[i].addTime;
+                    } else if (all[i].types == 5) {
+                        detail5 = all[i].detail;
+                        add_time5 = all[i].addTime;
+                    } else if (all[i].types == 6) {
+                        detail6 = all[i].detail;
+                        add_time6 = all[i].addTime;
+                    } else if (all[i].types == 7) {
+                        detail7 = all[i].detail;
+                        add_time7 = all[i].addTime;
+                    }
+                }
+            }
+
+            arr = [
+                {
+                    num: num4,
+                    name: "ONE福利",
+                    detail: detail4,
+                    add_time: add_time4,
+                    img: "../../Public/image/center_info_fuli.png"
+                },
+                {
+                    num: num5,
+                    name: "公告小助手",
+                    detail: detail5,
+                    add_time: add_time5,
+                    img: "../../Public/image/center_info_sys.png"
+                },
+                {
+                    num: num6,
+                    name: "审核君",
+                    detail: detail6,
+                    add_time: add_time6,
+                    img: "../../Public/image/center_info_shenhe.png"
+                },
+                {
+                    num: num7,
+                    name: "意见反馈",
+                    detail: detail7,
+                    add_time: add_time7,
+                    img: "../../Public/image/center_info_advise.png"
+                },
+            ]
+            res.json(arr);
+        })
     }
-})
+});
+
 
 // router.get("/edit");
 module.exports = router;

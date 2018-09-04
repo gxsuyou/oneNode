@@ -403,6 +403,11 @@ router.get('/getStrategyGameNameByMsg', function (req, res) {
     if (data.msg) {
         data.uid = data.uid > 0 ? data.uid : 0;
         strategy.getStrategyGameNameByMsg(data.uid, data.msg, function (result) {
+            for (var i in result){
+                if(result[i].nike_name){
+                    result[i]
+                }
+            }
             res.json({state: 1, gameName: result})
         })
     } else {

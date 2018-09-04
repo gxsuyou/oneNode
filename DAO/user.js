@@ -404,30 +404,35 @@ var user = {
         })
     },
 
-    getNotice: function (obj, callback) {
-        var sql = "SELECT * FROM t_feedback WHERE types=? ORDER BY id DESC LIMIT 1"
-        query(sql, [obj.types], function (last) {
-            var count = "SELECT t_feedback.*,t_tip.user_id as uid " +
-                "FROM t_feedback LEFT JOIN t_tip ON t_tip.tip_id=t_feedback.id AND t_tip.user_id=? " +
-                "WHERE t_feedback.types=?"
-            query(count, [obj.uid, obj.types], function (result) {
-                var newArr = [];
-                for (var i in result) {
-                    if (result[i].uid > 0) continue;
-                    newArr.push(result[i])
+    getNoticeDay: function (obj, uid, addTime, callback) {
+        var sql = "SELECT * FROM t_feedback WHERE types=? AND add_time BETWEEN " + obj.start + " AND " + obj.end + " ORDER BY id DESC LIMIT 1"
+        query(sql, [obj.types], function (feedbackDay) {
+            var id = feedbackDay[0].id;
+            var find = "SELECT * FROM t_tip WHERE user_id=? AND tip_id=?";
+            query(find, [uid, id], function (tipFind) {
+                if (!tipFind.length) {
+                    var sql_tip = "INSERT INTO t_tip " +
+                        "(`user_id`,`tip_id`,`type`,`state`,`add_time`,`detail`,`m_state`) " +
+                        "VALUES (?,?,?,0,?,?,1)";
+                    query(sql_tip, [uid, id, obj.types, addTime, feedbackDay[0].detail], function (add_tip) {
 
+                    })
                 }
-
-                var arr = {
-                    last: last[0],
-                    newMsg: newArr,
-                    newNum: newArr.length
-                }
-                return callback(arr)
             })
-        })
-    }
 
+            return callback(feedbackDay)
+        })
+    },
+
+    getNotice: function (obj, callback) {
+        var sql = "SELECT a.*,FROM_UNIXTIME(a.add_time,'%m月%d日') as addTime,b.user_id as uid, b.state as b_state " +
+            "FROM t_feedback a " +
+            "LEFT JOIN t_tip b ON b.tip_id=a.id AND b.type=a.types AND b.user_id=? " +
+            "WHERE a.add_time BETWEEN " + obj.start + " AND " + obj.end;
+        query(sql, [obj.uid], function (result) {
+            return callback(result)
+        })
+    },
 
 };
 module.exports = user;

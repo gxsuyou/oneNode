@@ -263,10 +263,13 @@ var strategy = {
     },
     // 根据关键词获取攻略游戏名字
     getStrategyGameNameByMsg: function (uid, msg, callback) {
-        var sql = 'SELECT  t_strategy.id,t_strategy.title,t_strategy.game_name ' +
-            'FROM t_strategy ' +
-            'WHERE t_strategy.game_name LIKE "%' + msg + '%" OR t_strategy.title LIKE "%' + msg + '%" ' +
-            'LIMIT 0,10';
+        var sql = 'select t_strategy.*,FROM_UNIXTIME(t_strategy.add_time,"%Y-%m-%d %H:%i") as add_time,t_user.nick_name,t_admin.nike_name,t_user.portrait ' +
+            ' from t_strategy ' +
+            ' LEFT JOIN t_user ON t_user.id=t_strategy.`user_id` ' +
+            ' LEFT JOIN t_admin ON t_admin.id=t_strategy.user_id ' +
+            ' WHERE t_strategy.game_name LIKE "%' + msg + '%" OR t_strategy.title LIKE "%' + msg + '%" ' +
+            ' GROUP BY t_strategy.id ORDER BY t_strategy.id DESC  limit 0,20';
+
         query(sql, [], function (result) {
 
             if (uid > 0) {

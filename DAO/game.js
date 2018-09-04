@@ -129,9 +129,17 @@ var game = {
     },
     // 根据关键词搜索游戏
     searchGameByMsg: function (uid, sys, msg, sort, page, callback) {
-        var sql = 'SELECT id,game_name,icon,grade ' +
-            'FROM t_game WHERE sys=? AND game_name LIKE "%' + msg + '%"  ' +
-            'ORDER BY "' + sort + '" DESC LIMIT ?,20';
+        var sql = 'SELECT GROUP_CONCAT(t_tag.`id`) AS tagIdList,GROUP_CONCAT(t_tag.`name`) AS tagList,' +
+            't_game.id,t_game.game_name,t_game.icon,t_game.grade,t_game.game_packagename ' +
+            'FROM t_game ' +
+            'LEFT JOIN t_tag_relation ON t_tag_relation.`game_id`=t_game.`id` ' +
+            'LEFT JOIN t_tag ON t_tag_relation.`tag_id`=t_tag.`id` ' +
+            'WHERE t_game.game_name LIKE "%' + msg + '%" AND t_game.sys = ? GROUP BY t_game.id ' +
+            'ORDER BY t_game.id DESC LIMIT ?,20';
+
+        // var sql = 'SELECT * ' +
+        //     'FROM t_game WHERE sys=? AND game_name LIKE "%' + msg + '%"  ' +
+        //     'ORDER BY "' + sort + '" DESC LIMIT ?,20';
         query(sql, [sys, (page - 1) * 20], function (result) {
             if (uid > 0) {
                 var del_log = "DELETE t_search_log WHERE user_id=? AND title=? AND types=2"
