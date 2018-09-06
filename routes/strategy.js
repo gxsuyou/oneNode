@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var strategy = require('../DAO/strategy');
 var socketio = require('./socketio');
+var common = require("../DAO/common");
 
 var path = require('path');
 var fs = require('fs');
@@ -235,7 +236,8 @@ router.get('/strategyComment', function (req, res) {
                         data.targetUserId = data.aid;
                     }
                     strategy.getSensitive(data.content, function (contents) {
-                        strategy.strategyComment(contents, data.userId, data.targetCommentId, data.targetUserId, data.series, parseInt(date.getTime() / 1000), data.target_img, data.targetid, data.target_title, function (result) {
+                        var newContent = common.getChangeFace(contents)
+                        strategy.strategyComment(newContent, data.userId, data.targetCommentId, data.targetUserId, data.series, parseInt(date.getTime() / 1000), data.target_img, data.targetid, data.target_title, function (result) {
                             result.insertId && strategy.addUserTip(result.insertId, data.targetUserId);
                             socketio.senMsg(data.targetUserId);
                             result.insertId ? res.json({state: 1, commentId: result.insertId}) : res.json({state: 0})
@@ -252,8 +254,8 @@ router.get('/strategyComment', function (req, res) {
                 strategy.addCommentNums(data.targetCommentId, function (result) {
                     function addComment() {
                         strategy.getSensitive(data.content, function (contents) {
-
-                            strategy.strategyComment(contents, data.userId, data.targetCommentId, data.targetUserId, data.series, parseInt(date.getTime() / 1000), data.target_img, data.targetid, data.target_title, function (result) {
+                            var newContent = common.getChangeFace(contents)
+                            strategy.strategyComment(newContent, data.userId, data.targetCommentId, data.targetUserId, data.series, parseInt(date.getTime() / 1000), data.target_img, data.targetid, data.target_title, function (result) {
                                 result.insertId && strategy.addUserTip(result.insertId, data.targetUserId);
                                 socketio.senMsg(data.targetUserId);
                                 result.insertId ? res.json({

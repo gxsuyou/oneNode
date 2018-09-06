@@ -2,6 +2,7 @@ var router = require('express').Router();
 var game = require("../DAO/game");
 var bodyParser = require('body-parser');
 var socketio = require('./socketio');
+var common = require("../DAO/common");
 
 
 function formatMsgTime(timespan) {
@@ -284,7 +285,7 @@ router.get('/comment', function (req, res, next) {
             userId: data.userId,
             gameId: data.gameId,
             score: data.score,
-            content: data.content,
+            content: common.getChangeFace(data.content),
             addTime: parseInt(date.getTime() / 1000),
             parentId: data.parentId,
             series: data.series,
@@ -298,6 +299,7 @@ router.get('/comment', function (req, res, next) {
             } else {
                 objArr.toUser = 0;
             }
+
             game.gameComment(objArr, function (result) {
                 if (result.insertId) {
                     if (objArr.toUser > 0) game.addUserTip(result.insertId, objArr.toUser);
