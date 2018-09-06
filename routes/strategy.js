@@ -252,6 +252,7 @@ router.get('/strategyComment', function (req, res) {
                 strategy.addCommentNums(data.targetCommentId, function (result) {
                     function addComment() {
                         strategy.getSensitive(data.content, function (contents) {
+
                             strategy.strategyComment(contents, data.userId, data.targetCommentId, data.targetUserId, data.series, parseInt(date.getTime() / 1000), data.target_img, data.targetid, data.target_title, function (result) {
                                 result.insertId && strategy.addUserTip(result.insertId, data.targetUserId);
                                 socketio.senMsg(data.targetUserId);
@@ -403,8 +404,8 @@ router.get('/getStrategyGameNameByMsg', function (req, res) {
     if (data.msg) {
         data.uid = data.uid > 0 ? data.uid : 0;
         strategy.getStrategyGameNameByMsg(data.uid, data.msg, function (result) {
-            for (var i in result){
-                if(result[i].nike_name){
+            for (var i in result) {
+                if (result[i].nike_name) {
                     result[i]
                 }
             }

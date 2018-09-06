@@ -127,7 +127,8 @@ router.get("/comment", function (req, res, next) {
     if (req.query.targetCommentId) {
         var data = req.query;
         news.getSensitive(data.content, function (content) {
-            news.newsComment(data.targetCommentId, data.userId, data.series, content, parseInt(date.getTime() / 1000), data.targetUserId || 0, data.news_img, data.news_title, data.newsid, function (result) {
+            var newContent = common.getChangeFace(content)
+            news.newsComment(data.targetCommentId, data.userId, data.series, newContent, parseInt(date.getTime() / 1000), data.targetUserId || 0, data.news_img, data.news_title, data.newsid, function (result) {
                 if (result.insertId) {
                     if (data.series == 1) {
                         news.addNewsComment(req.query.targetCommentId, function (result) {
@@ -147,6 +148,7 @@ router.get("/comment", function (req, res, next) {
         })
     }
 });
+
 router.get("/like", function (req, res, next) {
     if (req.query.parentId && req.query.userId && req.query.type) {
         var data = req.query;
@@ -301,6 +303,7 @@ router.get('/searchNewsByGameName', function (req, res) {
         res.json({state: 0})
     }
 });
+
 router.get('/collect', function (req, res) {
     var data = req.query;
     if (data.targetId && data.userId && data.type && data.sys) {

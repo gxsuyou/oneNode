@@ -969,94 +969,137 @@ router.get("/notice", function (req, res, next) {
             end: end,
             type: data.type
         };
-        user.getNotice(arr, function (result) {
-            var arr = {};
-            var num4 = 0;
-            var num5 = 0;
-            var num6 = 0;
-            var num7 = 0;
-            var all = result;
+        var newArr = []
+        noticeType(arr, 4, function (result4) {
+            noticeType(arr, 5, function (result5) {
+                noticeType(arr, 6, function (result6) {
+                    noticeType(arr, 7, function (result7) {
+                        newArr = [
+                            {
+                                num: result4.count > 0 ? result4.count : 0,
+                                img: "../../Public/image/center_info_fuli.png",
+                                type: 4,
+                                name: "ONE福利",
+                                last: result4.result ? result4.result : []
+                            },
+                            {
+                                num: result5.count > 0 ? result5.count : 0,
+                                img: "../../Public/image/center_info_advise.png",
+                                type: 5,
+                                name: "系统公告小助手",
+                                last: result5.result ? result5.result : []
+                            },
+                            {
+                                num: result6.count > 0 ? result6.count : 0,
+                                img: "../../Public/image/center_info_shenhe.png",
+                                type: 6,
+                                name: "审核君",
+                                last: result6.result ? result6.result : []
+                            },
+                            {
+                                num: result7.count > 0 ? result7.count : 0,
+                                img: "../../Public/image/center_info_sys.png",
+                                type: 7,
+                                name: "意见反馈",
+                                last: result7.result ? result7.result : []
+                            },
+                        ];
 
-            var detail4 = "";
-            var add_time4 = "";
-            var detail5 = "";
-            var add_time5 = "";
-            var detail6 = "";
-            var add_time6 = "";
-            var detail7 = "";
-            var add_time7 = "";
-
-            for (var i in all) {
-                if (all[i].b_state == 0 || all[i].b_state == null) {
-                    if (all[i].types == 4) {
-                        detail4 = all[i].detail;
-                        add_time4 = all[i].addTime;
-                        num4++
-                    } else if (all[i].types == 5) {
-                        detail5 = all[i].detail;
-                        add_time5 = all[i].addTime;
-                        num5++
-                    } else if (all[i].types == 6) {
-                        detail6 = all[i].detail;
-                        add_time6 = all[i].addTime;
-                        num6++
-                    } else if (all[i].types == 7) {
-                        detail7 = all[i].detail;
-                        add_time7 = all[i].addTime;
-                        num7++
-                    }
-                } else if (all[i].b_state == 1) {
-                    if (all[i].types == 4) {
-                        detail4 = all[i].detail;
-                        add_time4 = all[i].addTime;
-                    } else if (all[i].types == 5) {
-                        detail5 = all[i].detail;
-                        add_time5 = all[i].addTime;
-                    } else if (all[i].types == 6) {
-                        detail6 = all[i].detail;
-                        add_time6 = all[i].addTime;
-                    } else if (all[i].types == 7) {
-                        detail7 = all[i].detail;
-                        add_time7 = all[i].addTime;
-                    }
-                }
-            }
-
-            arr = [
-                {
-                    num: num4,
-                    name: "ONE福利",
-                    detail: detail4,
-                    add_time: add_time4,
-                    img: "../../Public/image/center_info_fuli.png"
-                },
-                {
-                    num: num5,
-                    name: "公告小助手",
-                    detail: detail5,
-                    add_time: add_time5,
-                    img: "../../Public/image/center_info_sys.png"
-                },
-                {
-                    num: num6,
-                    name: "审核君",
-                    detail: detail6,
-                    add_time: add_time6,
-                    img: "../../Public/image/center_info_shenhe.png"
-                },
-                {
-                    num: num7,
-                    name: "意见反馈",
-                    detail: detail7,
-                    add_time: add_time7,
-                    img: "../../Public/image/center_info_advise.png"
-                },
-            ]
-            res.json(arr);
+                        res.json(newArr);
+                    })
+                })
+            })
         })
     }
 });
 
+router.get("/getFeedBack", function (req, res, next) {
+    var data = req.query;
+    if (data.uid && data.type == 7) {
+        user.getFeedbackLast(data, function (reslut) {
+            res.json(reslut);
+        })
+    }
+});
+
+router.get("/getNoticeInfo", function (req, res, next) {
+    var data = req.query;
+    if (data.uid && data.type) {
+        if (data.type == 7) {
+            user.getFeedback(data, function (result) {
+                for (var i in result) {
+                    result[i].img = "../../Public/image/center_info_sys.png";
+                }
+                res.json(result);
+                return false
+            })
+        } else if (data.type > 3 && data.type < 7) {
+            // user.getNoticeInfoAdd(data, function () {
+            //
+            // })
+
+            user.getNoticeInfo(data, function (result) {
+                for (var i in result) {
+                    if (data.type == 4) {
+                        result[i].img = "../../Public/image/center_info_fuli.png";
+                    } else if (data.type == 5) {
+                        result[i].img = "../../Public/image/center_info_advise.png";
+                    } else if (data.type == 6) {
+                        result[i].img = "../../Public/image/center_info_shenhe.png";
+                    }
+                }
+                res.json(result);
+                return false
+            })
+        }
+    } else {
+        res.json([]);
+    }
+});
+
+
+router.get("/searchLogAdd", function (req, res, next) {
+    var data = req.query
+    var sys = data.sys > 0 ? data.sys : 2;
+    if (data.uid && data.keyword && data.type) {
+        user.searchLogAdd(data, sys, function (result) {
+            result.insertId ? res.json({state: 1}) : res.json({state: 0})
+        })
+    }
+});
+
+router.get("/searchLog", function (req, res, next) {
+    var data = req.query;
+    var sys = data.sys > 0 ? data.sys : 2;
+    if (data.uid && data.type) {
+        user.searchLog(data, sys, function (result) {
+            res.json(result);
+        })
+    }
+});
+router.get("/clearSearchLog", function (req, res, next) {
+    var data = req.query;
+    var sys = data.sys > 0 ? data.sys : 2;
+    if (data.uid && data.type) {
+        user.clearSearchLog(data, sys, function (result) {
+            result.affectedRows ? res.json({state: 1}) : res.json({state: 0})
+        })
+    }
+});
+
+
+function noticeType(obj, type, callback) {
+    // user.getNotice
+    new Promise(function (reslove, reject) {
+        user.getNotice(obj, type, function (result) {
+            reslove(result);
+        })
+    }).then(function (arr) {
+        // console.log(arr);
+        return callback(arr)
+    })
+
+}
 
 // router.get("/edit");
 module.exports = router;

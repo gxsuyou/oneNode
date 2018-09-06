@@ -424,15 +424,110 @@ var user = {
         })
     },
 
-    getNotice: function (obj, callback) {
-        var sql = "SELECT a.*,FROM_UNIXTIME(a.add_time,'%m月%d日') as addTime,b.user_id as uid, b.state as b_state " +
-            "FROM t_feedback a " +
-            "LEFT JOIN t_tip b ON b.tip_id=a.id AND b.type=a.types AND b.user_id=? " +
-            "WHERE a.add_time BETWEEN " + obj.start + " AND " + obj.end;
-        query(sql, [obj.uid], function (result) {
+    // getNotice: function (obj, type, callback) {
+    //     var sql = "SELECT a.*,FROM_UNIXTIME(a.add_time,'%m月%d日') as addTime,b.user_id as uid, b.state as b_state " +
+    //         "FROM t_feedback a " +
+    //         "LEFT JOIN t_tip b ON b.tip_id=a.id AND b.type=a.types AND b.user_id=? " +
+    //         "WHERE a.types=? ORDER BY a.id DESC ";
+    //     query(sql, [obj.uid, type], function (result) {
+    //         return callback(result)
+    //     })
+    // },
+    getNotice: function (obj, type, callback) {
+        var sql = "SELECT count(*) as count FROM t_tip WHERE user_id=? AND type=? AND state=0";
+        query(sql, [obj.uid, type], function (count) {
+            var sql1 = "SELECT *,FROM_UNIXTIME(add_time,'%m月%d日 %H:%i') as addTime " +
+                "FROM t_tip WHERE user_id=? AND type=? ORDER BY id DESC LIMIT 1 ";
+            query(sql1, [obj.uid, type], function (result) {
+                return callback({result: result[0], count: count[0].count})
+            })
+        })
+    },
+
+    getFeedback: function (obj, callback) {
+        var sql = "SELECT *,FROM_UNIXTIME(add_time,'%m月%d日 %H:%i') as addTime FROM t_feedback WHERE user_id=? AND types=7 ORDER BY id DESC";
+        query(sql, [obj.uid], function (resule) {
+            var sql2 = "UPDATE t_tip SET state=1 WHERE user_id=? AND type=7"
+            query(sql2, [obj.uid], function () {
+            })
+            return callback(resule)
+        })
+
+    },
+    getFeedbackLast: function (obj, callback) {
+        var sql = "SELECT *,FROM_UNIXTIME(add_time,'%m月%d日') as addTime FROM t_feedback WHERE user_id=? AND types=7 ORDER BY id DESC LIMIT 1";
+        query(sql, [obj.uid], function (resule) {
+            var sql2 = "UPDATE t_tip SET state=1 WHERE user_id=? AND type=?"
+            query(sql2, [obj.uid, obj.type], function () {
+            })
+
+            return callback(resule)
+        })
+
+    },
+
+    getNoticeInfoAdd: function (obj, callback) {
+        var sql = "SELECT a.*,b.id AS t_id,b.tip_id,b.user_id AS uid,b.state AS b_state " +
+            "FROM t_feedback a LEFT JOIN t_tip b ON a.id=b.tip_id AND b.type=a.types AND b.user_id=? " +
+            "WHERE a.types=? AND a.n_status=1 ORDER BY a.id DESC "
+        query(sql, [obj.uid, obj.type], function (lists) {
+            for (var i in lists) {
+                if (lists[i].t_id > 0) {
+                    if (lists[i].b_state < 1) {
+                        var tipDelSql = "UPDATE t_tip SET state=1 WHERE user_id=? AND type=? AND tip_id=?"
+                        query(tipDelSql, [obj.uid, obj.type, lists[i].id], function () {
+
+                        })
+                    }
+
+                } else {
+                    var add_tip = "INSERT INTO t_tip " +
+                        "(`tip_id`,`user_id`,`type`,`state`,`add_time`,`detail`,`m_state`) " +
+                        "VALUES (?,?,?,?,?,?,?) "
+                    query(add_tip, [lists[i].id, obj.uid, obj.type, 1, lists[i].add_time, lists[i].detail, 0], function () {
+
+                    })
+                }
+
+
+            }
+            return callback(lists)
+        })
+    },
+
+    getNoticeInfo: function (obj, callback) {
+        var sql = "SELECT *,FROM_UNIXTIME(add_time,'%m月%d日') as addTime FROM t_tip WHERE user_id=? AND type=? ORDER BY id DESC "
+        query(sql, [obj.uid, obj.type], function (result) {
             return callback(result)
         })
     },
+
+    searchLogAdd: function (obj, sys, callback) {
+        var del_log = "DELETE FROM t_search_log WHERE user_id=? AND title=? AND types=? AND sys=?";
+        query(del_log, [obj.uid, obj.keyword, obj.type, sys], function () {
+
+        });
+
+        var add_log = "INSERT INTO t_search_log (`user_id`,`title`,`types`,`sys`) VALUES (?,?,?,?)";
+        query(add_log, [obj.uid, obj.keyword, obj.type, sys], function (result) {
+            return callback(result)
+        })
+    },
+    searchLog: function (obj, sys, callback) {
+        var sql = "SELECT * FROM t_search_log WHERE user_id=? AND types=? AND sys=? ORDER BY id DESC"
+        query(sql, [obj.uid, obj.type, sys], function (result) {
+            return callback(result)
+        })
+    },
+    clearSearchLog: function (obj, sys, callback) {
+        var sql = "DELETE FROM t_search_log WHERE user_id=? AND types=? AND sys=?"
+        if (obj.id > 0) {
+            sql = "DELETE FROM t_search_log WHERE user_id=? AND types=? AND sys=? AND id=?"
+        }
+        query(sql, [obj.uid, obj.type, sys, obj.id], function (result) {
+            return callback(result)
+        })
+    }
 
 };
 module.exports = user;
