@@ -445,7 +445,7 @@ var user = {
     },
 
     getFeedback: function (obj, callback) {
-        var sql = "SELECT *,FROM_UNIXTIME(add_time,'%m月%d日 %H:%i') as addTime FROM t_feedback WHERE user_id=? AND types=7 ORDER BY id DESC";
+        var sql = "SELECT *,FROM_UNIXTIME(add_time,'%m月%d日 %H:%i') as addTime FROM t_tip WHERE user_id=? AND type=7 ORDER BY id DESC";
         query(sql, [obj.uid], function (resule) {
             var sql2 = "UPDATE t_tip SET state=1 WHERE user_id=? AND type=7"
             query(sql2, [obj.uid], function () {
