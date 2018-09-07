@@ -110,9 +110,10 @@ var game = {
     getGameByMsg: function (sys, type, sort, page, callback) {
         if (type !== '') {
             var sql = "SELECT t_game.*,GROUP_CONCAT(t_tag.name) AS tagList,GROUP_CONCAT(t_tag.id) AS tagId " +
-                "FROM t_tag_relation \n" +
-                "LEFT JOIN t_game ON t_tag_relation.game_id = t_game.id \n" +
-                " LEFT JOIN t_tag ON t_tag.`id`=t_tag_relation.`tag_id` where sys=? and type=? GROUP BY t_game.id ORDER BY " + sort + " DESC limit ?,20";
+                "FROM t_tag_relation  " +
+                "LEFT JOIN t_game ON t_tag_relation.game_id = t_game.id " +
+                "LEFT JOIN t_tag ON t_tag.`id`=t_tag_relation.`tag_id` " +
+                "WHERE sys=? AND type=? GROUP BY t_game.id ORDER BY " + sort + " DESC limit ?,20";
             query(sql, [sys, type, (page - 1) * 20], function (result) {
                 return callback(result)
             })
@@ -141,18 +142,6 @@ var game = {
         //     'FROM t_game WHERE sys=? AND game_name LIKE "%' + msg + '%"  ' +
         //     'ORDER BY "' + sort + '" DESC LIMIT ?,20';
         query(sql, [sys, (page - 1) * 20], function (result) {
-            if (uid > 0) {
-                var del_log = "DELETE t_search_log WHERE user_id=? AND title=? AND types=2"
-                query(del_log, [uid, msg], function () {
-
-                });
-
-                var add_log = "INSERT INTO t_search_log (`user_id`,`title`,`types`) VALUES (?,?,2)";
-                query(add_log, [uid, msg], function () {
-
-                })
-            }
-
             return callback(result)
         })
     },

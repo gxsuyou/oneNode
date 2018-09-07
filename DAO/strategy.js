@@ -271,19 +271,6 @@ var strategy = {
             ' GROUP BY t_strategy.id ORDER BY t_strategy.id DESC  limit 0,20';
 
         query(sql, [], function (result) {
-
-            if (uid > 0) {
-                var del_log = "DELETE t_search_log WHERE user_id=? AND title=? AND types=3"
-                query(del_log, [uid, msg], function () {
-
-                });
-
-                var add_log = "INSERT INTO t_search_log (`user_id`,`title`,`types`) VALUES (?,?,3)";
-                query(add_log, [uid, msg], function () {
-
-                })
-            }
-
             return callback(result)
         })
     },

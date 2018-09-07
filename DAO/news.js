@@ -202,17 +202,6 @@ var news = {
             'WHERE (t_game.`game_name` LIKE "%' + msg + '%" AND t_game.sys=?) OR t_news.title LIKE "%' + msg + '%" ' +
             "LIMIT ?,20";
         query(sql, [sys, (page - 1) * 20], function (result) {
-            // if (uid > 0) {
-            //     var del_log = "DELETE t_search_log WHERE user_id=? AND title=? AND types=1"
-            //     query(del_log, [uid, msg], function () {
-            //
-            //     });
-            //
-            //     var add_log = "INSERT INTO t_search_log (`user_id`,`title`,`types`) VALUES (?,?,1)";
-            //     query(add_log, [uid, msg], function () {
-            //
-            //     })
-            // }
 
             return callback(result)
         })

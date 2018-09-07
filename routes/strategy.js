@@ -247,9 +247,7 @@ router.get('/strategyComment', function (req, res) {
             }
 
             addComment();
-        }
-        ;
-        if (data.series == 2) {
+        } else if (data.series == 2) {
             function getstrategyid() {
                 strategy.addCommentNums(data.targetCommentId, function (result) {
                     function addComment() {
