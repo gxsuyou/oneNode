@@ -361,7 +361,8 @@ var user = {
         })
     },
     addAutoFeed: function (id, userId, addTime, datail, callback) {
-        var sql = "INSERT INTO (`tip_id`,`user_id`,`type`,`add_time`,`state`,`detail`) VALUES (??7?0?)"
+        var sql = "INSERT INTO t_tip (`tip_id`,`user_id`,`type`,`add_time`,`state`,`detail`) " +
+            "VALUES (?,?,7,?,0,?)"
         query(sql, [id, userId, addTime, datail], function (result) {
             return callback(result);
         })

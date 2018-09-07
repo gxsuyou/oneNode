@@ -850,7 +850,7 @@ router.get('/addFeedbackMsg', function (req, res) {
     if (data.userId && data.content) {
         user.addFeedbackMsg(data.userId, data.content, nowTime, function (result) {
             var autoDetail = "尊敬的用户，谢谢您的宝贵意见！小one程序猿已经快马加鞭地解决中~"
-            user.addAutoFeed(result.insertId, data.userId, nowTime, autoDetail, function () {
+            user.addAutoFeed(result.insertId, data.userId, parseInt(nowTime), autoDetail, function () {
 
             })
 
