@@ -112,7 +112,7 @@ var game = {
     // 获取游戏排行
     getGameByMsg: function (sys, type, sort, page, callback) {
         if (type !== '') {
-            var sql = "SELECT b.*,GROUP_CONCAT(c.name) AS tagList,GROUP_CONCAT(c.id) AS tagI, " +
+            var sql = "SELECT b.*,GROUP_CONCAT(c.name) AS tagList,GROUP_CONCAT(c.id) AS tagI " +
                 "FROM t_tag_relation a  " +
                 "LEFT JOIN t_game b ON a.game_id = b.id " +
                 "LEFT JOIN t_tag c ON c.id=a.tag_id " +
@@ -121,7 +121,7 @@ var game = {
                 return callback(result)
             })
         } else {
-            var sql = "SELECT b.*,GROUP_CONCAT(c.name) AS tagList,GROUP_CONCAT(c.id) AS tagId, " +
+            var sql = "SELECT b.*,GROUP_CONCAT(c.name) AS tagList,GROUP_CONCAT(c.id) AS tagId " +
                 "FROM t_tag_relation a " +
                 "LEFT JOIN t_game b ON a.game_id = b.id " +
                 "LEFT JOIN t_tag c ON c.id=a.tag_id where sys=? " +
