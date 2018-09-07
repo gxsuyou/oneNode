@@ -845,8 +845,15 @@ router.get('/newMessage', function (req, res) {
 });
 router.get('/addFeedbackMsg', function (req, res) {
     var data = req.query;
+    var date = new Date();
+    var nowTime = date.getTime() / 1000;
     if (data.userId && data.content) {
-        user.addFeedbackMsg(data.userId, data.content, function (result) {
+        user.addFeedbackMsg(data.userId, data.content, nowTime, function (result) {
+            var autoDetail = "尊敬的用户，谢谢您的宝贵意见！小one程序猿已经快马加鞭地解决中~"
+            user.addAutoFeed(result.insertId, data.userId, nowTime, autoDetail, function () {
+
+            })
+
             result.insertId ? res.json({state: 1, feedbackId: result.insertId}) : res.json({state: 0})
         })
     } else {
@@ -863,6 +870,7 @@ router.get('/addFeedbackImg', function (req, res) {
         res.json({state: 0})
     }
 });
+
 // 修改密码
 router.post('/upDatePassword', function (req, res, next) {
     var ver = req.body.verify;
@@ -1021,6 +1029,9 @@ router.get("/getFeedBack", function (req, res, next) {
         })
     }
 });
+router.get("/autoFeedBack", function (req, res, next) {
+
+})
 
 router.get("/getNoticeInfo", function (req, res, next) {
     var data = req.query;

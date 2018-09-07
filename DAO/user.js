@@ -348,9 +348,9 @@ var user = {
 
     },
     // 添加意见反馈信息
-    addFeedbackMsg: function (userId, content, callback) {
-        var sql = 'insert into t_feedback (detail,user_id) values (?,?)';
-        query(sql, [content, userId], function (result) {
+    addFeedbackMsg: function (userId, content, addTime, callback) {
+        var sql = 'insert into t_feedback (detail,user_id,add_time,types) values (?,?,?,1)';
+        query(sql, [content, userId, addTime], function (result) {
             return callback(result)
         })
     },
@@ -358,6 +358,12 @@ var user = {
         var sql = 'insert into t_feedback_img (feedback_id,img) values (?,?)';
         query(sql, [feedbackId, img], function (result) {
             return callbcak(result)
+        })
+    },
+    addAutoFeed: function (id, userId, addTime, datail, callback) {
+        var sql = "INSERT INTO (`tip_id`,`user_id`,`type`,`add_time`,`state`,`detail`) VALUES (??7?0?)"
+        query(sql, [id, userId, addTime, datail], function (result) {
+            return callback(result);
         })
     },
     // 找回密码
