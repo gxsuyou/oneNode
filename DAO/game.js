@@ -116,7 +116,7 @@ var game = {
                 "FROM t_tag_relation a  " +
                 "LEFT JOIN t_game b ON a.game_id = b.id " +
                 "LEFT JOIN t_tag c ON c.id=a.tag_id " +
-                "WHERE sys=? AND type=? GROUP BY t_game.id ORDER BY " + sort + " DESC limit ?,20";
+                "WHERE sys=? AND type=? GROUP BY b.id ORDER BY " + sort + " DESC limit ?,20";
             query(sql, [sys, type, (page - 1) * 20], function (result) {
                 return callback(result)
             })
@@ -125,7 +125,7 @@ var game = {
                 "FROM t_tag_relation a " +
                 "LEFT JOIN t_game b ON a.game_id = b.id " +
                 "LEFT JOIN t_tag c ON c.id=a.tag_id where sys=? " +
-                "GROUP BY t_game.id ORDER BY " + sort + " DESC limit ?,20";
+                "GROUP BY b.id ORDER BY " + sort + " DESC limit ?,20";
             query(sql, [sys, (page - 1) * 20], function (result) {
                 return callback(result)
             })

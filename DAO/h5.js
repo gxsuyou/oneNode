@@ -7,7 +7,7 @@ var h5 = {
         })
     },
     getH5ByMsg: function (msg, callback) {
-        var sql = "select * from t_h5 where name like '%" + msg + "%'  ORDER BY sort DESC limit 0,10";
+        var sql = 'select * from t_h5 where name like "%' + msg + '%"  ORDER BY sort DESC limit 0,10';
         query(sql, [], function (result) {
             return callback(result)
         })
