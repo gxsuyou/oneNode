@@ -978,6 +978,16 @@ router.get("/notice", function (req, res, next) {
             type: data.type
         };
         var newArr = []
+        var last = {
+            id: 0,
+            tip_id: 0,
+            user_id: 0,
+            type: 0,
+            state: 0,
+            add_time: 0,
+            detail: "",
+            addTime: ""
+        }
         noticeType(arr, 4, function (result4) {
             noticeType(arr, 5, function (result5) {
                 noticeType(arr, 6, function (result6) {
@@ -988,28 +998,28 @@ router.get("/notice", function (req, res, next) {
                                 img: "../../Public/image/center_info_fuli.png",
                                 type: 4,
                                 name: "ONE福利",
-                                last: result4.result ? result4.result : []
+                                last: result4.result ? result4.result : last
                             },
                             {
                                 num: result5.count > 0 ? result5.count : 0,
                                 img: "../../Public/image/center_info_advise.png",
                                 type: 5,
                                 name: "系统公告小助手",
-                                last: result5.result ? result5.result : []
+                                last: result5.result ? result5.result : last
                             },
                             {
                                 num: result6.count > 0 ? result6.count : 0,
                                 img: "../../Public/image/center_info_shenhe.png",
                                 type: 6,
                                 name: "审核君",
-                                last: result6.result ? result6.result : []
+                                last: result6.result ? result6.result : last
                             },
                             {
                                 num: result7.count > 0 ? result7.count : 0,
                                 img: "../../Public/image/center_info_sys.png",
                                 type: 7,
                                 name: "意见反馈",
-                                last: result7.result ? result7.result : []
+                                last: result7.result ? result7.result : last
                             },
                         ];
 
