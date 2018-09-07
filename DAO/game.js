@@ -87,6 +87,7 @@ var game = {
         //     "WHERE tag_ids LIKE'%," + tagId + ",%' AND sys=? " +
         //     "ORDER BY id DESC LIMIT ?,20"
         var sql = 'SELECT a.id,a.icon,a.game_name,a.grade,a.game_title_img,a.game_packagename,' +
+            'a.game_download_andriod, a.game_download_ios, a.game_download_ios2, ' +
             'GROUP_CONCAT(t_tag.`name`) as tagList,' +
             'GROUP_CONCAT(t_tag.`id`) as tagId ' +
             'FROM t_game AS a ' +
@@ -111,19 +112,21 @@ var game = {
     // 获取游戏排行
     getGameByMsg: function (sys, type, sort, page, callback) {
         if (type !== '') {
-            var sql = "SELECT t_game.*,GROUP_CONCAT(t_tag.name) AS tagList,GROUP_CONCAT(t_tag.id) AS tagId " +
-                "FROM t_tag_relation  " +
-                "LEFT JOIN t_game ON t_tag_relation.game_id = t_game.id " +
-                "LEFT JOIN t_tag ON t_tag.`id`=t_tag_relation.`tag_id` " +
+            var sql = "SELECT t_game.*,GROUP_CONCAT(c.name) AS tagList,GROUP_CONCAT(c.id) AS tagI, " +
+                'b.game_packagename, b.game_download_andriod, b.game_download_ios, b.game_download_ios2 ' +
+                "FROM t_tag_relation a  " +
+                "LEFT JOIN t_game b ON a.game_id = b.id " +
+                "LEFT JOIN t_tag c ON c.id=a.tag_id " +
                 "WHERE sys=? AND type=? GROUP BY t_game.id ORDER BY " + sort + " DESC limit ?,20";
             query(sql, [sys, type, (page - 1) * 20], function (result) {
                 return callback(result)
             })
         } else {
-            var sql = "SELECT t_game.*,GROUP_CONCAT(t_tag.name) AS tagList,GROUP_CONCAT(t_tag.id) AS tagId " +
-                "FROM t_tag_relation " +
-                "LEFT JOIN t_game ON t_tag_relation.game_id = t_game.id " +
-                "LEFT JOIN t_tag ON t_tag.`id`=t_tag_relation.`tag_id` where sys=? " +
+            var sql = "SELECT t_game.*,GROUP_CONCAT(c.name) AS tagList,GROUP_CONCAT(c.id) AS tagId, " +
+                'b.game_packagename, b.game_download_andriod, b.game_download_ios, b.game_download_ios2 ' +
+                "FROM t_tag_relation a " +
+                "LEFT JOIN t_game b ON a.game_id = b.id " +
+                "LEFT JOIN t_tag c ON c.id=a.tag_id where sys=? " +
                 "GROUP BY t_game.id ORDER BY " + sort + " DESC limit ?,20";
             query(sql, [sys, (page - 1) * 20], function (result) {
                 return callback(result)
@@ -401,6 +404,7 @@ var game = {
     // 根据分类获取游戏
     getGameByCls: function (clsId, sys, page, callback) {
         var sql = 'SELECT a.id,a.icon,a.game_name,a.grade,a.game_packagename,' +
+            'a.game_download_andriod, a.game_download_ios, a.game_download_ios2, ' +
             'GROUP_CONCAT(t_tag.`name`) as tagNameList,' +
             'GROUP_CONCAT(t_tag.`id`) as tagIdList ' +
             'FROM (t_game_cls_relation LEFT JOIN t_game AS a ON a.id = t_game_cls_relation.game_id) ' +
