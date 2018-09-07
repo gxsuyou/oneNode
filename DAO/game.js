@@ -66,10 +66,10 @@ var game = {
         var sql = "SELECT GROUP_CONCAT(c.`id`) AS tagIdList,GROUP_CONCAT(c.`name`) AS tagList," +
             "t_activity.type AS activeType, a.id, a.game_name, a.icon, a.grade, a.game_packagename, " +
             "a.game_download_andriod, a.game_download_ios, a.game_download_ios2" +
-            "FROM t_activity \n" +
-            "LEFT JOIN t_game a ON a.id= t_activity.game_id \n" +
-            "LEFT JOIN t_tag_relation b ON b.`game_id`=a.`id`\n" +
-            "LEFT JOIN t_tag c ON b.`tag_id`=c.`id`\n" +
+            "FROM t_activity  " +
+            "LEFT JOIN t_game a ON a.id= t_activity.game_id  " +
+            "LEFT JOIN t_tag_relation b ON b.game_id=a.`id` " +
+            "LEFT JOIN t_tag c ON b.tag_id=c.id  " +
             "WHERE t_activity.type=6 AND t_activity.active=1 AND a.sys = ?  GROUP BY a.id ";
         query(sql, [obj.sys], function (result) {
             return callback(result)
