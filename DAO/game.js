@@ -61,6 +61,7 @@ var game = {
             return callback(result)
         })
     },
+    //10位以上的推荐
     getActiveLenOfTen: function (obj, callback) {
         var sql = "SELECT GROUP_CONCAT(t_tag.`id`) AS tagIdList,GROUP_CONCAT(t_tag.`name`) AS tagList," +
             "t_activity.type AS activeType,t_game.id,t_game.game_name,t_game.icon,t_game.grade,t_game.game_packagename " +
@@ -68,7 +69,7 @@ var game = {
             "LEFT JOIN t_game ON t_game.id= t_activity.game_id \n" +
             "LEFT JOIN t_tag_relation ON t_tag_relation.`game_id`=t_game.`id`\n" +
             "LEFT JOIN t_tag ON t_tag_relation.`tag_id`=t_tag.`id`\n" +
-            "WHERE t_activity.type=6 AND t_activity.active=1 AND t_game.sys = ?  GROUP BY t_game.id LIMIT 10";
+            "WHERE t_activity.type=6 AND t_activity.active=1 AND t_game.sys = ?  GROUP BY t_game.id ";
         query(sql, [obj.sys], function (result) {
             return callback(result)
         })
