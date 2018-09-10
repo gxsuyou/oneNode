@@ -196,7 +196,7 @@ var news = {
         })
     },
     searchNewsByGameName: function (uid, sys, msg, page, callback) {
-        var sql = 'SELECT t_news.* ' +
+        var sql = 'SELECT t_news.*,FROM_UNIXTIME(t_news.add_time,"%Y-%m-%d") as add_time ' +
             'FROM t_news\n' +
             'LEFT JOIN t_game ON t_news.`game_id`=t_game.`id`\n' +
             'WHERE (t_game.`game_name` LIKE "%' + msg + '%" AND t_game.sys=?) OR t_news.title LIKE "%' + msg + '%" ' +
