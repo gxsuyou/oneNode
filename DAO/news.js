@@ -219,14 +219,14 @@ var news = {
         })
     },
     addUserTip: function (targetId, userId, callback) {
-        var sql = 'insert into t_tip(tip_id,user_id,type) values (?,?,1)';
+        var sql = 'INSERT INTO t_tip(tip_id,user_id,type) VALUES (?,?,1)';
         query(sql, [targetId, userId], function () {
 
         })
     },
     // 阅读新通知
     readMessage: function (userId, callback) {
-        var sql = 'update t_tip set state=1 where user_id=?';
+        var sql = 'UPDATE t_tip SET state=1 WHERE user_id=?';
         query(sql, [userId], function (result) {
             return callback(result)
         })
