@@ -224,8 +224,8 @@ router.get('/updateStrategyCommentImg', function (req, res) {
 // });
 
 // 添加评论
-router.get('/strategyComment', function (req, res) {
-    var data = req.query;
+router.post('/strategyComment', function (req, res) {
+    var data = req.body;
     var date = new Date();
     if (data.content && data.targetCommentId && data.targetUserId && data.userId && data.series) {
 
