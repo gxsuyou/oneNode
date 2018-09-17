@@ -448,7 +448,7 @@ var user = {
     getNotice: function (obj, type, callback) {
         var sql = "SELECT count(*) as count FROM t_tip WHERE user_id=? AND type=? AND state=0";
         query(sql, [obj.uid, type], function (count) {
-            var sql1 = "SELECT *,FROM_UNIXTIME(add_time,'%m月%d日 %H:%i') as addTime " +
+            var sql1 = "SELECT *,FROM_UNIXTIME(add_time,'%m月%d日) as addTime " +
                 "FROM t_tip WHERE user_id=? AND type=? ORDER BY id DESC LIMIT 1 ";
             query(sql1, [obj.uid, type], function (result) {
                 return callback({result: result[0], count: count[0].count})
