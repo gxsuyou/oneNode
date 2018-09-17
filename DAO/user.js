@@ -2,7 +2,6 @@
  * Created by Administrator on 2016/12/15.
  */
 var query = require('../config/config');
-var common = require('../DAO/common');
 
 var user = {
     login: function (user_tel, password, callback) {
@@ -18,6 +17,12 @@ var user = {
                     return callback(res)
                 })
             }
+        })
+    },
+    upLoginToken: function (uid, token, callback) {
+        var sql = "UPDATE t_user SET token = ? WHERE id=?"
+        query(sql, [token, uid], function (result) {
+            return callback(result)
         })
     },
     // uplogin: function (id, time, callback) {

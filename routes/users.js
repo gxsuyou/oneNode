@@ -3,9 +3,13 @@ var router = express.Router();
 var user = require("../DAO/user");
 var https = require('https');
 var qs = require('querystring');
-var path = 'F:/node/public/';
+// var path = 'F:/node/public/';
+var path = require("path");
 var crypto = require('crypto');
 var md5 = crypto.createHash("md5");
+var qrImage = require('qr-image');
+var common = require('../DAO/common')
+
 
 //qiniu
 var Base64 = {
@@ -359,17 +363,24 @@ router.get("/getSign", function (req, res, next) {
 router.post('/login', function (req, res, next) {
 //    var date = new Date();
 //    var nowTime = date.getTime() / 1000;//当前登陆时间
-    var password = req.body.password;
+    var data = req.body
+    var password = data.password;
     var md5 = crypto.createHash('md5');
     md5.update(password);
     var sign = md5.digest('hex');
     sign = isReverse(sign);
 
-    user.login(req.body.tel, sign, function (result) {
-//        user.uplogin(result[0].id, nowTime, function () {
-//
-//        })
-        res.json({state: result.length == 0 ? 0 : 1, user: result[0]})
+    user.login(data.tel, sign, function (result) {
+        if (result.length) {
+            var token = common.userToken(result[0].id);
+            user.upLoginToken(result[0].id, token, function (newToken) {
+                result[0].token = token;
+                newToken.affectedRows ? res.json({state: 1, user: result[0]}) : res.json({state: 0, user: result[0]})
+            })
+        } else {
+            res.json({state: result.length == 0 ? 0 : 1, user: result[0]})
+        }
+
     })
 });
 router.get('/game/comment', function (req, res, next) {
@@ -1108,6 +1119,17 @@ router.get("/clearSearchLog", function (req, res, next) {
     }
 });
 
+router.get("/getQrCode", function (req, res, next) {
+    var data = req.query;
+    var temp_qrcode = qrImage.image('https://www.oneyouxi.com.cn');
+    if (data.uid) {
+        temp_qrcode = qrImage.image('https://www.oneyouxi.com.cn?uid=/' + data.uid);
+    }
+    temp_qrcode.pipe(res)
+    res.type('png');
+    // res.json({s: 1})
+})
+
 
 function noticeType(obj, type, callback) {
     // user.getNotice
@@ -1116,11 +1138,10 @@ function noticeType(obj, type, callback) {
             reslove(result);
         })
     }).then(function (arr) {
-        // console.log(arr);
         return callback(arr)
     })
 
-}
+};
 
 // router.get("/edit");
 module.exports = router;

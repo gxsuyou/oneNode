@@ -277,7 +277,7 @@ var news = {
                     var delsql2 = "DELETE FROM  t_news_comment WHERE id=? AND series=1"
                     query(delsql2, [obj.id], function (result) {
 
-                        var count = "SELECT count(*) FROM t_news_comment WHERE newsid=?"
+                        var count = "SELECT count(*) AS count FROM t_news_comment WHERE newsid=?"
                         query(count, [newsId], function (count) {
                             var set = "UPDATE t_news SET comment=? WHERE id=?"
                             query(set, [count[0].count, newsId], function (newData) {
@@ -296,7 +296,7 @@ var news = {
                     var delsql = "DELETE FROM  t_news_comment WHERE id=? AND series=2"
                     query(delsql, [obj.id], function (result) {
 
-                        var count = "SELECT count(*) FROM t_news_comment WHERE newsid=?"
+                        var count = "SELECT count(*) AS count FROM t_news_comment WHERE newsid=?"
                         query(count, [newsId], function (count) {
                             var set = "UPDATE t_news SET comment=? WHERE id=?"
                             query(set, [count[0].count, newsId], function (newData) {

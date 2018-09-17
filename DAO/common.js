@@ -1,4 +1,5 @@
 var query = require('../config/config');
+var jwt = require('jsonwebtoken');
 var crypto = require('crypto');
 var common = {
     /**
@@ -12,6 +13,17 @@ var common = {
         var pwd = md5.update(pwd).digest('hex')
         return pwd;
         //return callback(result)
+    },
+
+    userToken: function (obj) {
+        //假设这是我们的secret
+        var secret = 'SALLEN-JWT';
+        //这是我们数据和生成方式
+        // var token = jwt.sign({name: 'sallen'}, secret);
+        //这是我们数据和生成方式  expiresIn参数 代表token保存时间
+        var older_token = jwt.sign({name: obj}, secret, {expiresIn: '1h'});
+
+        return older_token;
     },
 
     hasNewTip: function (userId, callback) {
