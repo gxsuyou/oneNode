@@ -196,7 +196,7 @@ var strategy = {
     },
 
     //取消攻略点赞
-    unLikeNum: function (strategyId) {
+    unLikeNum: function (strategyId, callback) {
         var s_info = "SELECT * FROM t_strategy WHERE id=?";
         query(s_info, [strategyId], function (sInfo) {
             var newNum = Number(sInfo[0].agree_num) - 1;

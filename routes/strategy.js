@@ -172,7 +172,7 @@ router.get('/addNum', function (req, res) {
     var data = req.query;
     var date = new Date()
     var nowTime = date.getTime() / 1000;
-    if (data.strategyId) {
+    if (data.strategyId && data.user_id) {
         strategy.getStrategyLike(data.strategyId, data.user_id, 1, function (result) {
             strategy.getStrategyAgree(data.strategyId, parseInt(nowTime), function (result) {
                 res.json({state: 1})
@@ -183,7 +183,7 @@ router.get('/addNum', function (req, res) {
 //取消攻略点赞
 router.get("/unLikeNum", function (req, res, next) {
     var data = req.query;
-    if (data.strategyId) {
+    if (data.strategyId && data.user_id) {
         strategy.unLikeNum(data.strategyId, function (result) {
             result.affectedRows ? res.json({state: 1}) : res.json({state: 0})
         })
