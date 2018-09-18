@@ -458,12 +458,14 @@ var game = {
         })
     },
     // 根据游戏名字获取相关攻略
-    getStrategyByGameName: function (gameName, page, callback) {
-        var sql = "SELECT a.*,FROM_UNIXTIME(a.add_time,'%Y-%m-%d %H:%i') as add_time,b.nike_name,c.`nick_name`,c.portrait FROM t_strategy as a \n " +
+    getStrategyByGameName: function (gameName, userId, page, callback) {
+        var sql = "SELECT a.*,FROM_UNIXTIME(a.add_time,'%Y-%m-%d %H:%i') as add_time,b.nike_name,c.`nick_name`,c.portrait,t_strategy_like.strategy_id " +
+            "FROM t_strategy as a \n " +
             " LEFT JOIN t_admin AS b ON b.id = a.`user_id`\n " +
             " LEFT JOIN t_user AS c ON c.id=a.`user_id` " +
+            " LEFT JOIN t_strategy_like ON t_strategy_like.`strategy_id`=t_strategy.`id` AND t_strategy_like.`user_id`=? " +
             " WHERE a.game_name  =? GROUP BY a.id  ORDER BY browse_num  DESC LIMIT ?,6";
-        query(sql, [gameName, (page - 1) * 6], function (result) {
+        query(sql, [userId, gameName, (page - 1) * 6], function (result) {
             return callback(result)
         })
     },

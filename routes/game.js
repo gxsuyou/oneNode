@@ -456,8 +456,9 @@ router.get('/getActiveLenOfTen', function (req, res) {
 // 根据游戏名字获取相关攻略
 router.get('/getStrategyByGameName', function (req, res) {
     var data = req.query;
+    var uid = data.user_id > 0 ? data.user_id : 0;
     if (data.gameName && data.page) {
-        game.getStrategyByGameName(data.gameName, data.page, function (result) {
+        game.getStrategyByGameName(data.gameName, uid, data.page, function (result) {
             for (var i = 0; i < result.length; i++) {
                 if (!result[i].nick_name) {
                     result[i].nick_name = result[i].nike_name;
