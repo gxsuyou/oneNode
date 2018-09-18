@@ -2,6 +2,7 @@
  * Created by Administrator on 2016/12/15.
  */
 var query = require('../config/config');
+var common = require('../DAO/common')
 
 var user = {
     login: function (user_tel, password, callback) {
@@ -55,27 +56,40 @@ var user = {
             return callback(result)
         })
     },
+    getRecUser: function (recUser, callback) {
+        var sql = "SELECT * FROM t_user WHERE nick_name=? OR tel=?"
+        query(sql, [recUser, recUser], function (result) {
+            return callback(result);
+        })
+    },
     // 注册
-    reg: function (tel, password, timeLogon, img, callback) {
+    reg: function (tel, password, timeLogon, img, recUser, callback) {
+        var rid = 0;
         var date = new Date();
         var month = date.getMonth() + 1
         var day = date.getDate()
         var H = date.getHours()
         var M = date.getMinutes()
 
-        var sqlUser = "select * from t_user where tel =?";
-        var nick_name = "ONE_" + month + day + H + M + "_" + Math.floor(Math.random() * 99999);
-        var sql = "INSERT INTO t_user (nick_name,password,portrait,coin,integral,achievement_point,sign,time_unlock,time_logon,tel) values (?,?,?,0,500,0,0,0,?,?)";
-        query(sqlUser, [tel], function (result) {
-            if (result.length <= 0) {
-                // var pwd = common.pwdMd5(password)
-                query(sql, [nick_name, password, img, timeLogon, tel], function (res) {
-                    console.log(res)
-                    return callback(res);
-                })
-            } else {
-                return callback(result)
+        var recSql = "SELECT * FROM t_user WHERE nick_name=? OR tel=?";
+        query(recSql, [recUser, recUser], function (recInfo) {
+
+            if (recInfo.length) {
+                rid = recInfo[0].id;
             }
+
+            var sqlUser = "select * from t_user where tel =?";
+            query(sqlUser, [tel], function (result) {
+                if (result.length <= 0) {
+                    var sql = "INSERT INTO t_user (nick_name,password,portrait,coin,integral,achievement_point,rid,sign,time_unlock,time_logon,tel) values (?,?,?,0,0,0,?,0,0,?,?)";
+                    var nick_name = "ONE_" + month + day + H + M + "_" + Math.floor(Math.random() * 99999);
+                    query(sql, [nick_name, password, img, rid, timeLogon, tel], function (res) {
+                        return callback(res);
+                    })
+                } else {
+                    return callback(result)
+                }
+            })
         })
     },
     updateOnlyidById: function (id, callback) {
@@ -539,7 +553,33 @@ var user = {
         query(sql, [obj.uid, obj.type, sys, obj.id], function (result) {
             return callback(result)
         })
-    }
+    },
+
+    getUserSign: function (obj, callback) {
+        var sql = "INSERT INTO t_user_sign (`uid`,`start_time`,`sign_time`,`sign_coin`,`sign_num`) " +
+            "VALUES (?,?,?,?,?)"
+        query(sql, [obj.uid, obj.start, obj.nowTime, obj.signCoin, obj.signNum], function (result) {
+            if (obj.signNum == 3 || obj.signNum == 7) {
+                var log = {
+                    uid: obj.uid,
+                    coin: obj.signCoin,
+                    types: 1,
+                    b_types: "SIGNIN"
+                }
+                var logMemo = "签到获得" + obj.signCoin + "金币";
+                common.getAddCoinLog(log, obj.nowTime, logMemo, 1, function () {
+
+                })
+            }
+            return callback(result);
+        })
+    },
+    getLastSign: function (obj, callback) {
+        var sql = "SELECT * FROM t_user_sign WHERE uid=? ORDER BY start_time DESC LIMIT 1"
+        query(sql, [obj.uid], function (result) {
+            return callback(result)
+        })
+    },
 
 };
 module.exports = user;

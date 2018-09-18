@@ -353,9 +353,62 @@ router.get("/getLottery", function (req, res, next) {
     }
 });
 router.get("/getSign", function (req, res, next) {
-    user.getSignById(req.query.id, function (result) {
-        result.length ? res.json({state: 1, user: result[0]}) : res.json({state: 0})
-    })
+    var data = req.query;
+    var date = new Date();
+    var nowTime = date.getTime() / 1000;
+    nowTime = parseInt(nowTime)
+    var toDay = date.setHours(0, 0, 0, 0) / 1000;
+    data.start = toDay;
+    data.nowTime = nowTime;
+    data.signCoin = 0;
+    data.signNum = 1;
+
+
+    if (data.uid) {
+        user.getLastSign(data, function (result) {
+            if (result.length) {
+                var lastDay = result[0].start_time
+                if (lastDay == toDay) {//已签到，不能重复签到
+                    res.json({state: 1, info: "已签到，不用重复签到"})
+                    return false;
+                }
+                if (Number(lastDay) + 86400 < toDay) {//断签
+                    console.log(1)
+                    user.getUserSign(data, function (re_sign) {
+                        re_sign.insertId ? res.json({state: 1}) : res.json({state: 0});
+                        return false;
+                    })
+                } else if (Number(lastDay) + 86400 == toDay) {//连续签到
+                    console.log(2)
+                    var num = result[0].sign_num;
+                    var newNum = Number(num) + 1;
+                    if (newNum > 7) newNum = 1;
+                    switch (newNum) {
+                        case 3:
+                            data.signCoin = 10;
+                            break;
+                        case 7:
+                            data.signCoin = 15;
+                            break;
+                        default:
+                            data.signCoin = 0
+                            break;
+                    }
+                    data.signNum = newNum;
+                    user.getUserSign(data, function (re_sign) {
+                        re_sign.insertId ? res.json({state: 1}) : res.json({state: 0});
+                        return false;
+                    })
+                }
+            } else {//首次签到
+                console.log(3)
+                user.getUserSign(data, function (re_sign) {
+                    re_sign.insertId ? res.json({state: 1}) : res.json({state: 0});
+                    return false;
+                })
+            }
+        })
+    }
 });
 // var md5 = crypto.createHash('md5');
 
@@ -415,6 +468,8 @@ router.get('/game/comment', function (req, res, next) {
 router.post('/reg', function (req, res, next) {
     var ver = req.body.verify;
     var tel = req.body.tel;
+    var recUser = req.body.recUser || null;
+
     var password = req.body.password;
     var md5 = crypto.createHash('md5');
     md5.update(password);
@@ -424,7 +479,7 @@ router.post('/reg', function (req, res, next) {
         if (ver == verify[tel]) {
             var date = new Date();
             var img = "../../Public/image/morentouxiang.png"
-            user.reg(tel, sign, parseInt(date.getTime() / 1000), img, function (result) {
+            user.reg(tel, sign, parseInt(date.getTime() / 1000), img, recUser, function (result) {
                 result.insertId ? user.updateOnlyidById(result.insertId, function () {
                 }) : "";
                 res.json({state: result.insertId && 1 || result[0].id && 2 || 0, id: result.insertId || ""})

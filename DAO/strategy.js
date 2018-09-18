@@ -1,6 +1,7 @@
 var query = require('../config/config');
 var path = require('path');
 var fs = require('fs');
+var common = require('../DAO/common')
 var strategy = {
     // 添加攻略信息
 
@@ -161,24 +162,76 @@ var strategy = {
         })
     },
 
-
     // 添加攻略点赞数
+    getStrategyLike: function (strategyId, userId, state, callback) {
+        var sql = 'insert into t_strategy_like (strategy_id,user_id,state,types) values (?,?,?,1)';
+        query(sql, [strategyId, userId, state], function (result) {
+            return callback(result)
+        })
+    },
+    getStrategyAgree: function (strategyId, nowTime, callback) {
+        var s_info = "SELECT * FROM t_strategy WHERE id=?";
+        query(s_info, [strategyId], function (sInfo) {
+            var newNum = Number(sInfo[0].agree_num) + 1;
+            var agree_coin = 0;
+            if (newNum >= 500 && sInfo[0].admin < 1 && sInfo[0].agree_coin < 1) {
+                var log = {
+                    uid: sInfo[0].user_id,
+                    coin: 100,
+                    types: 1,
+                    b_types: "AGREE"
+                }
+                var logMemo = "发布文章被点赞达到500次获得100金币";
+                common.getAddCoinLog(log, nowTime, logMemo, 1, function () {
+
+                });
+
+                agree_coin = 1;
+            }
+            var sql = "update t_strategy set agree_num=?,agree_coin=? where id =?";
+            query(sql, [newNum, agree_coin, strategyId], function (result) {
+                return callback(result)
+            })
+        })
+    },
+
+    // 添加攻略评论点赞数
     addAgreeNum: function (commentId, callback) {
         var sql = "update t_strategy_comment set agree_num=agree_num+1 where id =?";
         query(sql, [commentId], function (result) {
             return callback(result)
         })
     },
+
     // 添加攻略的浏览量
-    addBrowseNum: function (strategyId, callback) {
-        var sql = "update t_strategy set browse_num=browse_num+1 where id =?";
-        query(sql, [strategyId], function (result) {
-            return callback(result)
+    addBrowseNum: function (strategyId, nowTime, callback) {
+        var s_info = "SELECT * FROM t_strategy WHERE id=?";
+        query(s_info, [strategyId], function (sInfo) {
+            var newNum = Number(sInfo[0].browse_num) + 1;
+            var browse_coin = 0;
+            if (newNum >= 20000 && sInfo[0].admin < 1 && sInfo[0].browse_coin < 1) {
+                var log = {
+                    uid: sInfo[0].user_id,
+                    coin: 100,
+                    types: 1,
+                    b_types: "BROWSE"
+                }
+                var logMemo = "发布文章被浏览达到20000次获得100金币";
+                common.getAddCoinLog(log, nowTime, logMemo, 1, function () {
+
+                })
+
+                browse_coin = 1;
+            }
+            var sql = "update t_strategy set browse_num=?,browse_coin=? where id =?";
+            query(sql, [newNum, browse_coin, strategyId], function (result) {
+                return callback(result)
+            })
         })
     },
     //点赞接口
     likeComment: function (commentId, userId, state, callback) {
-        var sql = 'insert into t_strategy_like (strategy_id,user_id,state) values (?,?,?)';
+        var sql = 'insert into t_strategy_like (strategy_id,user_id,state,types) values (?,?,?,2)';
         query(sql, [commentId, userId, state], function (result) {
             return callback(result)
         })

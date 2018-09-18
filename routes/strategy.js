@@ -141,9 +141,10 @@ router.get('/getStrategyByEssence', function (req, res) {
 // 获取攻略详情
 router.get('/getStrategyById', function (req, res) {
     var data = req.query;
+    var date = new Date();
     if (data.strategyId && data.userId) {
         function add() {
-            strategy.addBrowseNum(data.strategyId, function (result) {
+            strategy.addBrowseNum(data.strategyId, date.getTime() / 1000, function (result) {
                 strategy.getStrategyById(data.userId, data.strategyId, function (result) {
                     res.json({state: 1, strategy: result[0]})
                 });
@@ -166,37 +167,17 @@ router.get('/getStrategyNum', function (req, res) {
         res.json({state: 0})
     }
 })
-// 添加攻略（浏览 || 点赞 || 评论）数
+// 添加攻略点赞数
 router.get('/addNum', function (req, res) {
     var data = req.query;
-    if (data.num && data.strategyId && data.numType) {
-        // 添加评论数
-        if (data.numType == "comment_num") {
-            function num() {
-                strategy.countComment(data.strategyId, function (result) {
-                    var num = result[0].num;
-                    strategy.addNum(num, data.strategyId, data.numType, function (result) {
-                        res.json({state: 1})
-                    });
-                });
-            }
-
-            num();
-        } else if (data.numType == "agree_num") {// 添加点赞数
-            function anum() {
-                strategy.getCountLikeComment(data.strategyId, function (result) {
-                    var anum = result[0].lnum + 1;
-                    strategy.addNum(anum, data.strategyId, data.numType, function (result) {
-                        res.json({state: 3})
-                    });
-                });
-            }
-
-            anum();
-        } else {
-            res.json({state: 0})
-        }
-
+    var date = new Date()
+    var nowTime = date.getTime() / 1000;
+    if (data.strategyId) {
+        strategy.getStrategyLike(data.strategyId, data.user_id, 1, function (result) {
+            strategy.getStrategyAgree(data.strategyId, parseInt(nowTime), function (result) {
+                res.json({state: 1})
+            });
+        });
     }
 
 });
