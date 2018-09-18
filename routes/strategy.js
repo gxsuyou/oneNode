@@ -104,9 +104,10 @@ router.get('/getSearchGame', function (req, res) {
 // 获取攻略列表
 router.get('/getStrategyByMsg', function (req, res) {
     var data = req.query;
+    var uid = data.user_id > 0 ? data.user_id : 0;
     if (data.sort && data.page) {
         if (data.sort == 'essence') {
-            strategy.getStrategyByEssence(data.page, function (result) {
+            strategy.getStrategyByEssence(uid, data.page, function (result) {
                 for (var i = 0; i < result.length; i++) {
                     if (result[i].nick_name == null) {
                         result[i].nick_name = result[i].nike_name;
@@ -115,7 +116,7 @@ router.get('/getStrategyByMsg', function (req, res) {
                 res.json({state: 1, strategy: result})
             })
         } else {
-            strategy.getStrategyByMsg(data.sort, data.page, function (result) {
+            strategy.getStrategyByMsg(data.sort, uid, data.page, function (result) {
                 for (var i = 0; i < result.length; i++) {
                     if (result[i].nick_name == null) {
                         result[i].nick_name = result[i].nike_name;

@@ -62,25 +62,27 @@ var strategy = {
         })
     },
     // 获取攻略列表                                          
-
-    getStrategyByMsg: function (sort, page, callback) {
-        var sql = 'select t_strategy.*,FROM_UNIXTIME(t_strategy.add_time,"%Y-%m-%d %H:%i") as add_time,t_user.nick_name,t_admin.nike_name,t_user.portrait \n' +
+    getStrategyByMsg: function (sort, userId, page, callback) {
+        var sql = 'select t_strategy.*,FROM_UNIXTIME(t_strategy.add_time,"%Y-%m-%d %H:%i") as add_time,t_user.nick_name,t_admin.nike_name,t_user.portrait,t_strategy_like.strategy_id \n' +
             ' from t_strategy \n' +
             ' LEFT JOIN t_user ON t_user.id=t_strategy.`user_id`  \n' +
             ' left join t_admin on t_admin.id=t_strategy.user_id ' +
+            " LEFT JOIN t_strategy_like ON t_strategy_like.`strategy_id`=t_strategy.`id` AND t_strategy_like.`user_id`=? " +
             ' group by t_strategy.id order by ' + sort + ' desc  limit ?,10';
-        query(sql, [(page - 1) * 10], function (result) {
+        query(sql, [userId, (page - 1) * 10], function (result) {
             return callback(result)
         })
     },
+
     // 获取精华攻略
-    getStrategyByEssence: function (page, callback) {
-        var sql = "SELECT t_strategy.*,FROM_UNIXTIME(t_strategy.add_time,'%Y-%m-%d %H:%i') as add_time,t_user.nick_name,t_admin.nike_name,t_user.portrait " +
+    getStrategyByEssence: function (userId, page, callback) {
+        var sql = "SELECT t_strategy.*,FROM_UNIXTIME(t_strategy.add_time,'%Y-%m-%d %H:%i') as add_time,t_user.nick_name,t_admin.nike_name,t_user.portrait,t_strategy_like.strategy_id " +
             " FROM t_strategy  " +
             " LEFT JOIN t_user ON t_user.id=t_strategy.`user_id`  \n" +
             " LEFT JOIN t_admin ON t_admin.id=t_strategy.user_id " +
+            " LEFT JOIN t_strategy_like ON t_strategy_like.`strategy_id`=t_strategy.`id` AND t_strategy_like.`user_id`=? " +
             " WHERE essence = 1 group by t_strategy.id desc limit ?,10";
-        query(sql, [((page - 1) * 10)], function (result) {
+        query(sql, [userId, ((page - 1) * 10)], function (result) {
             return callback(result)
         })
     },
