@@ -195,6 +195,21 @@ var strategy = {
         })
     },
 
+    //取消攻略点赞
+    unLikeNum: function (strategyId) {
+        var s_info = "SELECT * FROM t_strategy WHERE id=?";
+        query(s_info, [strategyId], function (sInfo) {
+            var newNum = Number(sInfo[0].agree_num) - 1;
+            if (newNum <= 0) {
+                newNum = 0;
+            }
+            var sql = "update t_strategy set agree_num=? where id =?";
+            query(sql, [newNum, strategyId], function (result) {
+                return callback(result)
+            })
+        })
+    },
+
     // 添加攻略评论点赞数
     addAgreeNum: function (commentId, callback) {
         var sql = "update t_strategy_comment set agree_num=agree_num+1 where id =?";

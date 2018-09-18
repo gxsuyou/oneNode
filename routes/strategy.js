@@ -179,8 +179,17 @@ router.get('/addNum', function (req, res) {
             });
         });
     }
-
 });
+//取消攻略点赞
+router.get("/unLikeNum", function (req, res, next) {
+    var data = req.query;
+    if (data.strategyId) {
+        strategy.unLikeNum(data.strategyId, function (result) {
+            result.affectedRows ? res.json({state: 1}) : res.json({state: 0})
+        })
+    }
+})
+
 // 更换攻略评论图片
 router.get('/updateStrategyCommentImg', function (req, res) {
     var data = req.query;
