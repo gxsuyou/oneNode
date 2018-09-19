@@ -205,7 +205,7 @@ var strategy = {
             if (newNum <= 0) {
                 newNum = 0;
             }
-            var del = "DELETE FROM t_strategy_like WHERE type=1 AND user_id=? AND strategy_id=?";
+            var del = "DELETE FROM t_strategy_like WHERE types=1 AND user_id=? AND strategy_id=?";
             query(del, [userId, strategyId], function (delInfo) {
 
             })
