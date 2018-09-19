@@ -295,13 +295,14 @@ var user = {
     // 获取用户攻略收藏
     getStrategyCollect: function (userId, page, callback) {
         var sql = 'select t_strategy.*,FROM_UNIXTIME(t_strategy.add_time,"%Y-%m-%d %H:%i") as add_time,' +
-            't_user.`nick_name`,t_user.portrait,t_admin.nike_name,t_collect.id as coll_id ' +
+            't_user.`nick_name`,t_user.portrait,t_admin.nike_name,t_collect.id as coll_id,t_strategy_like.`strategy_id` ' +
             'from t_collect  ' +
             'left join t_strategy on t_strategy.id=t_collect.target_id ' +
             'LEFT JOIN t_user ON t_user.id=t_strategy.`user_id` ' +
             'LEFT JOIN t_admin ON t_admin.id=t_strategy.`user_id` ' +
+            "LEFT JOIN t_strategy_like ON t_strategy_like.`strategy_id`=t_strategy.`id` AND t_strategy_like.`user_id`=? \n" +
             'where t_collect.`user_id`=? and t_collect.target_type=2 group by t_strategy.id order by t_collect.id desc  limit ?,10';
-        query(sql, [userId, (page - 1) * 10], function (result) {
+        query(sql, [userId, userId, (page - 1) * 10], function (result) {
             return callback(result)
         })
     },
