@@ -65,7 +65,9 @@ var user = {
     // 注册
     reg: function (tel, password, timeLogon, img, recUser, callback) {
         var rid = 0;
+        var ruser = "";
         var date = new Date();
+        var nowTime = date.getTime() / 1000
         var month = date.getMonth() + 1
         var day = date.getDate()
         var H = date.getHours()
@@ -76,6 +78,7 @@ var user = {
 
             if (recInfo.length) {
                 rid = recInfo[0].id;
+                ruser = recInfo[0].nick_name;
             }
 
             var sqlUser = "select * from t_user where tel =?";
@@ -84,6 +87,11 @@ var user = {
                     var sql = "INSERT INTO t_user (nick_name,password,portrait,coin,integral,achievement_point,rid,sign,time_unlock,time_logon,tel) values (?,?,?,0,0,0,?,0,0,?,?)";
                     var nick_name = "ONE_" + month + day + H + M + "_" + Math.floor(Math.random() * 99999);
                     query(sql, [nick_name, password, img, rid, timeLogon, tel], function (res) {
+                        console.log(res)
+                        if (rid > 0) {
+                            addCoinLog(res.insertId, 100, nowTime, "推荐人昵称：" + ruser, "您有推荐人，因此赠送福利100金币")
+                            addCoinLog(rid, 100, nowTime, "推荐新人昵称：" + nick_name, "推荐新用户，因此赠送福利100金币")
+                        }
                         return callback(res);
                     })
                 } else {
@@ -560,16 +568,8 @@ var user = {
             "VALUES (?,?,?,?,?)"
         query(sql, [obj.uid, obj.start, obj.nowTime, obj.signCoin, obj.signNum], function (result) {
             if (obj.signNum == 3 || obj.signNum == 7) {
-                var log = {
-                    uid: obj.uid,
-                    coin: obj.signCoin,
-                    types: 1,
-                    b_types: "SIGNIN"
-                }
                 var logMemo = "签到获得" + obj.signCoin + "金币";
-                common.getAddCoinLog(log, obj.nowTime, logMemo, 1, function () {
-
-                })
+                addCoinLog(obj.uid, obj.signCoin, obj.nowTime, "连续签到第" + obj.signNum + "天，获得金币", 1, "SIGNIN", logMemo)
             }
             return callback(result);
         })
@@ -581,6 +581,22 @@ var user = {
         })
     },
 
+
 };
+
+function addCoinLog(userId, coin, nowTime, target, types, b_types, memo, state = 1) {
+    var log = {
+        uid: userId,
+        target: target,
+        coin: coin,
+        types: types,
+        b_types: b_types
+    }
+    common.getAddCoinLog(log, parseInt(nowTime), memo, state, function () {
+
+    })
+    return true
+}
+
 module.exports = user;
 

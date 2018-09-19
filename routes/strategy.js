@@ -361,9 +361,10 @@ router.get('/unLikeComment', function (req, res) {
 // 根据关游戏名字获取攻略
 router.get('/getStrategyByGameName', function (req, res) {
     var data = req.query;
+    var uid = data.user_id > 0 ? data.user_id : 0
     if (data.msg && data.page && data.sort) {
         if (data.sort == 'essence') {
-            strategy.getEssenceStrategyByGameName(data.msg, data.page, function (result) {
+            strategy.getEssenceStrategyByGameName(data.msg, uid, data.page, function (result) {
                 for (var i = 0; i < result.length; i++) {
                     var arr = [];
                     if (result[i].src != null) {
@@ -374,7 +375,7 @@ router.get('/getStrategyByGameName', function (req, res) {
                 res.json({state: 1, strategy: result})
             })
         } else {
-            strategy.getStrategyByGameName(data.msg, data.sort, data.page, function (result) {
+            strategy.getStrategyByGameName(data.msg, uid, data.sort, data.page, function (result) {
                 for (var i = 0; i < result.length; i++) {
                     var arr = [];
                     if (result[i].src != null) {

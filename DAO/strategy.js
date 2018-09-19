@@ -177,17 +177,8 @@ var strategy = {
             var newNum = Number(sInfo[0].agree_num) + 1;
             var agree_coin = 0;
             if (newNum >= 500 && sInfo[0].admin < 1 && sInfo[0].agree_coin < 1) {
-                var log = {
-                    uid: sInfo[0].user_id,
-                    coin: 100,
-                    types: 1,
-                    b_types: "AGREE"
-                }
                 var logMemo = "发布文章被点赞达到500次获得100金币";
-                common.getAddCoinLog(log, nowTime, logMemo, 1, function () {
-
-                });
-
+                addCoinLog(sInfo[0].user_id, 100, nowTime, "文章标题：" + sInfo[0].title, 1, "AGREE", logMemo);
                 agree_coin = 1;
             }
             var sql = "update t_strategy set agree_num=?,agree_coin=? where id =?";
@@ -232,16 +223,9 @@ var strategy = {
             var newNum = Number(sInfo[0].browse_num) + 1;
             var browse_coin = 0;
             if (newNum >= 20000 && sInfo[0].admin < 1 && sInfo[0].browse_coin < 1) {
-                var log = {
-                    uid: sInfo[0].user_id,
-                    coin: 100,
-                    types: 1,
-                    b_types: "BROWSE"
-                }
-                var logMemo = "发布文章被浏览达到20000次获得100金币";
-                common.getAddCoinLog(log, nowTime, logMemo, 1, function () {
 
-                })
+                var logMemo = "发布文章被浏览达到20000次获得福利100金币";
+                addCoinLog(sInfo[0].user_id, 100, nowTime, "文章标题：" + sInfo[0].title, 1, "BROWSE", logMemo);
 
                 browse_coin = 1;
             }
@@ -350,22 +334,26 @@ var strategy = {
         })
     },
     // 根据关游戏名字获取攻略
-    getStrategyByGameName: function (gameName, sort, page, callback) {
+    getStrategyByGameName: function (gameName, uid, sort, page, callback) {
         var sql = "select t_strategy.*,FROM_UNIXTIME(t_strategy.add_time,'%Y-%m-%d %H:%i') as add_time," +
-            "GROUP_CONCAT(t_strategy_img.src order by t_strategy_img.src desc) as src,t_user.`nick_name`,t_user.portrait,t_admin.nike_name " +
-            "from t_strategy left join t_strategy_img on t_strategy_img.strategy_id= t_strategy.id " +
+            "GROUP_CONCAT(t_strategy_img.src order by t_strategy_img.src desc) as src,t_user.`nick_name`,t_user.portrait,t_admin.nike_name,t_strategy_like.`strategy_id`" +
+            "from t_strategy " +
+            "left join t_strategy_img on t_strategy_img.strategy_id= t_strategy.id " +
             "LEFT JOIN t_user ON t_user.id=t_strategy.`user_id` " +
             "LEFT JOIN t_admin ON t_admin.id=t_strategy.`user_id` " +
+            "LEFT JOIN t_strategy_like ON t_strategy_like.`strategy_id`=t_strategy.`id` AND t_strategy_like.`user_id`=? \n" +
             "where t_strategy.game_name  =? group by t_strategy.id  order by " + sort + " desc limit ?,10";
-        query(sql, [gameName, (page - 1) * 10], function (result) {
+        query(sql, [uid, gameName, (page - 1) * 10], function (result) {
             return callback(result)
         })
     },
-    getEssenceStrategyByGameName: function (gameName, page, callback) {
-        var sql = "select t_strategy.*,FROM_UNIXTIME(t_strategy.add_time,'%Y-%m-%d %H:%i') as add_time,t_strategy_img.src from t_strategy " +
+    getEssenceStrategyByGameName: function (gameName, uid, page, callback) {
+        var sql = "select t_strategy.*,FROM_UNIXTIME(t_strategy.add_time,'%Y-%m-%d %H:%i') as add_time,t_strategy_img.src,t_strategy_like.`strategy_id` " +
+            "from t_strategy " +
             "left join t_strategy_img on t_strategy_img.strategy_id= t_strategy.id " +
+            "LEFT JOIN t_strategy_like ON t_strategy_like.`strategy_id`=t_strategy.`id` AND t_strategy_like.`user_id`=? \n" +
             "where essence = 1 and t_strategy.game_name  =? group by t_strategy.id limit ?,10";
-        query(sql, [gameName, (page - 1) * 10], function (result) {
+        query(sql, [uid, gameName, (page - 1) * 10], function (result) {
             return callback(result)
         })
     },
@@ -511,4 +499,20 @@ var strategy = {
 
 
 };
+
+function addCoinLog(uid, coin, nowTime, target, types, b_types, memo) {
+    var log = {
+        uid: uid,
+        target: target,
+        coin: 100,
+        types: types,
+        b_types: b_types
+    }
+    common.getAddCoinLog(log, nowTime, memo, 1, function (result) {
+
+    })
+
+    return true
+}
+
 module.exports = strategy;
