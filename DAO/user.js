@@ -85,7 +85,7 @@ var user = {
             query(sqlUser, [tel], function (result) {
                 if (result.length <= 0) {
                     var sql = "INSERT INTO t_user (nick_name,password,portrait,coin,integral,achievement_point,rid,sign,time_unlock,time_logon,tel) values (?,?,?,0,0,0,?,0,0,?,?)";
-                    var nick_name = "ONE_" + date.getTime().substr(11) + "_" + Math.floor(Math.random() * 99999);
+                    var nick_name = "ONE_" + nowTime.substr(8) + "_" + Math.floor(Math.random() * 99999);
                     query(sql, [nick_name, password, img, rid, timeLogon, tel], function (res) {
                         console.log(res)
                         if (rid > 0) {
