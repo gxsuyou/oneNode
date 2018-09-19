@@ -198,13 +198,18 @@ var strategy = {
     },
 
     //取消攻略点赞
-    unLikeNum: function (strategyId, callback) {
+    unLikeNum: function (strategyId, userId, callback) {
         var s_info = "SELECT * FROM t_strategy WHERE id=?";
         query(s_info, [strategyId], function (sInfo) {
             var newNum = Number(sInfo[0].agree_num) - 1;
             if (newNum <= 0) {
                 newNum = 0;
             }
+            var del = "DELETE FROM t_strategy_like WHERE type=1 AND user_id=? AND strategy_id=?";
+            query(del, [userId, strategyId], function (delInfo) {
+
+            })
+
             var sql = "update t_strategy set agree_num=? where id =?";
             query(sql, [newNum, strategyId], function (result) {
                 return callback(result)

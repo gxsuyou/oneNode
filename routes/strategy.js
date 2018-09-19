@@ -185,7 +185,7 @@ router.get('/addNum', function (req, res) {
 router.get("/unLikeNum", function (req, res, next) {
     var data = req.query;
     if (data.strategyId && data.user_id) {
-        strategy.unLikeNum(data.strategyId, function (result) {
+        strategy.unLikeNum(data.strategyId, data.user_id, function (result) {
             result.affectedRows ? res.json({state: 1}) : res.json({state: 0})
         })
     }
