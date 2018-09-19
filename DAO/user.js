@@ -87,7 +87,6 @@ var user = {
                     var sql = "INSERT INTO t_user (nick_name,password,portrait,coin,integral,achievement_point,rid,sign,time_unlock,time_logon,tel) values (?,?,?,0,0,0,?,0,0,?,?)";
                     var nick_name = "ONE_" + month + day + "_" + Math.floor(Math.random() * 99999);
                     query(sql, [nick_name, password, img, rid, timeLogon, tel], function (res) {
-                        console.log(res)
                         if (rid > 0) {
                             addCoinLog(res.insertId, 100, nowTime, "推荐人昵称：" + ruser, "您有推荐人，因此赠送福利100金币")
                             addCoinLog(rid, 100, nowTime, "推荐新人昵称：" + nick_name, "推荐新用户，因此赠送福利100金币")
