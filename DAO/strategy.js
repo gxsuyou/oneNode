@@ -461,7 +461,7 @@ var strategy = {
 
                     var delsql2 = "DELETE FROM   t_strategy_comment WHERE id=? AND series=1"
                     query(delsql2, [obj.id], function (result) {
-                        var count = "SELECT count(*) FROM t_strategy_comment WHERE targetid=?"
+                        var count = "SELECT count(*) AS count FROM t_strategy_comment WHERE targetid=?"
                         query(count, [targetid], function (count) {
                             var set = "UPDATE t_strategy SET comment_num=? WHERE id=?"
                             query(set, [count[0].count, targetid], function (newData) {
@@ -479,7 +479,7 @@ var strategy = {
 
                     var delsql = "DELETE FROM t_strategy_comment WHERE id=? AND series=2"
                     query(delsql, [obj.id], function (result) {
-                        var count = "SELECT count(*) FROM t_strategy_comment WHERE targetid=?"
+                        var count = "SELECT count(*) AS count FROM t_strategy_comment WHERE targetid=?"
                         query(count, [my_result[0].targetid], function (count) {
                             var set = "UPDATE t_strategy SET comment_num=? WHERE id=?"
                             query(set, [count[0].count, my_result[0].targetid], function (newData) {
