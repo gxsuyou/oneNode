@@ -185,6 +185,7 @@ router.get('/getGameTowComment', function (req, res) {
         res.json({state: 0})
     }
 });
+/*游戏评论点赞*/
 router.get('/likeComment', function (req, res) {
     var data = req.query;
     if (data.commentId && data.userId) {
@@ -200,6 +201,7 @@ router.get('/likeComment', function (req, res) {
         res.json({state: 0})
     }
 });
+/*游戏评论点赞取消*/
 router.get('/unLikeComment', function (req, res) {
     var data = req.query;
     if (data.commentId && data.userId) {
@@ -417,6 +419,7 @@ router.get('/getGameBySubject', function (req, res) {
         res.json({state: 0})
     }
 });
+
 // 添加我的游戏
 router.get('/addMyGame', function (req, res) {
     var data = req.query;
@@ -428,6 +431,7 @@ router.get('/addMyGame', function (req, res) {
         res.json({state: 0})
     }
 });
+
 router.get('/addMyGameIos', function (req, res) {
     var data = req.query;
     if (data.userId && data.gameId && data.sys) {
@@ -438,6 +442,7 @@ router.get('/addMyGameIos', function (req, res) {
         res.json({state: 0})
     }
 });
+
 // 获取推荐位(2个)
 router.get('/getActiveLenOfTow', function (req, res) {
     var data = req.query;
@@ -470,7 +475,6 @@ router.get('/getStrategyByGameName', function (req, res) {
         res.json({state: 0})
     }
 });
-
 
 router.get("/checkGameSys", function (req, res) {
     var data = req.query;
