@@ -83,12 +83,12 @@ var strategy = {
 
     // 获取精华攻略
     getStrategyByEssence: function (userId, page, callback) {
-        var sql = "SELECT t_strategy.*,FROM_UNIXTIME(t_strategy.add_time,'%Y-%m-%d %H:%i') as add_time,t_user.nick_name,t_admin.nike_name,t_user.portrait,t_strategy_like.strategy_id " +
-            " FROM t_strategy  " +
-            " LEFT JOIN t_user ON t_user.id=t_strategy.`user_id`  \n" +
-            " LEFT JOIN t_admin ON t_admin.id=t_strategy.user_id " +
-            " LEFT JOIN t_strategy_like ON t_strategy_like.`strategy_id`=t_strategy.`id` AND t_strategy_like.`user_id`=? " +
-            " WHERE essence = 1 group by t_strategy.add_time desc limit ?,10";
+        var sql = "SELECT a.*,FROM_UNIXTIME(a.add_time,'%Y-%m-%d %H:%i') as add_time,b.nick_name,c.nike_name,b.portrait,d.strategy_id " +
+            " FROM t_strategy a " +
+            " LEFT JOIN t_user b ON b.id=a.`user_id`  \n" +
+            " LEFT JOIN t_admin c ON c.id=a.user_id " +
+            " LEFT JOIN t_strategy_like d ON d.`strategy_id`=a.`id` AND d.`user_id`=? " +
+            " WHERE a.essence = 1 GROUP BY a.add_time DESC,a.id DESC LIMIT ?,10";
         query(sql, [userId, ((page - 1) * 10)], function (result) {
             return callback(result)
         })
