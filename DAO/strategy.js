@@ -61,14 +61,21 @@ var strategy = {
             return callback(result)
         })
     },
-    // 获取攻略列表                                          
+    // 获取攻略列表
+    /*comment_num*/
+    /*add_time*/
     getStrategyByMsg: function (sort, userId, page, callback) {
-        var sql = 'select t_strategy.*,FROM_UNIXTIME(t_strategy.add_time,"%Y-%m-%d %H:%i") as add_time,t_user.nick_name,t_admin.nike_name,t_user.portrait,t_strategy_like.strategy_id \n' +
-            ' from t_strategy \n' +
-            ' LEFT JOIN t_user ON t_user.id=t_strategy.`user_id`  \n' +
-            ' left join t_admin on t_admin.id=t_strategy.user_id ' +
-            " LEFT JOIN t_strategy_like ON t_strategy_like.`strategy_id`=t_strategy.`id` AND t_strategy_like.`user_id`=? " +
-            ' group by t_strategy.id order by ' + sort + ' desc  limit ?,10';
+        var newSort = " a.add_time DESC, a.id "
+        if (sort == "comment_num") {
+            newSort = " a.comment_num DESC,a.browse_num DESC,a.add_time DESC,a.id "
+        }
+        var sql = 'SELECT a.*,FROM_UNIXTIME(a.add_time,"%Y-%m-%d %H:%i") AS add_time,b.nick_name,c.nike_name,b.portrait,d.strategy_id \n' +
+            ' FROM t_strategy a \n' +
+            ' LEFT JOIN t_user b ON b.id=a.`user_id`  \n' +
+            ' LEFT JOIN t_admin c ON c.id=a.user_id ' +
+            ' LEFT JOIN t_strategy_like d ON d.`strategy_id`=a.`id` AND d.`user_id`=? ' +
+            ' GROUP BY a.id ORDER BY ' + newSort + ' DESC  LIMIT ?,10';
+        console.log(sql);
         query(sql, [userId, (page - 1) * 10], function (result) {
             return callback(result)
         })
@@ -81,7 +88,7 @@ var strategy = {
             " LEFT JOIN t_user ON t_user.id=t_strategy.`user_id`  \n" +
             " LEFT JOIN t_admin ON t_admin.id=t_strategy.user_id " +
             " LEFT JOIN t_strategy_like ON t_strategy_like.`strategy_id`=t_strategy.`id` AND t_strategy_like.`user_id`=? " +
-            " WHERE essence = 1 group by t_strategy.id desc limit ?,10";
+            " WHERE essence = 1 group by t_strategy.add_time desc limit ?,10";
         query(sql, [userId, ((page - 1) * 10)], function (result) {
             return callback(result)
         })
