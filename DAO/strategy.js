@@ -75,7 +75,6 @@ var strategy = {
             ' LEFT JOIN t_admin c ON c.id=a.user_id ' +
             ' LEFT JOIN t_strategy_like d ON d.`strategy_id`=a.`id` AND d.`user_id`=? ' +
             ' GROUP BY a.id ORDER BY ' + newSort + ' DESC  LIMIT ?,10';
-        console.log(sql);
         query(sql, [userId, (page - 1) * 10], function (result) {
             return callback(result)
         })
