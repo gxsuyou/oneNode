@@ -464,7 +464,7 @@ var game = {
             " LEFT JOIN t_admin AS b ON b.id = a.`user_id`\n " +
             " LEFT JOIN t_user AS c ON c.id=a.`user_id` " +
             " LEFT JOIN t_strategy_like ON t_strategy_like.`strategy_id`=a.`id` AND t_strategy_like.`user_id`=? " +
-            " WHERE a.game_name  =? GROUP BY a.id  ORDER BY browse_num  DESC LIMIT ?,6";
+            " WHERE a.game_name  =? GROUP BY a.id  ORDER BY a.essence DESC, a.browse_num DESC LIMIT ?,6";
         query(sql, [userId, gameName, (page - 1) * 6], function (result) {
             return callback(result)
         })
