@@ -328,7 +328,7 @@ var strategy = {
             ' LEFT JOIN t_admin ON t_admin.id=t_strategy.user_id ' +
             " LEFT JOIN t_strategy_like ON t_strategy_like.`strategy_id`=t_strategy.`id` AND t_strategy_like.`user_id`=? \n" +
             ' WHERE t_strategy.game_name LIKE "%' + msg + '%" OR t_strategy.title LIKE "%' + msg + '%" ' +
-            ' GROUP BY t_strategy.id ORDER BY t_strategy.id DESC  limit 0,20';
+            ' GROUP BY t_strategy.id ORDER BY t_strategy.id DESC limit 0,20';
         query(sql, [uid], function (result) {
             return callback(result)
         })

@@ -394,13 +394,14 @@ router.get('/getStrategyByGameName', function (req, res) {
 router.get('/getStrategyGameNameByMsg', function (req, res) {
     var data = req.query;
     if (data.msg) {
-        data.uid = data.uid > 0 ? data.uid : 0;
+        data.uid = data.user_id > 0 ? data.user_id : 0;
         strategy.getStrategyGameNameByMsg(data.uid, data.msg, function (result) {
             for (var i in result) {
                 if (result[i].nike_name) {
                     result[i]
                 }
             }
+            // console.log(result)
             res.json({state: 1, gameName: result})
         })
     } else {
