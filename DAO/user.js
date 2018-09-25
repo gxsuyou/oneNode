@@ -88,8 +88,8 @@ var user = {
                     var nick_name = "ONE_" + month + day + "_" + Math.floor(Math.random() * 99999);
                     query(sql, [nick_name, password, img, rid, timeLogon, tel], function (res) {
                         if (rid > 0) {
-                            addCoinLog(res.insertId, 100, nowTime, "推荐人昵称：" + ruser, "您有推荐人，因此赠送福利100金币")
-                            addCoinLog(rid, 100, nowTime, "推荐新人昵称：" + nick_name, "推荐新用户，因此赠送福利100金币")
+                            addCoinLog(res.insertId, 100, nowTime, "推荐人昵称：" + ruser, "您有推荐人，因此赠送福利100金币", 1)
+                            addCoinLog(rid, 100, nowTime, "推荐新人昵称：" + nick_name, "推荐新用户，因此赠送福利100金币", 1)
                         }
                         return callback(res);
                     })
@@ -569,7 +569,7 @@ var user = {
         query(sql, [obj.uid, obj.start, obj.nowTime, obj.signCoin, obj.signNum], function (result) {
             if (obj.signNum == 3 || obj.signNum == 7) {
                 var logMemo = "签到获得" + obj.signCoin + "金币";
-                addCoinLog(obj.uid, obj.signCoin, obj.nowTime, "连续签到第" + obj.signNum + "天，获得金币", 1, "SIGNIN", logMemo)
+                addCoinLog(obj.uid, obj.signCoin, obj.nowTime, "连续签到第" + obj.signNum + "天，获得金币", 1, "SIGNIN", logMemo, 1)
             }
             return callback(result);
         })
@@ -581,10 +581,21 @@ var user = {
         })
     },
 
+    getMyTicket: function (obj, callback) {
+        var myTicketSql = "SELECT a.*,GROUP_CONCAT(c.tid) AS tids,GROUP_CONCAT(c.uuid) AS uuids,GROUP_CONCAT(c.coin) AS coins,GROUP_CONCAT(c.a_coin) AS a_coins,c.uid " +
+            "FROM t_ticket_game a  " +
+            "LEFT JOIN t_ticket b ON b.game_id = a.game_id  " +
+            "LEFT JOIN t_ticket_user c ON c.tid = b.id  " +
+            "WHERE a.game_id IN(SELECT c.`game_id` FROM t_ticket_user WHERE c.game_id=a.game_id) AND a.state = 1 AND uid = ? ORDER BY a.id DESC"
+        query(myTicketSql, [obj.uid], function (result) {
+            return callback(result);
+        })
+    }
+
 
 };
 
-function addCoinLog(userId, coin, nowTime, target, types, b_types, memo, state = 1) {
+function addCoinLog(userId, coin, nowTime, target, types, b_types, memo, state) {
     var log = {
         uid: userId,
         target: target,

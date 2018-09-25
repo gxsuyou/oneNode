@@ -7,7 +7,7 @@ var qs = require('querystring');
 var path = require("path");
 var crypto = require('crypto');
 var md5 = crypto.createHash("md5");
-var qrImage = require('qr-image');
+// var qrImage = require('qr-image');
 var common = require('../DAO/common')
 
 
@@ -369,13 +369,13 @@ router.get("/getSign", function (req, res, next) {
             if (result.length) {
                 var lastDay = result[0].start_time
                 if (lastDay == toDay) {//已签到，不能重复签到
-                    res.json({state: 1, info: "已签到，不用重复签到"})
+                    res.json({state: 2, info: "已签到，不用重复签到"})
                     return false;
                 }
                 if (Number(lastDay) + 86400 < toDay) {//断签
                     console.log(1)
                     user.getUserSign(data, function (re_sign) {
-                        re_sign.insertId ? res.json({state: 1}) : res.json({state: 0});
+                        re_sign.insertId ? res.json({state: 1, info: "已签到"}) : res.json({state: 0, info: "签到失败"});
                         return false;
                     })
                 } else if (Number(lastDay) + 86400 == toDay) {//连续签到
@@ -396,14 +396,20 @@ router.get("/getSign", function (req, res, next) {
                     }
                     data.signNum = newNum;
                     user.getUserSign(data, function (re_sign) {
-                        re_sign.insertId ? res.json({state: 1}) : res.json({state: 0});
-                        return false;
+                        user.getUserMsgById(data.uid, function (userInfo) {
+                            re_sign.insertId ? res.json({
+                                state: 1,
+                                coin: userInfo[0].coin,
+                                info: "已签到"
+                            }) : res.json({state: 0, info: "签到失败"});
+                            return false;
+                        })
                     })
                 }
             } else {//首次签到
                 console.log(3)
                 user.getUserSign(data, function (re_sign) {
-                    re_sign.insertId ? res.json({state: 1}) : res.json({state: 0});
+                    re_sign.insertId ? res.json({state: 1, info: "已签到"}) : res.json({state: 0, info: "签到失败"});
                     return false;
                 })
             }
@@ -1176,15 +1182,52 @@ router.get("/clearSearchLog", function (req, res, next) {
     }
 });
 
-router.get("/getQrCode", function (req, res, next) {
+// router.get("/getQrCode", function (req, res, next) {
+//     var data = req.query;
+//     var temp_qrcode = qrImage.image('https://www.oneyouxi.com.cn');
+//     if (data.uid) {
+//         temp_qrcode = qrImage.image('https://www.oneyouxi.com.cn?uid=/' + data.uid);
+//     }
+//     temp_qrcode.pipe(res)
+//     res.type('png');
+//     // res.json({s: 1})
+// });
+
+router.get("/getMyTicket", function (req, res, next) {
     var data = req.query;
-    var temp_qrcode = qrImage.image('https://www.oneyouxi.com.cn');
     if (data.uid) {
-        temp_qrcode = qrImage.image('https://www.oneyouxi.com.cn?uid=/' + data.uid);
+        user.getMyTicket(data, function (result) {
+            if (result.length) {
+                if (result[0].id != null) {
+                    for (var i in result) {
+                        var num = 0;
+                        var mytickey = []
+                        var tidArr = result[i].tids.split(",");
+                        var uuidArr = result[i].uuids.split(",");
+                        var coinArr = result[i].coins.split(",");
+                        var a_coinArr = result[i].a_coins.split(",");
+
+                        for (var ii in tidArr) {
+                            mytickey.push({
+                                tid: tidArr[ii],
+                                uuid: uuidArr[ii],
+                                coin: coinArr[ii],
+                                a_coin: a_coinArr[ii]
+                            })
+                        }
+                        result[i].num = mytickey.length > 0 ? mytickey.length : num
+                        result[i].mytickets = mytickey.length > 0 ? mytickey : []
+                    }
+                } else {
+                    for (var i in result) {
+                        result[i].num = 0
+                        result[i].mytickets = []
+                    }
+                }
+            }
+            res.json(result);
+        })
     }
-    temp_qrcode.pipe(res)
-    res.type('png');
-    // res.json({s: 1})
 })
 
 

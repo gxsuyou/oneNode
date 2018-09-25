@@ -521,6 +521,11 @@ var game = {
                 return callback(my_result)
             }
         })
+    },
+
+    getTicketByUser: function (obj, callback) {
+        var ticketSql = "SELECT * FROM t_ticket WHERE id = ? AND state = 1"
+
     }
 };
 module.exports = game;

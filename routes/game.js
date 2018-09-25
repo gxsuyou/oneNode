@@ -500,5 +500,12 @@ router.get("/delMyComment", function (req, res, next) {
     }
 })
 
+router.get("/getTicket", function (req, res, next) {
+    var data = req.query;
+    if (data.uid && data.tid) {
+
+    }
+})
+
 
 module.exports = router;
