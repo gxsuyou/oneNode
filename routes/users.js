@@ -384,11 +384,26 @@ router.get("/getSign", function (req, res, next) {
                     var newNum = Number(num) + 1;
                     if (newNum > 7) newNum = 1;
                     switch (newNum) {
+                        case 1:
+                            data.signCoin = 5;
+                            break;
+                        case 2:
+                            data.signCoin = 5;
+                            break;
                         case 3:
-                            data.signCoin = 10;
+                            data.signCoin = 5;
+                            break;
+                        case 4:
+                            data.signCoin = 5;
+                            break;
+                        case 5:
+                            data.signCoin = 5;
+                            break;
+                        case 6:
+                            data.signCoin = 5;
                             break;
                         case 7:
-                            data.signCoin = 15;
+                            data.signCoin = 5;
                             break;
                         default:
                             data.signCoin = 0
