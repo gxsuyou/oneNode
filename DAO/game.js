@@ -523,9 +523,13 @@ var game = {
         })
     },
 
-    getTicketByUser: function (obj, callback) {
-        var ticketSql = "SELECT * FROM t_ticket WHERE id = ? AND state = 1"
-
+    getTicketInfo: function (obj, uid, callback) {
+        var ticketSql = "SELECT a.*, b.uid FROM t_ticket a " +
+            "LEFT JOIN t_ticket_user b ON a.id = b.tid AND b.uid = ? " +
+            "WHERE a.game_id=? AND a.state = 1"
+        query(ticketSql, [uid, obj.game_id], function (result) {
+            return callback(result);
+        })
     }
 };
 module.exports = game;

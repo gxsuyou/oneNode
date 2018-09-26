@@ -500,12 +500,15 @@ router.get("/delMyComment", function (req, res, next) {
     }
 })
 
-router.get("/getTicket", function (req, res, next) {
+router.get('/getGameTickets', function (req, res, next) {
     var data = req.query;
-    if (data.uid && data.tid) {
-
+    if (data.game_id) {
+        var uid = data.user_id > 0 ? data.user_id : 0
+        game.getTicketInfo(data.game_id, uid, function (result) {
+            res.json(result)
+        })
     }
-})
+});
 
 
 module.exports = router;

@@ -1217,17 +1217,34 @@ router.get("/getMyTicket", function (req, res, next) {
                     for (var i in result) {
                         var num = 0;
                         var mytickey = []
-                        var tidArr = result[i].tids.split(",");
-                        var uuidArr = result[i].uuids.split(",");
-                        var coinArr = result[i].coins.split(",");
-                        var a_coinArr = result[i].a_coins.split(",");
+                        if (result[i].tids == null) {
+                            result[i].num = 0
+                            result[i].mytickets = []
+                            continue;
+                        }
+                        if (result[i].tids.indexOf(",") > -1) {
+                            var tidArr = result[i].tids.split(",");
+                            var uuidArr = result[i].uuids.split(",");
+                            var coinArr = result[i].coins.split(",");
+                            var a_coinArr = result[i].a_coins.split(",");
+                            var uidArr = result[i].uids.split(",");
 
-                        for (var ii in tidArr) {
+                            for (var ii in tidArr) {
+                                mytickey.push({
+                                    tid: tidArr[ii],
+                                    uid: uidArr[ii],
+                                    uuid: uuidArr[ii],
+                                    coin: coinArr[ii],
+                                    a_coin: a_coinArr[ii]
+                                })
+                            }
+                        } else {
                             mytickey.push({
-                                tid: tidArr[ii],
-                                uuid: uuidArr[ii],
-                                coin: coinArr[ii],
-                                a_coin: a_coinArr[ii]
+                                tid: result[i].tids,
+                                uid: result[i].uids == null ? 0 : result[i].uids,
+                                uuid: result[i].uuids,
+                                coin: result[i].coins,
+                                a_coin: result[i].a_coins
                             })
                         }
                         result[i].num = mytickey.length > 0 ? mytickey.length : num

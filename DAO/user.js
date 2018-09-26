@@ -582,11 +582,11 @@ var user = {
     },
 
     getMyTicket: function (obj, callback) {
-        var myTicketSql = "SELECT a.*,GROUP_CONCAT(c.tid) AS tids,GROUP_CONCAT(c.uuid) AS uuids,GROUP_CONCAT(c.coin) AS coins,GROUP_CONCAT(c.a_coin) AS a_coins,c.uid " +
-            "FROM t_ticket_game a  " +
-            "LEFT JOIN t_ticket b ON b.game_id = a.game_id  " +
-            "LEFT JOIN t_ticket_user c ON c.tid = b.id  " +
-            "WHERE a.game_id IN(SELECT c.`game_id` FROM t_ticket_user WHERE c.game_id=a.game_id) AND a.state = 1 AND uid = ? ORDER BY a.id DESC"
+        var myTicketSql = "SELECT a.*,GROUP_CONCAT(b.id) AS tids,GROUP_CONCAT(b.uuid) AS uuids,GROUP_CONCAT(b.coin) AS coins,GROUP_CONCAT(b.a_coin) AS a_coins,GROUP_CONCAT(c.uid) AS uids\n" +
+            "FROM t_ticket_game a \n" +
+            "LEFT JOIN t_ticket b ON b.game_id = a.game_id \n" +
+            "LEFT JOIN t_ticket_user c ON c.tid = b.id AND c.uid = ? \n" +
+            "WHERE a.state = 1 GROUP BY a.id ORDER BY a.id DESC"
         query(myTicketSql, [obj.uid], function (result) {
             return callback(result);
         })
