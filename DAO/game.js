@@ -530,6 +530,26 @@ var game = {
         query(ticketSql, [uid, obj.game_id], function (result) {
             return callback(result);
         })
+    },
+    goTicket: function (obj, callback) {
+        var ticketSql = "SELECT * FROM t_ticket WHERE id = ? AND state = 1"
+        query(ticketSql, [obj.id], function (result) {
+            if (result.length) {
+                var t_user = "SELECT * FROM t_ticket_user WHERE uid=? AND tid=? AND state=1"
+                query(t_user, [obj.user_id, obj.id], function (ut_result) {
+                    if (ut_result.length) {
+                        return callback({state: 2, info: "抵用券已领取"})
+                    }
+
+                    var add_u_ticket = "INSERT INTO t_ticket_user (uid,tid,game_id,uuid,coin,a_coin,reback,add_time,state) VALUES (?,?,?,?,?,?,?,?,1)";
+                    query(add_u_ticket, [obj.user_id, obj.id, result[0].game_id, result[0].uuid, result[0].coin, result[0].a_coin, result[0].reback, parseInt(obj.addTime)], function (addMsg) {
+                        return callback(addMsg)
+                    })
+                })
+            } else {
+                return callback({state: 0, info: "抵用券不存在或已停用"})
+            }
+        })
     }
 };
 module.exports = game;

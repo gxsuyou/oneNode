@@ -509,6 +509,16 @@ router.get('/getGameTickets', function (req, res, next) {
         })
     }
 });
+router.get('/goGameTicket', function (req, res, next) {
+    var data = req.query;
+    var date = new Date();
+    if (data.id && data.user_id) {
+        date.addTime = date.getTime() / 1000;
+        game.goTicket(data, function (result) {
+            result.insertId ? res.json({state: 1}) : res.json({state: 0})
+        })
+    }
+});
 
 
 module.exports = router;

@@ -582,7 +582,7 @@ var user = {
     },
 
     getMyTicket: function (obj, callback) {
-        var myTicketSql = "SELECT a.*,GROUP_CONCAT(b.id) AS tids,GROUP_CONCAT(b.uuid) AS uuids,GROUP_CONCAT(b.coin) AS coins,GROUP_CONCAT(b.a_coin) AS a_coins,GROUP_CONCAT(c.uid) AS uids\n" +
+        var myTicketSql = "SELECT a.*,c.uid,GROUP_CONCAT(b.id) AS tids,GROUP_CONCAT(b.uuid) AS uuids,GROUP_CONCAT(b.coin) AS coins,GROUP_CONCAT(b.a_coin) AS a_coins,GROUP_CONCAT(IFNULL(c.uid, 0)) AS uids, GROUP_CONCAT(IFNULL(c.state, 0)) AS c_states \n" +
             "FROM t_ticket_game a \n" +
             "LEFT JOIN t_ticket b ON b.game_id = a.game_id \n" +
             "LEFT JOIN t_ticket_user c ON c.tid = b.id AND c.uid = ? \n" +
@@ -591,8 +591,6 @@ var user = {
             return callback(result);
         })
     }
-
-
 };
 
 function addCoinLog(userId, coin, nowTime, target, types, b_types, memo, state) {
