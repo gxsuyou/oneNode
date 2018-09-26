@@ -1218,7 +1218,6 @@ router.get("/getMyTicket", function (req, res, next) {
                         var num = 0;
                         var mytickey = []
                         if (result[i].tids == null) {
-                            result[i].num = 0
                             result[i].mytickets = []
                             continue;
                         }
@@ -1246,7 +1245,8 @@ router.get("/getMyTicket", function (req, res, next) {
                                 uid: result[i].uids == null ? 0 : result[i].uids,
                                 uuid: result[i].uuids,
                                 coin: result[i].coins,
-                                a_coin: result[i].a_coins
+                                a_coin: result[i].a_coins,
+                                state: result[i].states
                             })
                         }
                         // result[i].num = mytickey.length > 0 ? mytickey.length : num
@@ -1254,7 +1254,6 @@ router.get("/getMyTicket", function (req, res, next) {
                     }
                 } else {
                     for (var i in result) {
-                        result[i].num = 0
                         result[i].mytickets = []
                     }
                 }
