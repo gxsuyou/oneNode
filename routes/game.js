@@ -504,7 +504,7 @@ router.get('/getGameTickets', function (req, res, next) {
     var data = req.query;
     if (data.game_id) {
         var uid = data.user_id > 0 ? data.user_id : 0
-        game.getTicketInfo(data.game_id, uid, function (result) {
+        game.getTicketInfo(data, uid, function (result) {
             res.json(result)
         })
     }
