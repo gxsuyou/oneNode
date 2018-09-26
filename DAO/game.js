@@ -541,8 +541,13 @@ var game = {
                         return callback({state: 2, info: "抵用券已领取"})
                     }
 
-                    var add_u_ticket = "INSERT INTO t_ticket_user (uid,tid,game_id,uuid,coin,a_coin,reback,add_time,state) VALUES (?,?,?,?,?,?,?,?,1)";
-                    query(add_u_ticket, [obj.user_id, obj.id, result[0].game_id, result[0].uuid, result[0].coin, result[0].a_coin, result[0].reback, parseInt(obj.addTime)], function (addMsg) {
+                    var add_u_ticket = "INSERT INTO t_ticket_user (`uid`,`tid`,`game_id`,`uuid`,`coin`,`a_coin`,`reback`,`add_time`,`state`) VALUES (?,?,?,?,?,?,?,?,1)";
+                    var game_id = result[0].game_id;
+                    var uuid = result[0].uuid;
+                    var coin = result[0].coin;
+                    var a_coin = result[0].a_coin;
+                    var reback = result[0].reback;
+                    query(add_u_ticket, [obj.user_id, obj.id, game_id, uuid, coin, a_coin, reback, parseInt(obj.addTime)], function (addMsg) {
                         return callback(addMsg)
                     })
                 })
