@@ -781,6 +781,14 @@ router.get("/getUserMsgById", function (req, res, next) {
         })
     }
 });
+router.get("/getUserMyCoin", function (req, res, next) {
+    var data = req.query;
+    if (data.uid) {
+        user.getUserMsgById(data.uid, function (result) {
+            result.length ? res.json(result[0]) : res.json([])
+        })
+    }
+});
 router.get("/addAddress", function (req, res, next) {
     if (req.query.id) {
         var data = req.query;
