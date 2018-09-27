@@ -1210,6 +1210,7 @@ router.get("/clearSearchLog", function (req, res, next) {
 
 router.get("/getMyTicket", function (req, res, next) {
     var data = req.query;
+    data.stateType = data.stateType > 0 ? data.stateType : 1;
     if (data.uid) {
         user.getMyTicket(data, function (result) {
             if (result.length) {
