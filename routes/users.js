@@ -1228,9 +1228,11 @@ router.get("/getMyTicket", function (req, res, next) {
                             var a_coinArr = result[i].a_coins.split(",");
                             var uidArr = result[i].uids.split(",");
                             var stateArr = result[i].c_states.split(",");
+                            var tu_idArr = result[i].tu_ids.split(",");
 
                             for (var ii in tidArr) {
                                 mytickey.push({
+                                    tu_id: tu_idArr[ii],
                                     tid: tidArr[ii],
                                     uid: uidArr[ii],
                                     uuid: uuidArr[ii],
@@ -1241,6 +1243,7 @@ router.get("/getMyTicket", function (req, res, next) {
                             }
                         } else {
                             mytickey.push({
+                                tu_id: result[i].tu_ids,
                                 tid: result[i].tids,
                                 uid: result[i].uids == null ? 0 : result[i].uids,
                                 uuid: result[i].uuids,

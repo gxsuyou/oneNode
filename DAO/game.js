@@ -555,6 +555,23 @@ var game = {
                 return callback({state: 0, info: "抵用券不存在或已停用"})
             }
         })
+    },
+
+    getUseTicket: function (obj, callback) {
+        var sql = "SELECT a.*, b.uuid AS b_uuid, c.game_name " +
+            "FROM t_ticket_user a " +
+            "LEFT JOIN t_ticket b ON a.tid = b.id " +
+            "LEFT JOIN t_game c ON a.game_id = c.id " +
+            "WHERE a.id = ? AND a.state=1";
+        query(sql, [obj.id], function (result) {
+            return callback(result);
+        })
+    },
+    getUseTicketSet: function (obj, callback) {
+        var sql = "UPDATE t_ticket_user SET state=3 WHERE id=?";
+        query(sql, [obj.id], function (result) {
+            return callback(result);
+        })
     }
 };
 module.exports = game;

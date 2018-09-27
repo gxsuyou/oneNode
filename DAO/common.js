@@ -1,6 +1,33 @@
 var query = require('../config/config');
 var jwt = require('jsonwebtoken');
 var crypto = require('crypto');
+var date = new Date();
+Date.prototype.Format = function (formatStr) {
+    var str = formatStr;
+    var Week = ['日', '一', '二', '三', '四', '五', '六'];
+
+    str = str.replace(/yyyy|YYYY/, this.getFullYear());
+    str = str.replace(/yy|YY/, (this.getYear() % 100) > 9 ? (this.getYear() % 100).toString() : '0' + (this.getYear() % 100));
+
+    str = str.replace(/MM/, this.getMonth() > 9 ? (this.getMonth() + 1).toString() : '0' + (this.getMonth() + 1));
+    str = str.replace(/M/g, this.getMonth());
+
+    str = str.replace(/w|W/g, Week[this.getDay()]);
+
+    str = str.replace(/dd|DD/, this.getDate() > 9 ? this.getDate().toString() : '0' + this.getDate());
+    str = str.replace(/d|D/g, this.getDate());
+
+    str = str.replace(/hh|HH/, this.getHours() > 9 ? this.getHours().toString() : '0' + this.getHours());
+    str = str.replace(/h|H/g, this.getHours());
+    str = str.replace(/mm/, this.getMinutes() > 9 ? this.getMinutes().toString() : '0' + this.getMinutes());
+    str = str.replace(/m/g, this.getMinutes());
+
+    str = str.replace(/ss|SS/, this.getSeconds() > 9 ? this.getSeconds().toString() : '0' + this.getSeconds());
+    str = str.replace(/s|S/g, this.getSeconds());
+
+    return str;
+};
+
 var common = {
     /**
      * md5加密
@@ -143,7 +170,7 @@ var common = {
      * @param coin 活动金额
      * @param balance 结算后余额
      * @param types 1：增加，2：扣减
-     * @param b_types 结算类型，SIGNIN 签到，REC 推荐，ESSENCE 精华，BROWSE 浏览数，AGREE 点赞数，UNKNOWN 其他
+     * @param b_types 结算类型，SIGNIN 签到，REC 推荐，ESSENCE 精华，BROWSE 浏览数，AGREE 点赞数，TICKET 使用抵用券，UNKNOWN 其他
      * @param add_time 添加时间
      * @param memo 备注说明
      * @param state 状态 1 已结算，0 未结算
@@ -170,6 +197,22 @@ var common = {
             }
         })
 
-    }
-};
+    },
+
+    getAddOrder: function (obj, callback) {
+        var date = new Date();
+        var nowTime = date.getTime() / 1000;
+        var orderCode = date.Format('yyyyMMddHHmmSS') + Math.floor(Math.random() * 999999)
+
+        var sql = "INSERT INTO t_ticket_order (`user_id`,`from`,`order_code`,`coin`,`game_id`,`game_name`,`game_user`,`game_area`,`tel`,`types`,`add_time`,`memo`,`sys_memo`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)"
+        var arr = [
+            obj.user_id, obj.from, orderCode, obj.coin,
+            obj.game_id, obj.game_name, obj.game_user, obj.game_area, obj.tel,
+            obj.types, nowTime, obj.memo, obj.sys_memo
+        ];
+        query(sql, arr, function (result) {
+            return callback(result);
+        })
+    },
+}
 module.exports = common;

@@ -520,5 +520,46 @@ router.get('/goGameTicket', function (req, res, next) {
     }
 });
 
+router.post("/getUseTicket", function (req, res, next) {
+    var data = req.body;
+    data.id = data.tu_id;
+    if (data.uid && data.id && data.game_user && data.game_area && data.tel) {
+        game.getUseTicket(data, function (ticketInfo) {
+            if (ticketInfo.length) {
+                if (ticketInfo[0].uuid != ticketInfo[0].b_uuid) {
+                    res.json({state: 3, info: "签名比对不正确，请与管理员联系"})
+                    return false
+                }
+                if (ticketInfo[0].state != 1) {
+                    res.json({state: 0, info: "抵用券已失效或审核中"})
+                    return false
+                }
+                var arr = {
+                    from: "游戏充值使用抵用券" + ticketInfo[0].coin + "元",
+                    user_id: data.uid,
+                    coin: ticketInfo[0].coin,
+                    game_id: ticketInfo[0].game_id,
+                    game_name: ticketInfo[0].game_name,
+                    game_user: data.game_user,
+                    game_area: data.game_area,
+                    tel: data.tel,
+                    types: 1,
+                    memo: "充值返还" + ticketInfo[0].reback + "金币",
+                    sys_memo: "使用的抵用券id为：[" + data.id + "]，抵用券签名标识符为：[" + ticketInfo[0].uuid + "]"
+                }
+                game.getUseTicketSet(data, function (setInfo) {
+                    common.getAddOrder(arr, function () {
+
+                    });
+                    setInfo.affectedRows ? res.json({state: 1}) : res.json({state: 0})
+                })
+            } else {
+                res.json({state: 0, info: "抵用券已失效或审核中"})
+                return false
+            }
+        })
+    }
+})
+
 
 module.exports = router;
