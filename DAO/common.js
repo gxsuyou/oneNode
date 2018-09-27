@@ -166,6 +166,7 @@ var common = {
     /**
      *
      * @param obj
+     * @param target 来源说明
      * @param uid 用户id
      * @param coin 活动金额
      * @param balance 结算后余额
