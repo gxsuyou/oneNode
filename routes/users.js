@@ -1249,7 +1249,7 @@ router.get("/getMyTicket", function (req, res, next) {
                                 uuid: result[i].uuids,
                                 coin: result[i].coins,
                                 a_coin: result[i].a_coins,
-                                state: result[i].states
+                                state: result[i].c_states
                             })
                         }
                         // result[i].num = mytickey.length > 0 ? mytickey.length : num
