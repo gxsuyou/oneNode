@@ -374,7 +374,7 @@ router.get("/getSign", function (req, res, next) {
                 }
                 if (Number(lastDay) + 86400 < toDay) {//断签
                     console.log(1)
-                    user.getUserSign(data, function (re_sign) {
+                    user.getUserSign(data, 3, function (re_sign) {
                         re_sign.insertId ? res.json({state: 1, info: "已签到"}) : res.json({state: 0, info: "签到失败"});
                         return false;
                     })
@@ -410,7 +410,7 @@ router.get("/getSign", function (req, res, next) {
                             break;
                     }
                     data.signNum = newNum;
-                    user.getUserSign(data, function (re_sign) {
+                    user.getUserSign(data, 2, function (re_sign) {
                         user.getUserMsgById(data.uid, function (userInfo) {
                             re_sign.insertId ? res.json({
                                 state: 1,
@@ -423,7 +423,7 @@ router.get("/getSign", function (req, res, next) {
                 }
             } else {//首次签到
                 console.log(3)
-                user.getUserSign(data, function (re_sign) {
+                user.getUserSign(data, 1, function (re_sign) {
                     re_sign.insertId ? res.json({state: 1, info: "已签到"}) : res.json({state: 0, info: "签到失败"});
                     return false;
                 })

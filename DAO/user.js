@@ -563,10 +563,17 @@ var user = {
         })
     },
 
-    getUserSign: function (obj, callback) {
+    getUserSign: function (obj, signType, callback) {
         var sql = "INSERT INTO t_user_sign (`uid`,`start_time`,`sign_time`,`sign_coin`,`sign_num`) " +
             "VALUES (?,?,?,?,?)"
         query(sql, [obj.uid, obj.start, obj.nowTime, obj.signCoin, obj.signNum], function (result) {
+
+            var userSql = "UPDATE t_user SET sign=?,new_sign=? WHERE id=?";
+            query(userSql, [obj.signNum, obj.start, obj.uid], function (setUser) {
+
+            })
+
+
             // if (obj.signNum == 3 || obj.signNum == 7) {
             var logMemo = "签到获得" + obj.signCoin + "金币";
             addCoinLog(obj.uid, obj.signCoin, obj.nowTime, "来自：连续签到第" + obj.signNum + "天，获得金币", 1, "SIGNIN", logMemo, 1)
