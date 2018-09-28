@@ -403,7 +403,7 @@ router.get("/getSign", function (req, res, next) {
                             data.signCoin = 5;
                             break;
                         case 7:
-                            data.signCoin = 5;
+                            data.signCoin = 30;
                             break;
                         default:
                             data.signCoin = 0
