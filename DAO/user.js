@@ -614,7 +614,7 @@ var user = {
 
         var sql = "INSERT INTO t_withdraw (`uid`,`code`,`coin`,`w_types`,`code_no`,`add_time`,`state`,`memo`) VALUES (?,?,?,?,?,?,0,?)";
         query(sql, [obj.uid, orderCode, obj.coin, obj.types, obj.code_no, nowTime, obj.memo], function (result) {
-            addCoinLog(obj.uid, newCoin, nowTime, "来自：提现：" + orderCode, 2, "WITHDRAW", obj.memo, 1)
+            // addCoinLog(obj.uid, newCoin, nowTime, "来自：提现：" + orderCode, 2, "WITHDRAW", obj.memo, 1)
 
             return callback(result);
         })
