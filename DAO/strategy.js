@@ -184,7 +184,7 @@ var strategy = {
             var agree_coin = 0;
             if (newNum >= 500 && sInfo[0].admin < 1 && sInfo[0].agree_coin < 1) {
                 var logMemo = "发布文章被点赞达到500次获得100金币";
-                addCoinLog(sInfo[0].user_id, 100, nowTime, "文章标题：" + sInfo[0].title, 1, "AGREE", logMemo);
+                addCoinLog(sInfo[0].user_id, 100, nowTime, "来自：文章标题：" + sInfo[0].title, 1, "AGREE", logMemo);
                 agree_coin = 1;
             }
             var sql = "update t_strategy set agree_num=?,agree_coin=? where id =?";
@@ -231,7 +231,7 @@ var strategy = {
             if (newNum >= 20000 && sInfo[0].admin < 1 && sInfo[0].browse_coin < 1) {
 
                 var logMemo = "发布文章被浏览达到20000次获得福利100金币";
-                addCoinLog(sInfo[0].user_id, 100, nowTime, "文章标题：" + sInfo[0].title, 1, "BROWSE", logMemo);
+                addCoinLog(sInfo[0].user_id, 100, nowTime, "来自：文章标题：" + sInfo[0].title, 1, "BROWSE", logMemo);
 
                 browse_coin = 1;
             }

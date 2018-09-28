@@ -1273,6 +1273,49 @@ router.get("/getMyTicket", function (req, res, next) {
             res.json(result);
         })
     }
+});
+
+router.post("/goWithdraw", function (req, res, next) {
+    var data = req.body;
+    var date = new Date();
+    var nowTime = parseInt(date.getTime() / 1000)
+    if (data.uid && data.coin && data.code_no && data.types) {
+        user.getUserMsgById(data.uid, function (userInfo) {
+            if (userInfo.length) {
+                var coin = Number(data.coin) * 100;
+                if (parseInt(userInfo[0].coin) < coin) {
+                    res.json({state: 0, info: "您的余额不足，不能申请提现"})
+                    return false;
+                }
+
+                user.getLastWithdraw(data, function (lastWithdraw) {
+                    if (lastWithdraw.length) {
+                        var addTime = lastWithdraw[0].add_time
+                        var lockTime = Number(addTime) + 300;
+                        if (nowTime < lockTime) {
+                            res.json({state: 0, info: "提现后300秒内不能再次申请提现"})
+                            return false;
+                        }
+
+                        data.memo = "申请提现，提现金额为" + data.coin + "元";
+                        user.goWithdraw(data, function (result) {
+                            result.insertId ? res.json({state: 1}) : res.json({state: 0});
+                        })
+
+
+                    } else {
+                        data.memo = "申请提现，提现金额为" + data.coin + "元";
+                        user.goWithdraw(data, function (result) {
+                            result.insertId ? res.json({state: 1}) : res.json({state: 0, info: "提现失败，请联系管理员"});
+                        })
+                    }
+                });
+
+            } else {
+                res.json({state: 0, info: "您尚未登录，或者并未注册，请先注册或登录"})
+            }
+        })
+    }
 })
 
 

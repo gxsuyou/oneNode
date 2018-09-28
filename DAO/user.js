@@ -88,8 +88,8 @@ var user = {
                     var nick_name = "ONE_" + month + day + "_" + Math.floor(Math.random() * 99999);
                     query(sql, [nick_name, password, img, rid, timeLogon, tel], function (res) {
                         if (rid > 0) {
-                            addCoinLog(res.insertId, 100, nowTime, "推荐人昵称：" + ruser, "您有推荐人，因此赠送福利100金币", 1)
-                            addCoinLog(rid, 100, nowTime, "推荐新人昵称：" + nick_name, "推荐新用户，因此赠送福利100金币", 1)
+                            addCoinLog(res.insertId, 100, nowTime, "来自：推荐人昵称：" + ruser, "您有推荐人，因此赠送福利100金币", 1)
+                            addCoinLog(rid, 100, nowTime, "来自：推荐新人昵称：" + nick_name, "推荐新用户，因此赠送福利100金币", 1)
                         }
                         return callback(res);
                     })
@@ -569,7 +569,7 @@ var user = {
         query(sql, [obj.uid, obj.start, obj.nowTime, obj.signCoin, obj.signNum], function (result) {
             // if (obj.signNum == 3 || obj.signNum == 7) {
             var logMemo = "签到获得" + obj.signCoin + "金币";
-            addCoinLog(obj.uid, obj.signCoin, obj.nowTime, "连续签到第" + obj.signNum + "天，获得金币", 1, "SIGNIN", logMemo, 1)
+            addCoinLog(obj.uid, obj.signCoin, obj.nowTime, "来自：连续签到第" + obj.signNum + "天，获得金币", 1, "SIGNIN", logMemo, 1)
             // }
             return callback(result);
         })
@@ -597,7 +597,26 @@ var user = {
         query(myTicketSql, [obj.uid], function (result) {
             return callback(result);
         })
-    }
+    },
+
+    getLastWithdraw: function (obj, callback) {
+        var sql = "SELECT * FROM t_withdraw WHERE uid=? ORDER BY id DESC LIMIT 1";
+        query(sql, [obj.uid], function (result) {
+            return callback(result)
+        })
+    },
+    goWithdraw: function (obj, callback) {
+        var date = new Date();
+        var nowTime = date.getTime() / 1000;
+        var orderCode = date.Format('yyyyMMddHHmmSS') + Math.floor(Math.random() * 999999)
+
+        var sql = "INSERT INTO t_withdraw (`uid`,`code`,`coin`,`w_types`,`code_no`,`add_time`,`state`,`memo`) VALUES (?,?,?,?,?,?,0,?)";
+        query(sql, [obj.uid, orderCode, obj.coin, obj.types, obj.code_no, nowTime, obj.memo], function (result) {
+            addCoinLog(obj.uid, obj.coin, nowTime, "来自：提现：" + orderCode, 2, "WITHDRAW", obj.memo, 1)
+
+            return callback(result);
+        })
+    },
 };
 
 function addCoinLog(userId, coin, nowTime, target, types, b_types, memo, state) {
