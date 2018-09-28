@@ -621,7 +621,7 @@ var user = {
     },
 
     getMyCoinLog: function (obj, page, callback) {
-        var sql = "SELECT * FROM t_coin_log WHERE uid = ? ORDER BY id DESC LIMIT ?,10"
+        var sql = "SELECT *,FROM_UNIXTIME(add_time,'%Y-%m-%d') as addTime FROM t_coin_log WHERE uid = ? ORDER BY id DESC LIMIT ?,10"
         query(sql, [obj.uid, (page - 1) * 10], function (result) {
             return callback(result)
         })
