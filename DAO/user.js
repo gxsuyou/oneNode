@@ -610,13 +610,22 @@ var user = {
         var nowTime = date.getTime() / 1000;
         var orderCode = date.Format('yyyyMMddHHmmSS') + Math.floor(Math.random() * 999999)
 
+        var newCoin = Number(obj.coin) * 100;
+
         var sql = "INSERT INTO t_withdraw (`uid`,`code`,`coin`,`w_types`,`code_no`,`add_time`,`state`,`memo`) VALUES (?,?,?,?,?,?,0,?)";
         query(sql, [obj.uid, orderCode, obj.coin, obj.types, obj.code_no, nowTime, obj.memo], function (result) {
-            addCoinLog(obj.uid, obj.coin, nowTime, "来自：提现：" + orderCode, 2, "WITHDRAW", obj.memo, 1)
+            addCoinLog(obj.uid, newCoin, nowTime, "来自：提现：" + orderCode, 2, "WITHDRAW", obj.memo, 1)
 
             return callback(result);
         })
     },
+
+    getMyCoinLog: function (obj, page, callback) {
+        var sql = "SELECT * FROM t_coin_log WHERE uid = ? ORDER BY id DESC LIMIT ?,10"
+        query(sql, [obj.uid, (page - 1) * 10], function (result) {
+            return callback(result)
+        })
+    }
 };
 
 function addCoinLog(userId, coin, nowTime, target, types, b_types, memo, state) {

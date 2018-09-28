@@ -1289,6 +1289,23 @@ router.post("/goWithdraw", function (req, res, next) {
                 }
 
                 user.getLastWithdraw(data, function (lastWithdraw) {
+                    var typeMemo = ""
+                    switch (data.types) {
+                        case "ALIPAY":
+                            typeMemo = "支付宝";
+                            break;
+                        case "WECHAT":
+                            typeMemo = "微信";
+                            break;
+                        case "BANK":
+                            typeMemo = "银行";
+                            break;
+                        default:
+                            typeMemo = "其他";
+                            break;
+                    }
+                    data.memo = "申请提现，提现金额为" + data.coin + "元，提现账户为[" + typeMemo + "]账户";
+
                     if (lastWithdraw.length) {
                         var addTime = lastWithdraw[0].add_time
                         var lockTime = Number(addTime) + 300;
@@ -1296,15 +1313,10 @@ router.post("/goWithdraw", function (req, res, next) {
                             res.json({state: 0, info: "提现后300秒内不能再次申请提现"})
                             return false;
                         }
-
-                        data.memo = "申请提现，提现金额为" + data.coin + "元";
                         user.goWithdraw(data, function (result) {
                             result.insertId ? res.json({state: 1}) : res.json({state: 0});
                         })
-
-
                     } else {
-                        data.memo = "申请提现，提现金额为" + data.coin + "元";
                         user.goWithdraw(data, function (result) {
                             result.insertId ? res.json({state: 1}) : res.json({state: 0, info: "提现失败，请联系管理员"});
                         })
@@ -1314,6 +1326,22 @@ router.post("/goWithdraw", function (req, res, next) {
             } else {
                 res.json({state: 0, info: "您尚未登录，或者并未注册，请先注册或登录"})
             }
+        })
+    }
+});
+
+router.get("/getMyCoinLog", function (req, res, next) {
+    var data = req.query;
+    var page = data.page > 0 ? data.page : 1;
+    if (data.uid) {
+        user.getMyCoinLog(data, page, function (result) {
+            var typeMemo = common.logBTypesMemo();
+            for (var i in result) {
+                var b_type = result[i].b_types;
+                result[i].types_memo = result[i].types == 1 ? "增加" : "扣减";
+                result[i].b_types_memo = typeMemo[b_type];
+            }
+            res.json(result)
         })
     }
 })
