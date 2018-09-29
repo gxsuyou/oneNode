@@ -1006,7 +1006,6 @@ router.get("/getMassage", function (req, res, next) {
     var data = req.query;
     if (data.uid) {
         user.getMsg(data, function (result) {
-            var arr = {};
             var num1 = 0;
             var num2 = 0;
             var num3 = 0;
@@ -1020,7 +1019,7 @@ router.get("/getMassage", function (req, res, next) {
                     num3++
                 }
             }
-            arr = {
+            var arr = {
                 num1: num1,
                 num2: num2,
                 num3: num3,
@@ -1289,21 +1288,8 @@ router.post("/goWithdraw", function (req, res, next) {
                 }
 
                 user.getLastWithdraw(data, function (lastWithdraw) {
-                    var typeMemo = ""
-                    switch (data.types) {
-                        case "ALIPAY":
-                            typeMemo = "支付宝";
-                            break;
-                        case "WECHAT":
-                            typeMemo = "微信";
-                            break;
-                        case "BANK":
-                            typeMemo = "银行";
-                            break;
-                        default:
-                            typeMemo = "其他";
-                            break;
-                    }
+                    var typeMemos = common.withdrawTypesMemo();
+                    var typeMemo = typeMemos[data.types];
                     data.memo = "申请提现，提现金额为" + data.coin + "元，提现账户为[" + typeMemo + "]账户";
 
                     if (lastWithdraw.length) {
