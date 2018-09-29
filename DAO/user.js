@@ -232,7 +232,7 @@ var user = {
         })
     },
     getUserMsgById: function (id, callback) {
-        var sql = "select id,nick_name,portrait,coin,integral,tel,sign,new_sign,channel,sex,pay,only_id,birthday,head_add  from t_user where id=?";
+        var sql = "select id,nick_name,portrait,coin,integral,tel,sign,new_sign,channel,sex,pay,only_id,birthday,head_add,FROM_UNIXTIME(new_sign,'%Y-%m-%d') as newSignTime  from t_user where id=?";
         query(sql, [id], function (result) {
             return callback(result)
         })
