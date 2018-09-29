@@ -42,7 +42,7 @@ var common = {
         //return callback(result)
     },
 
-    logBTypesMemo: function () {
+    logBTypesMemo: function (types) {
         var typesMemo = {
             SIGNIN: "签到",
             REC: "推荐注册",
@@ -53,16 +53,16 @@ var common = {
             WITHDRAW: "提现",
             UNKNOWN: "其他",
         }
-        return typesMemo;
+        return typesMemo[types];
     },
-    withdrawTypesMemo: function () {
+    withdrawTypesMemo: function (types) {
         var typesMemo = {
             ALIPAY: "支付宝",
             WECHAT: "微信",
             BANK: "银行",
             UNKNOWN: "其他",
         }
-        return typesMemo;
+        return typesMemo[types];
     },
 
     userToken: function (obj) {

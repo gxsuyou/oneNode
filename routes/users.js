@@ -1290,8 +1290,7 @@ router.post("/goWithdraw", function (req, res, next) {
                 }
 
                 user.getLastWithdraw(data, function (lastWithdraw) {
-                    var typeMemos = common.withdrawTypesMemo();
-                    var typeMemo = typeMemos[data.types];
+                    var typeMemo = common.withdrawTypesMemo(data.types);
                     data.memo = "申请提现，提现金额为" + data.coin + "元，提现账户为[" + typeMemo + "]账户";
 
                     if (lastWithdraw.length) {
@@ -1323,11 +1322,10 @@ router.get("/getMyCoinLog", function (req, res, next) {
     var page = data.page > 0 ? data.page : 1;
     if (data.uid) {
         user.getMyCoinLog(data, page, function (result) {
-            var typeMemo = common.logBTypesMemo();
             for (var i in result) {
                 var b_type = result[i].b_types;
                 result[i].types_memo = result[i].types == 1 ? "增加" : "扣减";
-                result[i].b_types_memo = typeMemo[b_type];
+                result[i].b_types_memo = common.logBTypesMemo(b_type);
             }
             res.json(result)
         })
