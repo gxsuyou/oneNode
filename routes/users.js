@@ -773,9 +773,10 @@ router.post("/updateHead", function (req, res, next) {
  * 我的信息
  */
 router.get("/getUserMsgById", function (req, res, next) {
-    if (req.query.id) {
-        user.getUserMsgById(req.query.id, function (result) {
-            user.getGameCollect(req.query.id, function (coll) {
+    var data = req.query;
+    if (data.id) {
+        user.getUserMsgById(data.id, function (result) {
+            user.getGameCollect(data.id, function (coll) {
                 result.length ? res.json({state: 1, user: result[0], gameColl: coll}) : res.json({state: 0})
             })
         })
@@ -790,24 +791,25 @@ router.get("/getUserMyCoin", function (req, res, next) {
     }
 });
 router.get("/addAddress", function (req, res, next) {
-    if (req.query.id) {
-        var data = req.query;
+    var data = req.query;
+    if (data.id) {
         user.addAddress(data.id, data.name, data.tel, data.area, data.detail, function (result) {
             result.insertId ? res.json({state: 1}) : res.json({state: 0})
         })
     }
 });
 router.get("/editAddress", function (req, res, next) {
-    if (req.query.id) {
-        var data = req.query;
+    var data = req.query;
+    if (data.id) {
         user.editAddress(data.id, data.name, data.tel, data.area, data.detail, function (result) {
             result.affectedRows ? res.json({state: 1}) : res.json({state: 0})
         })
     }
 });
 router.get("/getAddress", function (req, res, next) {
-    if (req.query.id) {
-        user.getAddress(req.query.id, function (result) {
+    var data = req.query;
+    if (data.id) {
+        user.getAddress(data.id, function (result) {
             res.json({state: 1, address: result})
         })
     }
