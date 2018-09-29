@@ -383,6 +383,7 @@ router.get("/getSign", function (req, res, next) {
                     var num = result[0].sign_num;
                     var newNum = Number(num) + 1;
                     if (newNum > 7) newNum = 1;
+                    console.log(newNum)
                     switch (newNum) {
                         case 1:
                             data.signCoin = 5;
@@ -445,12 +446,31 @@ router.post('/login', function (req, res, next) {
     sign = isReverse(sign);
 
     user.login(data.tel, sign, function (result) {
+        console.log(result[0])
         if (result.length) {
             var token = common.userToken(result[0].id);
-            user.upLoginToken(result[0].id, token, function (newToken) {
-                result[0].token = token;
-                newToken.affectedRows ? res.json({state: 1, user: result[0]}) : res.json({state: 0, user: result[0]})
-            })
+            if (result[0].is_inside !== 1) {//普通
+                user.upLoginToken(result[0].id, token, function (newToken) {
+                    result[0].token = token;
+                    newToken.affectedRows ? res.json({state: 1, user: result[0]}) : res.json({
+                        state: 0,
+                        user: result[0]
+                    })
+                    return false;
+                })
+            } else {//后台
+                user.upLoginTokenA(result[0].a_id, token, function (newToken) {
+                    user.upLoginToken(result[0].id, token, function () {
+
+                    })
+                    result[0].token = token;
+                    newToken.affectedRows ? res.json({state: 1, user: result[0]}) : res.json({
+                        state: 0,
+                        user: result[0]
+                    });
+                    return false;
+                })
+            }
         } else {
             res.json({state: result.length == 0 ? 0 : 1, user: result[0]})
         }
@@ -1271,6 +1291,15 @@ router.get("/getMyTicket", function (req, res, next) {
                     }
                 }
             }
+            res.json(result);
+        })
+    }
+});
+router.get("/getMyTicketCommon", function (req, res, next) {
+    var data = req.query;
+    data.stateType = data.stateType > 0 ? data.stateType : 1;
+    if (data.uid) {
+        user.getMyTicket2(data, function (result) {
             res.json(result);
         })
     }

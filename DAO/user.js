@@ -8,20 +8,19 @@ var user = {
     login: function (user_tel, password, callback) {
         // var pwd = common.pwdMd5(password)
         // console.log(pwd);
-        var sql = "select id,nick_name,portrait,coin,integral,achievement_point,time_logon,tel,pay from t_user where tel=? and password=?";
-        query(sql, [user_tel, password], function (result) {
-            if (result.length > 0) {
-                return callback(result)
-            } else {
-                var sql = "select id,nick_name,portrait,coin,integral,achievement_point,time_logon,tel pay from t_user where nick_name=? and password=?";
-                query(sql, [user_tel, password], function (res) {
-                    return callback(res)
-                })
-            }
+        var sql = "SELECT id,nick_name,portrait,coin,integral,achievement_point,time_logon,tel,pay,is_inside,a_id FROM t_user WHERE (tel=? OR nick_name=?) AND password=?";
+        query(sql, [user_tel, user_tel, password], function (result) {
+            return callback(result)
         })
     },
     upLoginToken: function (uid, token, callback) {
         var sql = "UPDATE t_user SET token = ? WHERE id=?"
+        query(sql, [token, uid], function (result) {
+            return callback(result)
+        })
+    },
+    upLoginTokenA: function (uid, token, callback) {
+        var sql = "UPDATE t_admin SET token = ? WHERE id=?"
         query(sql, [token, uid], function (result) {
             return callback(result)
         })
@@ -605,6 +604,23 @@ var user = {
             return callback(result);
         })
     },
+    getMyTicket2: function (obj, callback) {//通用券
+        var stateType = obj.stateType;
+        var stateSql = "";
+        if (stateType == 1) {//未失效
+            stateSql = "AND (a.state = 1 OR a.state = 3)"
+        } else {//已失效
+            stateSql = "AND (a.state = 2 OR a.state = -1)"
+        }
+        var myTicketSql = "SELECT a.*,b.names,b.uuid AS b_uuid,b.state AS b_state " +
+            "FROM t_ticket_user a " +
+            "LEFT JOIN t_ticket b ON a.tid=b.id AND b.types=1 " +
+            "WHERE b.state=1 " + stateSql + " ORDER BY a.coin DESC  "
+        query(myTicketSql, [obj.uid], function (result) {
+            return callback(result);
+        })
+    },
+
 
     getLastWithdraw: function (obj, callback) {
         var sql = "SELECT * FROM t_withdraw WHERE uid=? ORDER BY id DESC LIMIT 1";

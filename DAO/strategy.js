@@ -182,10 +182,12 @@ var strategy = {
         query(s_info, [strategyId], function (sInfo) {
             var newNum = Number(sInfo[0].agree_num) + 1;
             var agree_coin = 0;
-            if (newNum >= 500 && sInfo[0].admin < 1 && sInfo[0].agree_coin < 1) {
-                var logMemo = "发布文章被点赞达到500次获得100金币";
-                addCoinLog(sInfo[0].user_id, 100, nowTime, "来自：文章标题：" + sInfo[0].title, 1, "AGREE", logMemo);
-                agree_coin = 1;
+            if (sInfo[0].agree_coin < 1) {
+                if (newNum >= 500 && sInfo[0].admin < 1) {
+                    var logMemo = "发布文章被点赞达到500次获得100金币";
+                    addCoinLog(sInfo[0].user_id, 100, nowTime, "来自：文章标题：" + sInfo[0].title, 1, "AGREE", logMemo);
+                    agree_coin = 1;
+                }
             }
             var sql = "update t_strategy set agree_num=?,agree_coin=? where id =?";
             query(sql, [newNum, agree_coin, strategyId], function (result) {
@@ -228,12 +230,12 @@ var strategy = {
         query(s_info, [strategyId], function (sInfo) {
             var newNum = Number(sInfo[0].browse_num) + 1;
             var browse_coin = 0;
-            if (newNum >= 20000 && sInfo[0].admin < 1 && sInfo[0].browse_coin < 1) {
-
-                var logMemo = "发布文章被浏览达到20000次获得福利100金币";
-                addCoinLog(sInfo[0].user_id, 100, nowTime, "来自：文章标题：" + sInfo[0].title, 1, "BROWSE", logMemo);
-
-                browse_coin = 1;
+            if (sInfo[0].browse_coin < 1) {
+                if (newNum >= 20000 && sInfo[0].admin < 1) {
+                    var logMemo = "发布文章被浏览达到20000次获得福利100金币";
+                    addCoinLog(sInfo[0].user_id, 100, nowTime, "来自：文章标题：" + sInfo[0].title, 1, "BROWSE", logMemo);
+                    browse_coin = 1;
+                }
             }
             var sql = "update t_strategy set browse_num=?,browse_coin=? where id =?";
             query(sql, [newNum, browse_coin, strategyId], function (result) {
