@@ -581,7 +581,7 @@ var user = {
         })
     },
     getLastSign: function (obj, callback) {
-        var sql = "SELECT * FROM t_user_sign WHERE uid=? ORDER BY start_time DESC, id DESC LIMIT 1"
+        var sql = "SELECT * FROM t_user_sign WHERE uid=? ORDER BY start_time DESC, sign_num DESC LIMIT 1"
         query(sql, [obj.uid], function (result) {
             return callback(result)
         })
