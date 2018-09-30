@@ -633,7 +633,7 @@ var user = {
         var nowTime = date.getTime() / 1000;
         var orderCode = date.Format('yyyyMMddHHmmSS') + Math.floor(Math.random() * 999999)
 
-        var newCoin = Number(obj.coin) * 100;
+        var newCoin = Number(obj.coin) * 100;//比率换算1：100
 
         var sql = "INSERT INTO t_withdraw (`uid`,`code`,`coin`,`w_types`,`code_no`,`add_time`,`state`,`memo`) VALUES (?,?,?,?,?,?,0,?)";
         query(sql, [obj.uid, orderCode, obj.coin, obj.types, obj.code_no, nowTime, obj.memo], function (result) {

@@ -531,11 +531,17 @@ router.post("/getUseTicket", function (req, res, next) {
                     return false
                 }
                 if (ticketInfo[0].state != 1) {
-                    res.json({state: 0, info: "抵用券已失效或审核中"})
+                    res.json({state: 0, info: "通用券/抵用券已失效或审核中"})
                     return false
                 }
+                var sysMemo = "使用的抵用券id为：[" + data.id + "]，抵用券签名标识符为：[" + ticketInfo[0].uuid + "]";
+                var from = "游戏充值使用抵用券" + ticketInfo[0].coin + "元";
+                if (ticketInfo[0].types == 1) {
+                    from = "游戏充值使用通用券" + ticketInfo[0].coin + "元";
+                    sysMemo = "使用的通用券id为：[" + data.id + "]，通用券签名标识符为：[" + ticketInfo[0].uuid + "]";
+                }
                 var arr = {
-                    from: "游戏充值使用抵用券" + ticketInfo[0].coin + "元",
+                    from: from,
                     user_id: data.uid,
                     coin: ticketInfo[0].coin,
                     game_id: ticketInfo[0].game_id,
@@ -545,8 +551,9 @@ router.post("/getUseTicket", function (req, res, next) {
                     tel: data.tel,
                     types: 1,
                     memo: "充值返还" + ticketInfo[0].reback + "金币",
-                    sys_memo: "使用的抵用券id为：[" + data.id + "]，抵用券签名标识符为：[" + ticketInfo[0].uuid + "]"
-                }
+                    sys_memo: sysMemo
+                };
+
                 game.getUseTicketSet(data, function (setInfo) {
                     common.getAddOrder(arr, function () {
 
@@ -554,7 +561,7 @@ router.post("/getUseTicket", function (req, res, next) {
                     setInfo.affectedRows ? res.json({state: 1}) : res.json({state: 0})
                 })
             } else {
-                res.json({state: 0, info: "抵用券已失效或审核中"})
+                res.json({state: 0, info: "通用券/抵用券已失效或审核中"})
                 return false
             }
         })

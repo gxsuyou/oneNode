@@ -558,7 +558,7 @@ var game = {
     },
 
     getUseTicket: function (obj, callback) {
-        var sql = "SELECT a.*, b.uuid AS b_uuid, c.game_name " +
+        var sql = "SELECT a.*,b.types, b.uuid AS b_uuid, c.game_name " +
             "FROM t_ticket_user a " +
             "LEFT JOIN t_ticket b ON a.tid = b.id " +
             "LEFT JOIN t_game c ON a.game_id = c.id " +
