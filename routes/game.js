@@ -559,7 +559,7 @@ router.post("/getUseTicket", function (req, res, next) {
             }
         })
     }
-})
+});
 
 
 module.exports = router;
