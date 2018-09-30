@@ -477,7 +477,7 @@ var game = {
     },
 
     getActivityGame: function (obj, page, callback) {
-        var sql = "SELECT * FROM t_ticket_game WHERE state=1 ORDER BY id DESC LIMIT ?,10";
+        var sql = "SELECT a.*, b.game_packagename, b.game_download_ios, b.game_download_andriod FROM t_ticket_game a LEFT JOIN t_game b ON a.game_id = b.id WHERE a.state=1 ORDER BY a.id DESC LIMIT ?,10";
         query(sql, [(page - 1) * 10], function (result) {
             return callback(result);
         })
