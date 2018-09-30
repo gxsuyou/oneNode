@@ -476,6 +476,13 @@ var game = {
         })
     },
 
+    getActivityGame: function (obj, page, callback) {
+        var sql = "SELECT * FROM t_ticket_game WHERE state=1 ORDER BY id DESC LIMIT ?,10";
+        query(sql, [(page - 1) * 10], function (result) {
+            return callback(result);
+        })
+    },
+
     delMyComment: function (obj, callback) {
         var getMySql = "SELECT * FROM t_game_comment WHERE id=? AND user_id=?"
         query(getMySql, [obj.id, obj.uid], function (my_result) {

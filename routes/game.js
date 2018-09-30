@@ -500,6 +500,15 @@ router.get("/delMyComment", function (req, res, next) {
     }
 })
 
+
+router.get("/getActivityGame", function (req, res, next) {
+    var data = req.query;
+    var page = data.page > 0 ? data.page : 1;
+    game.getActivityGame(data, page, function (result) {
+        res.json(result)
+    })
+})
+
 router.get('/getGameTickets', function (req, res, next) {
     var data = req.query;
     if (data.game_id) {
