@@ -79,7 +79,7 @@ var user = {
                 rid = recInfo[0].id;
                 ruser = recInfo[0].nick_name;
             }
-
+            console.log(recInfo)
             var sqlUser = "select * from t_user where tel =?";
             query(sqlUser, [tel], function (result) {
                 if (result.length <= 0) {
@@ -87,8 +87,8 @@ var user = {
                     var nick_name = "ONE_" + month + day + "_" + Math.floor(Math.random() * 99999);
                     query(sql, [nick_name, password, img, rid, timeLogon, tel], function (res) {
                         if (rid > 0) {
-                            addCoinLog(res.insertId, 100, nowTime, "来自：推荐人昵称：" + ruser, "您有推荐人，因此赠送福利100金币", 1)
-                            addCoinLog(rid, 100, nowTime, "来自：推荐新人昵称：" + nick_name, "推荐新用户，因此赠送福利100金币", 1)
+                            addCoinLog(res.insertId, 100, nowTime, "来自：推荐人昵称：" + ruser, 1, "REC", "您有推荐人，因此赠送福利100金币", 1)
+                            addCoinLog(rid, 100, nowTime, "来自：推荐新人昵称：" + nick_name, 1, "REC", "推荐新用户，因此赠送福利100金币", 1)
                         }
                         return callback(res);
                     })
@@ -658,7 +658,7 @@ function addCoinLog(userId, coin, nowTime, target, types, b_types, memo, state) 
         coin: coin,
         types: types,
         b_types: b_types
-    }
+    };
     common.getAddCoinLog(log, parseInt(nowTime), memo, state, function () {
 
     })
