@@ -72,8 +72,8 @@ var user = {
         var H = date.getHours()
         var M = date.getMinutes()
 
-        var recSql = "SELECT * FROM t_user WHERE nick_name=? OR tel=?";
-        query(recSql, [recUser, recUser], function (recInfo) {
+        var recSql = "SELECT * FROM t_user WHERE only_id=?";
+        query(recSql, [recUser], function (recInfo) {
 
             if (recInfo.length) {
                 rid = recInfo[0].id;

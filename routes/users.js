@@ -509,7 +509,7 @@ router.get('/game/comment', function (req, res, next) {
 router.post('/reg', function (req, res, next) {
     var ver = req.body.verify;
     var tel = req.body.tel;
-    var recUser = req.body.recUser || null;
+    var recUser = req.body.only_id || null;
 
     var password = req.body.password;
     var md5 = crypto.createHash('md5');
@@ -517,18 +517,18 @@ router.post('/reg', function (req, res, next) {
     var sign = md5.digest('hex');
     sign = isReverse(sign);
     if (ver && tel && password) {
-        if (ver == verify[tel]) {
-            var date = new Date();
-            var img = "../../Public/image/morentouxiang.png"
-            user.reg(tel, sign, parseInt(date.getTime() / 1000), img, recUser, function (result) {
-                result.insertId ? user.updateOnlyidById(result.insertId, function () {
-                }) : "";
+        // if (ver == verify[tel]) {
+        var date = new Date();
+        var img = "../../Public/image/morentouxiang.png"
+        user.reg(tel, sign, parseInt(date.getTime() / 1000), img, recUser, function (result) {
+            result.insertId ? user.updateOnlyidById(result.insertId, function () {
+            }) : "";
 
-                result.insertId ? res.json({state: 1, id: result.insertId}) : res.json({state: 0, id: ""})
-            })
-        } else {
-            res.json({state: 3});
-        }
+            result.insertId ? res.json({state: 1, id: result.insertId}) : res.json({state: 0, id: ""})
+        })
+        // } else {
+        //     res.json({state: 3});
+        // }
     } else {
         res.json({state: 99});
     }
