@@ -542,11 +542,21 @@ var game = {
         var ticketSql = "SELECT * FROM t_ticket WHERE id = ? AND state = 1"
         query(ticketSql, [obj.id], function (result) {
             if (result.length) {
+                if (result[0].num < 1) {
+                    return callback({state: 0, info: "抵用券已领完"})
+                }
+
                 var t_user = "SELECT * FROM t_ticket_user WHERE uid=? AND tid=? AND state=1"
                 query(t_user, [obj.user_id, obj.id], function (ut_result) {
                     if (ut_result.length) {
                         return callback({state: 2, info: "抵用券已领取"})
                     }
+
+                    var newNum = Number(result[0].num) - 1;
+                    var setSql = "UPDATE t_ticket SET num = ? WHERE id=?"
+                    query(setSql, [newNum, obj.id], function (setMsg) {
+
+                    })
 
                     var add_u_ticket = "INSERT INTO t_ticket_user (`uid`,`tid`,`game_id`,`uuid`,`coin`,`a_coin`,`reback`,`add_time`,`state`) VALUES (?,?,?,?,?,?,?,?,1)";
                     var game_id = result[0].game_id;
