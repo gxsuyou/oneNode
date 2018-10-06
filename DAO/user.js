@@ -573,10 +573,10 @@ var user = {
             })
 
 
-            // if (obj.signNum == 3 || obj.signNum == 7) {
-            var logMemo = "签到获得" + obj.signCoin + "金币";
-            addCoinLog(obj.uid, obj.signCoin, obj.nowTime, "来自：连续签到第" + obj.signNum + "天，获得金币", 1, "SIGNIN", logMemo, 1)
-            // }
+            if (obj.signCoin > 0) {
+                var logMemo = "签到获得" + obj.signCoin + "金币";
+                addCoinLog(obj.uid, obj.signCoin, obj.nowTime, "来自：连续签到第" + obj.signNum + "天，获得金币", 1, "SIGNIN", logMemo, 1)
+            }
             return callback(result);
         })
     },

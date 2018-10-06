@@ -424,6 +424,7 @@ router.get("/getSign", function (req, res, next) {
                 }
             } else {//首次签到
                 console.log(3)
+                data.signCoin = 5;
                 user.getUserSign(data, 1, function (re_sign) {
                     re_sign.insertId ? res.json({state: 1, info: "已签到"}) : res.json({state: 0, info: "签到失败"});
                     return false;
