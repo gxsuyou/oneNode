@@ -1240,6 +1240,9 @@ router.get("/clearSearchLog", function (req, res, next) {
 
 router.get("/getMyTicket", function (req, res, next) {
     var data = req.query;
+    var date = new Date();
+    var h = date.setHours(0, 0, 0, 0);
+    var newHours = Number(h) / 1000;
     data.stateType = data.stateType > 0 ? data.stateType : 1;
     if (data.uid) {
         user.getMyTicket(data, function (result) {
@@ -1260,8 +1263,15 @@ router.get("/getMyTicket", function (req, res, next) {
                             var uidArr = result[i].uids.split(",");
                             var stateArr = result[i].c_states.split(",");
                             var tu_idArr = result[i].tu_ids.split(",");
+                            var addTimeArr = result[i].add_times.split(",");
 
+                            var t = 0;
                             for (var ii in tidArr) {
+                                var isnew = 0;
+                                if (addTimeArr[ii] > newHours) {
+                                    isnew = 1;
+                                    t++;
+                                }
                                 mytickey.push({
                                     tu_id: tu_idArr[ii],
                                     tid: tidArr[ii],
@@ -1269,10 +1279,19 @@ router.get("/getMyTicket", function (req, res, next) {
                                     uuid: uuidArr[ii],
                                     coin: coinArr[ii],
                                     a_coin: a_coinArr[ii],
+                                    add_time: addTimeArr[ii],
+                                    is_new: isnew,
                                     state: stateArr[ii]
                                 })
                             }
+                            result[i].t_num = t;
                         } else {
+                            result[i].t_num = 0;
+                            var isnew = 0;
+                            if (result[i].add_times > newHours) {
+                                isnew = 1;
+                                result[i].t_num = 1;
+                            }
                             mytickey.push({
                                 tu_id: result[i].tu_ids,
                                 tid: result[i].tids,
@@ -1280,6 +1299,8 @@ router.get("/getMyTicket", function (req, res, next) {
                                 uuid: result[i].uuids,
                                 coin: result[i].coins,
                                 a_coin: result[i].a_coins,
+                                add_time: result[i].add_times,
+                                is_new: isnew,
                                 state: result[i].c_states
                             })
                         }
