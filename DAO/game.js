@@ -558,7 +558,7 @@ var game = {
 
                     })
 
-                    var add_u_ticket = "INSERT INTO t_ticket_user (`uid`,`tid`,`game_id`,`uuid`,`coin`,`a_coin`,`reback`,`add_time`,`end_time`,`state`) VALUES (?,?,?,?,?,?,?,?,1)";
+                    var add_u_ticket = "INSERT INTO t_ticket_user (`uid`,`tid`,`game_id`,`uuid`,`coin`,`a_coin`,`reback`,`add_time`,`end_time`,`state`) VALUES (?,?,?,?,?,?,?,?,?,1)";
                     var game_id = result[0].game_id;
                     var uuid = result[0].uuid;
                     var coin = result[0].coin;
