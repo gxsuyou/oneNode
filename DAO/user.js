@@ -269,12 +269,13 @@ var user = {
     },
     getStrategyByUserId: function (userId, page, callback) {
         var sql = 'select t_strategy.*,FROM_UNIXTIME(t_strategy.add_time,"%Y-%m-%d %H:%i") as add_time,' +
-            't_strategy_img.src,t_user.`nick_name`,t_user.portrait ' +
-            'from t_strategy ' +
-            'left join t_strategy_img on t_strategy_img.strategy_id= t_strategy.id ' +
+            't_strategy_img.src,t_user.`nick_name`,t_user.portrait,t_strategy_like.strategy_id ' +
+            'FROM t_strategy ' +
+            'LEFT JOIN t_strategy_img on t_strategy_img.strategy_id= t_strategy.id ' +
             'LEFT JOIN t_user ON t_user.id=t_strategy.`user_id` ' +
+            "LEFT JOIN t_strategy_like ON t_strategy_like.`strategy_id`=t_strategy.`id` AND t_strategy_like.`user_id`=? " +
             'where t_strategy.`user_id`=? group by t_strategy.id order by add_time desc  limit ?,10';
-        query(sql, [userId, (page - 1) * 10], function (result) {
+        query(sql, [userId, userId, (page - 1) * 10], function (result) {
             return callback(result)
         })
     },
