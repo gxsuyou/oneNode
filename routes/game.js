@@ -504,6 +504,7 @@ router.get("/delMyComment", function (req, res, next) {
 router.get("/getActivityGame", function (req, res, next) {
     var data = req.query;
     var page = data.page > 0 ? data.page : 1;
+    data.sys = data.sys > 0 ? data.sys : 2;
     game.getActivityGame(data, page, function (result) {
         res.json(result)
     })

@@ -1244,6 +1244,7 @@ router.get("/getMyTicket", function (req, res, next) {
     var h = date.setHours(0, 0, 0, 0);
     var newHours = Number(h) / 1000;
     data.stateType = data.stateType > 0 ? data.stateType : 1;
+    data.sys = data.sys > 0 ? data.sys : 2;
     if (data.uid) {
         user.getMyTicket(data, function (result) {
             if (result.length) {
