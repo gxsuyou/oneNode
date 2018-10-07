@@ -558,13 +558,13 @@ var game = {
 
                     })
 
-                    var add_u_ticket = "INSERT INTO t_ticket_user (`uid`,`tid`,`game_id`,`uuid`,`coin`,`a_coin`,`reback`,`add_time`,`state`) VALUES (?,?,?,?,?,?,?,?,1)";
+                    var add_u_ticket = "INSERT INTO t_ticket_user (`uid`,`tid`,`game_id`,`uuid`,`coin`,`a_coin`,`reback`,`add_time`,`end_time`,`state`) VALUES (?,?,?,?,?,?,?,?,1)";
                     var game_id = result[0].game_id;
                     var uuid = result[0].uuid;
                     var coin = result[0].coin;
                     var a_coin = result[0].a_coin;
                     var reback = result[0].reback;
-                    query(add_u_ticket, [obj.user_id, obj.id, game_id, uuid, coin, a_coin, reback, parseInt(obj.addTime)], function (addMsg) {
+                    query(add_u_ticket, [obj.user_id, obj.id, game_id, uuid, coin, a_coin, reback, parseInt(obj.addTime), parseInt(obj.endTime)], function (addMsg) {
                         return callback(addMsg)
                     })
                 })

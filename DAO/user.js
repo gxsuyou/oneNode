@@ -604,6 +604,13 @@ var user = {
             return callback(result);
         })
     },
+
+    upDayEnd: function (uid, nowTime, callback) {
+        var sql = "UPDATE t_ticket_user SET state = -1 WHERE uid=? AND end_time<?";
+        query(sql, [uid, nowTime], function (result) {
+            return callback(result);
+        })
+    },
     getMyTicket2: function (obj, callback) {//通用券
         var stateType = obj.stateType;
         var stateSql = "";
