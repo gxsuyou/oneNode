@@ -536,7 +536,7 @@ router.get('/goGameTicket', function (req, res, next) {
 router.post("/getUseTicket", function (req, res, next) {
     var data = req.body;
     data.id = data.tu_id;
-    if (data.uid && data.id && data.game_user && data.tel) {
+    if (data.uid && data.id && data.tel) {
         game.getUseTicket(data, function (ticketInfo) {
             if (ticketInfo.length) {
                 if (ticketInfo[0].uuid != ticketInfo[0].b_uuid) {
@@ -559,7 +559,7 @@ router.post("/getUseTicket", function (req, res, next) {
                     coin: ticketInfo[0].coin,
                     game_id: ticketInfo[0].game_id,
                     game_name: ticketInfo[0].game_name,
-                    game_user: data.game_user,
+                    game_user: data.game_user || "",
                     game_area: data.game_area || "",
                     tel: data.tel,
                     types: 1,
