@@ -1241,7 +1241,7 @@ router.get("/clearSearchLog", function (req, res, next) {
 router.get("/getMyTicket", function (req, res, next) {
     var data = req.query;
     var date = new Date();
-    var getTime = date.getTime();
+    var getTime = date.getTime() / 1000;
     var h = date.setHours(0, 0, 0, 0);
     var newHours = Number(h) / 1000;
     data.stateType = data.stateType > 0 ? data.stateType : 1;
