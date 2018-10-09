@@ -616,9 +616,9 @@ var user = {
         var stateType = obj.stateType;
         var stateSql = "";
         if (stateType == 1) {//未失效
-            stateSql = "AND (a.state = 1 OR a.state = 3)"
+            stateSql = "AND a.state IN (1,3,-2)"
         } else {//已失效
-            stateSql = "AND (a.state = 2 OR a.state = -1)"
+            stateSql = "AND a.state IN (2,-1)"
         }
         var myTicketSql = "SELECT a.*,b.names,b.uuid AS b_uuid,b.state AS b_state " +
             "FROM t_ticket_user a " +
