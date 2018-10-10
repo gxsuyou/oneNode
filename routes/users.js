@@ -527,7 +527,7 @@ router.post('/reg', function (req, res, next) {
 
                 result.insertId ? res.json({state: 1, id: result.insertId}) : res.json({
                     state: 0,
-                    info: "注册失败，该帐号或已注册，不能重复注册"
+                    info: "注册失败，该帐号已注册"
                 })
             })
         } else {
