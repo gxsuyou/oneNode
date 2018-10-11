@@ -524,6 +524,8 @@ router.post('/reg', function (req, res, next) {
             user.reg(tel, sign, parseInt(date.getTime() / 1000), img, recUser, function (result) {
                 result.insertId ? user.updateOnlyidById(result.insertId, function () {
                 }) : "";
+                result.insertId ? user.getAddTy(result.insertId, function () {
+                }) : "";
 
                 result.insertId ? res.json({state: 1, id: result.insertId}) : res.json({
                     state: 0,

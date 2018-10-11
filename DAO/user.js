@@ -592,9 +592,9 @@ var user = {
         var stateType = obj.stateType;
         var stateSql = "";
         if (stateType == 1) {//未失效
-            stateSql = "AND (c.state = 1 OR c.state = 3)"
+            stateSql = "AND a.state IN (1,3,-2)"
         } else {//已失效
-            stateSql = "AND (c.state = 2 OR c.state = -1)"
+            stateSql = "AND a.state IN (2,-1)"
         }
         var myTicketSql = "SELECT a.*,c.uid,GROUP_CONCAT(b.id) AS tids,GROUP_CONCAT(c.id) AS tu_ids,GROUP_CONCAT(b.uuid) AS uuids,GROUP_CONCAT(b.coin) AS coins,GROUP_CONCAT(b.a_coin) AS a_coins,GROUP_CONCAT(IFNULL(c.uid, 0)) AS uids, GROUP_CONCAT(IFNULL(c.state, 0)) AS c_states, GROUP_CONCAT(IFNULL(c.add_time, 0)) AS add_times \n" +
             "FROM t_ticket_game a \n" +
@@ -612,6 +612,29 @@ var user = {
             return callback(result);
         })
     },
+    getAddTy: function (obj, callback) {
+        var date = new Date();
+        var now = date.getTime();
+        var uuidApp = [
+            "ef0d5f79-5ae2-4696-afb7-9736939e1ac3",
+            "2b70b640-b6f2-4050-97c7-9d06f946c564",
+            "2b70b640-b6f2-4050-97c7-9d06f946c564",
+            "e8ff1a31-99fe-49cd-b256-7c4c130284e3",
+            "e8ff1a31-99fe-49cd-b256-7c4c130284e3",
+        ]
+        var coinArr = [50, 20, 20, 5, 5];
+        var a_coinArr = [200, 100, 100, 30, 30];
+        var tidArr = [49, 52, 52, 50, 50];
+
+        for (var i in uuidApp) {
+            var sql = "INSERT INTO t_ticket_user (`uid`,`tid`,`uuid`,`coin`,`a_coin`,`reback`,`add_time`,`state`) VALUES (?,?,?,?,?,?,?,1)";
+            query(sql, [obj, tidArr[i], uuidApp[i], coinArr[i], a_coinArr[i], coinArr[i], now], function () {
+
+            })
+        }
+        return callback({state: 1})
+    },
+
     getMyTicket2: function (obj, callback) {//通用券
         var stateType = obj.stateType;
         var stateSql = "";
