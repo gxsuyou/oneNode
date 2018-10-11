@@ -614,7 +614,7 @@ var user = {
     },
     getAddTy: function (obj, callback) {
         var date = new Date();
-        var now = date.getTime();
+        var now = date.getTime() / 1000;
         var uuidApp = [
             "ef0d5f79-5ae2-4696-afb7-9736939e1ac3",
             "2b70b640-b6f2-4050-97c7-9d06f946c564",
