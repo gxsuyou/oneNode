@@ -628,7 +628,7 @@ var user = {
 
         for (var i in uuidApp) {
             var sql = "INSERT INTO t_ticket_user (`uid`,`tid`,`uuid`,`coin`,`a_coin`,`reback`,`add_time`,`state`) VALUES (?,?,?,?,?,?,?,1)";
-            query(sql, [obj, tidArr[i], uuidApp[i], coinArr[i], a_coinArr[i], coinArr[i], now], function () {
+            query(sql, [obj, tidArr[i], uuidApp[i], coinArr[i], a_coinArr[i], coinArr[i], parseInt(now)], function () {
 
             })
         }
