@@ -527,7 +527,7 @@ router.get('/goGameTicket', function (req, res, next) {
         data.addTime = date.getTime() / 1000;
         data.endTime = data.addTime + (86400 * 7);
         game.goTicket(data, function (result) {
-            result.insertId ? res.json({state: 1}) : res.json({state: 0})
+            result.insertId ? res.json({state: 1}) : res.json({state: 0, info: result.info})
         })
     } else {
         res.json({state: 0})
