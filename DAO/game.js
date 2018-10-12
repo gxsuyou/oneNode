@@ -533,13 +533,13 @@ var game = {
     getTicketInfo: function (obj, uid, callback) {
         var ticketSql = "SELECT a.*, b.uid, b.state AS b_state FROM t_ticket a " +
             "LEFT JOIN t_ticket_user b ON a.id = b.tid AND b.uid = ? AND b.state IN (1,3)" +
-            "WHERE a.game_id=? AND a.state = 1 ORDER BY a.coin DESC"
+            "WHERE a.game_id=? AND a.state = 1 AND a.num>0 ORDER BY a.coin DESC"
         query(ticketSql, [uid, obj.game_id], function (result) {
             return callback(result);
         })
     },
     goTicket: function (obj, callback) {
-        var ticketSql = "SELECT * FROM t_ticket WHERE id = ? AND state = 1"
+        var ticketSql = "SELECT * FROM t_ticket WHERE id = ? AND state = 1 OR state = -2"
         query(ticketSql, [obj.id], function (result) {
             if (result.length) {
                 if (result[0].num < 1) {
@@ -556,6 +556,16 @@ var game = {
                     var setSql = "UPDATE t_ticket SET num = ? WHERE id=?"
                     query(setSql, [newNum, obj.id], function (setMsg) {
 
+                    })
+
+                    var sqlGame = "SELECT * FROM t_ticket WHERE game_id=? AND num>0"
+                    query(sqlGame, [result[0].game_id], function (tGame) {
+                        if (!tGame.length) {
+                            var upTGame = "UPDATE t_ticket_game SET state=0 WHERE game_id=?"
+                            query(upTGame, [result[0].game_id], function () {
+
+                            })
+                        }
                     })
 
                     var add_u_ticket = "INSERT INTO t_ticket_user (`uid`,`tid`,`game_id`,`uuid`,`coin`,`a_coin`,`reback`,`add_time`,`end_time`,`state`) VALUES (?,?,?,?,?,?,?,?,?,1)";
