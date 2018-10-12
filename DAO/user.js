@@ -646,7 +646,7 @@ var user = {
         var myTicketSql = "SELECT a.*,b.names,b.uuid AS b_uuid,b.state AS b_state " +
             "FROM t_ticket_user a " +
             "LEFT JOIN t_ticket b ON a.tid=b.id AND b.types=1 " +
-            "WHERE b.state=1 " + stateSql + " ORDER BY a.coin DESC  "
+            "WHERE b.state=1 " + stateSql + " AND a.uid=? ORDER BY a.coin DESC  "
         query(myTicketSql, [obj.uid], function (result) {
             return callback(result);
         })
