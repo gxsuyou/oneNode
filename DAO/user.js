@@ -598,7 +598,7 @@ var user = {
             "LEFT JOIN t_ticket b ON b.game_id = a.game_id AND b.state = 1 \n" +
             "LEFT JOIN t_ticket_user c ON c.tid = b.id AND c.uid = ? AND  " + stateSql +
             "WHERE a.state = 1 AND c.uid = ? AND a.sys=? AND c.uid IS NOT NULL GROUP BY a.id ORDER BY a.id DESC"
-        query(myTicketSql, [obj.uid, obj.sys], function (result) {
+        query(myTicketSql, [obj.uid, obj.uid, obj.sys], function (result) {
             return callback(result);
         })
     },
