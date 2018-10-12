@@ -1163,9 +1163,6 @@ router.get("/getFeedBack", function (req, res, next) {
         })
     }
 });
-router.get("/autoFeedBack", function (req, res, next) {
-
-})
 
 router.get("/getNoticeInfo", function (req, res, next) {
     var data = req.query;
@@ -1179,10 +1176,6 @@ router.get("/getNoticeInfo", function (req, res, next) {
                 return false
             })
         } else if (data.type > 3 && data.type < 7) {
-            // user.getNoticeInfoAdd(data, function () {
-            //
-            // })
-
             user.getNoticeInfo(data, function (result) {
                 for (var i in result) {
                     if (data.type == 4) {
@@ -1342,6 +1335,8 @@ router.post("/goWithdraw", function (req, res, next) {
     var data = req.body;
     var date = new Date();
     var nowTime = parseInt(date.getTime() / 1000)
+    data.userName = data.userName || null;
+    data.bank = data.bank || null;
     if (data.uid && data.coin && data.code_no && data.types) {
         user.getUserMsgById(data.uid, function (userInfo) {
             if (userInfo.length) {
@@ -1363,7 +1358,7 @@ router.post("/goWithdraw", function (req, res, next) {
                             return false;
                         }
                         user.goWithdraw(data, function (result) {
-                            result.insertId ? res.json({state: 1}) : res.json({state: 0});
+                            result.insertId ? res.json({state: 1}) : res.json({state: 0, info: "提现失败，请联系管理员"});
                         })
                     } else {
                         user.goWithdraw(data, function (result) {
