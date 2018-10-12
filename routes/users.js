@@ -734,18 +734,10 @@ router.get("/getCoin", function (req, res, next) {
 router.get("/updateNickName", function (req, res, next) {
     if (req.query.id && req.query.nickName) {
         user.hasNickName(req.query.nickName, function (users) {
-            if (!users.user.length && !users.admin.length) {
+            if (!users.length) {
                 user.updateNickName(req.query.id, req.query.nickName, function (result) {
                     result.affectedRows ? res.json({state: 1}) : res.json({state: 0})
                 })
-            } else if (users.user.length) {
-                if (users.user[0].id == req.query.id && !users.admin.length) {
-                    user.updateNickName(req.query.id, req.query.nickName, function (result) {
-                        result.affectedRows ? res.json({state: 1}) : res.json({state: 0})
-                    })
-                }
-            } else if (!users.user.length && users.admin.length) {
-                res.json({state: 0, info: "该昵称已注册，请输入其他昵称"})
             } else {
                 res.json({state: 0, info: "该昵称已注册，请输入其他昵称"})
             }
