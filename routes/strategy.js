@@ -202,17 +202,6 @@ router.get('/updateStrategyCommentImg', function (req, res) {
         res.json({state: 0})
     }
 });
-// 获取攻略点赞数
-// router.get('/getCountLikeComment', function (req, res) {
-//     var data = req.query;
-//     if (data.strategyId) {
-//         strategy.getCountLikeComment(data.strategyId, function (result) {
-//             res.json({state: 1, lnum: result});
-//         });
-//     } else {
-//         res.json({state: 0})
-//     }
-// });
 
 // 添加评论
 router.post('/strategyComment', function (req, res) {
@@ -317,20 +306,15 @@ router.get('/getStrategyCommentTowByPage', function (req, res) {
 router.get('/getCommentById', function (req, res) {
     var data = req.query;
     if (data.commentId) {
-        // function ready(){
-        // strategy.readMessage(data.commentId,function(result){
         strategy.getCommentById(req.query.commentId, function (result) {
             result.length && (result[0].add_time = subdate(result[0].add_time));
             result.length ? res.json({state: 1, comment: result[0]}) : res.json({state: 0});
         })
-        // });
-        // }
-        // ready();
     } else {
         res.json({state: 0})
     }
 });
-// 点赞接口
+// 攻略评论点赞接口
 router.get('/likeComment', function (req, res) {
     var data = req.query;
     if (data.commentId && data.userId && data.state) {
@@ -347,7 +331,7 @@ router.get('/likeComment', function (req, res) {
         res.json({state: 0})
     }
 });
-// 取消点赞接口
+// 攻略评论取消点赞接口
 router.get('/unLikeComment', function (req, res) {
     var data = req.query;
     if (data.commentId && data.userId) {
@@ -401,7 +385,6 @@ router.get('/getStrategyGameNameByMsg', function (req, res) {
                     result[i]
                 }
             }
-            // console.log(result)
             res.json({state: 1, gameName: result})
         })
     } else {
@@ -486,10 +469,6 @@ router.get("/delMyComment", function (req, res, next) {
 })
 
 // 限制不文明词语
-// router.get('/test',function(req,res){
-//     var con = req.query.content;
-//     console.log(test(con));
-// });
 function test(content) {
     if (content) {
         var str = "";

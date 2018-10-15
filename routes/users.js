@@ -289,6 +289,7 @@ var signArr =
         type: 1,
         value: 10
     }, {day: 29, type: 0, value: 100}, {day: 30, type: 2, value: 5}];
+
 router.get("/sign", function (req, res, next) {
     if (req.query.id) {
         var id = req.query.id;
@@ -374,6 +375,7 @@ router.get("/getSign", function (req, res, next) {
                 }
                 if (Number(lastDay) + 86400 < toDay) {//断签
                     console.log(1)
+                    data.signCoin = 5;
                     user.getUserSign(data, 3, function (re_sign) {
                         re_sign.insertId ? res.json({state: 1, info: "已签到"}) : res.json({state: 0, info: "签到失败"});
                         return false;
@@ -611,30 +613,8 @@ router.get('/verify', function (req, result, next) {
         });
         req.write(content);
         return req.end();
-        // return next()
     }
 });
-// router.post('/updatePassword',function (req,res) {
-//     if(req.body.tel && req.body.password && req.body.verify){
-//         var ver=req.body.verify;
-//         var tel=req.body.tel;
-//         var password=req.body.password;
-//         var md5 = crypto.createHash('md5');
-//         md5.update(password);
-//         var sign = md5.digest('hex');
-//         sign=isReverse(sign);
-//         user.updatePassword()
-//         if(verify[tel]==ver){
-//             user.updatePassword(tel,sign,function (result) {
-//                 result.affectedRows ? res.json({state:1}) : res.json({state:0})
-//             })
-//         }else {
-//             res.json({state:3});
-//         }
-//     }else {
-//         res.json({state:99})
-//     }
-// });
 
 router.get("/lottery", function (req, res) {
     var uid = req.query.id;

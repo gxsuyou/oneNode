@@ -33,12 +33,6 @@ var game = {
             return callback(result)
         })
     },
-    editGameById: function (gameId, text, callback) {
-        var sql = "UPDATE t_game SET game_detail=? where id=?";
-        query(sql, [text, gameId], function (result) {
-            return callback(result)
-        })
-    },
     getCarousel: function (sys, callback) {
         var sql = "select * from t_activity where type=1 and active=1 AND sys=? ORDER BY sort DESC";
         query(sql, [sys], function (result) {
@@ -145,12 +139,6 @@ var game = {
         //     'FROM t_game WHERE sys=? AND game_name LIKE "%' + msg + '%"  ' +
         //     'ORDER BY "' + sort + '" DESC LIMIT ?,20';
         query(sql, [sys, (page - 1) * 20], function (result) {
-            return callback(result)
-        })
-    },
-    getHotGame: function (callback) {
-        var sql = "select * from t_hotgame";
-        query(sql, [], function (result) {
             return callback(result)
         })
     },

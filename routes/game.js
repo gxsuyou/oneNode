@@ -93,11 +93,6 @@ router.get('/getGameImgListById', function (req, res) {
         res.json({state: 0})
     }
 });
-router.get('/edit', function (req, res, next) {
-    game.editGameById(1, req.query.text, function (result) {
-        res.json({result: result})
-    });
-});
 router.get("/carousel", function (req, res, next) {
     var data = req.query;
     data.sys = data.sys > 0 ? data.sys : 2;
@@ -134,11 +129,6 @@ router.get("/getGameByMsg", function (req, res, next) {
     var data = req.query;
     game.getGameByMsg(data.sys, data.type, data.sort, data.page, function (result) {
         res.json({state: 1, game: result})
-    })
-});
-router.get("/hotGame", function (req, res, next) {
-    game.getHotGame(function (result) {
-        result.length ? res.json({state: 1, game: result[0]}) : res.json({state: 0})
     })
 });
 router.get("/clsIconActive", function (req, res, next) {
@@ -363,10 +353,6 @@ router.get("/searchGameByMsg", function (req, res, next) {
             result.length ? res.json({state: 1, game: result}) : res.json({state: 0})
         })
     }
-});
-router.get("/likeGameComment", function (req, res, next) {
-    // console.log(req.query);
-    // game.like(req.query.)
 });
 router.get("/addDownloadNum", function (req, res, next) {
     if (req.query.id) {
