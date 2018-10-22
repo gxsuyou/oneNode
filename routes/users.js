@@ -449,7 +449,6 @@ router.post('/login', function (req, res, next) {
     sign = isReverse(sign);
 
     user.login(data.tel, sign, function (result) {
-        console.log(result[0])
         if (result.length) {
             var token = common.userToken(result[0].id);
             if (result[0].is_inside !== 1) {//普通
