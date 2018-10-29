@@ -47,10 +47,10 @@ var game = {
     },
     // 获取推荐位(2个)
     getActiveLenOfTow: function (obj, callback) {
-        var sql = "select t_activity.type as activeType,t_game.id,t_game.game_name,t_game.game_packagename,t_game.game_title_img " +
-            "from t_activity " +
-            "left join t_game on t_game.id= t_activity.game_id " +
-            "where t_activity.type=5 and t_activity.active=1 and t_game.sys = ? ORDER BY RAND() LIMIT 2";
+        var sql = "SELECT a.type as activeType, b.id, b.game_name, b.game_packagename, b.game_title_img " +
+            "FROM t_activity a " +
+            "LEFT JOIN t_game b on b.id= a.game_id " +
+            "WHERE a.type=5 AND a.active=1 AND b.sys = ? ORDER BY RAND() LIMIT 2";
         query(sql, [obj.sys], function (result) {
             return callback(result)
         })
@@ -70,7 +70,7 @@ var game = {
         })
     },
     getClsActive: function (callback) {
-        var sql = "select * from t_activity where type=3 and active=1";
+        var sql = "SELECT * FROM t_activity WHERE type=3 AND active=1";
         query(sql, [], function (result) {
             return callback(result)
         })
@@ -105,25 +105,16 @@ var game = {
     },
     // 获取游戏排行
     getGameByMsg: function (sys, type, sort, page, callback) {
-        if (type !== '') {
-            var sql = "SELECT b.*,GROUP_CONCAT(c.name) AS tagList,GROUP_CONCAT(c.id) AS tagI " +
-                "FROM t_tag_relation a  " +
-                "LEFT JOIN t_game b ON a.game_id = b.id " +
-                "LEFT JOIN t_tag c ON c.id=a.tag_id " +
-                "WHERE sys=? AND type=? GROUP BY b.id ORDER BY " + sort + " DESC limit ?,20";
-            query(sql, [sys, type, (page - 1) * 20], function (result) {
-                return callback(result)
-            })
-        } else {
-            var sql = "SELECT b.*,GROUP_CONCAT(c.name) AS tagList,GROUP_CONCAT(c.id) AS tagId " +
-                "FROM t_tag_relation a " +
-                "LEFT JOIN t_game b ON a.game_id = b.id " +
-                "LEFT JOIN t_tag c ON c.id=a.tag_id where sys=? " +
-                "GROUP BY b.id ORDER BY " + sort + " DESC limit ?,20";
-            query(sql, [sys, (page - 1) * 20], function (result) {
-                return callback(result)
-            })
-        }
+        var whereType = type !== "" ? " AND type = " + type : "";
+
+        var sql = "SELECT b.*,GROUP_CONCAT(c.name) AS tagList,GROUP_CONCAT(c.id) AS tagI " +
+            "FROM t_tag_relation a  " +
+            "LEFT JOIN t_game b ON a.game_id = b.id " +
+            "LEFT JOIN t_tag c ON c.id=a.tag_id " +
+            "WHERE sys=? " + whereType + " GROUP BY b.id ORDER BY " + sort + " DESC limit ?,20";
+        query(sql, [sys, (page - 1) * 20], function (result) {
+            return callback(result)
+        })
     },
     // 根据关键词搜索游戏
     searchGameByMsg: function (uid, sys, msg, sort, page, callback) {
