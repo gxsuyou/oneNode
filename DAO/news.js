@@ -89,9 +89,9 @@ var news = {
     },
     //添加资讯评论
     newsComment: function (targetCommentId, userId, series, content, addTime, targetUserId, news_img, news_title, newsid, callback) {
-        var sql = "insert into t_news_comment " +
+        var sql = "INSERT INTO t_news_comment " +
             "(content,user_id,series,target_comment_id,add_time,target_user_id,news_img,news_title,newsid) " +
-            "values (?,?,?,?,?,?,?,?,?)";
+            "VALUES (?,?,?,?,?,?,?,?,?)";
         query(sql, [content, userId, series, targetCommentId, addTime, targetUserId, news_img, news_title, newsid], function (result) {
             return callback(result)
         })
@@ -199,21 +199,20 @@ var news = {
         var sql = 'SELECT t_news.*,FROM_UNIXTIME(t_news.add_time,"%Y-%m-%d") as add_time ' +
             'FROM t_news\n' +
             'LEFT JOIN t_game ON t_news.`game_id`=t_game.`id`\n' +
-            'WHERE (t_game.`game_name` LIKE "%' + msg + '%" AND t_game.sys=?) OR t_news.title LIKE "%' + msg + '%" ' +
-            "LIMIT ?,20";
+            'WHERE (t_game.`game_name` LIKE "%' + msg + '%" AND t_game.sys=?) OR t_news.title LIKE "%' + msg + '%" LIMIT ?,20';
         query(sql, [sys, (page - 1) * 20], function (result) {
 
             return callback(result)
         })
     },
     collect: function (targetId, userId, type, sys, callback) {
-        var sql = 'insert into t_collect (target_id,user_id,target_type,sys) values (?,?,?,?)';
+        var sql = 'INSERT INTO t_collect (target_id,user_id,target_type,sys) VALUES (?,?,?,?)';
         query(sql, [targetId, userId, type, sys], function (result) {
             return callback(result)
         })
     },
     unCollect: function (targetId, userId, type, callback) {
-        var sql = 'delete from  t_collect where target_id=? and user_id=? and target_type=?';
+        var sql = 'DELETE FROM t_collect where target_id=? AND user_id=? AND target_type=?';
         query(sql, [targetId, userId, type], function (result) {
             return callback(result)
         })

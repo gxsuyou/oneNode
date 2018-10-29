@@ -3,14 +3,14 @@ var game = {
     // 获取游戏详情
     getDetailById: function (gameId, callback) {
         // query("call pro_getGameDetailById(?)",[gameId],callback);
-        var sql = 'SELECT t_game.game_download_ios,t_game.game_download_ios2,t_game.game_packagename,t_game.game_download_andriod,' +
-            't_game.`game_name`,t_game.game_size,t_game.game_download_num,t_game.game_version,FROM_UNIXTIME(t_game.game_update_date,"%Y-%m-%d") as game_update_date,' +
-            't_game.game_detail,t_game.`game_title_img`,t_game.`game_company`,t_game.`icon`,t_game.`grade`,' +
-            'GROUP_CONCAT(t_tag.name) AS tagList,GROUP_CONCAT(t_tag.id) AS tagId ' +
-            'FROM t_game \n' +
-            'LEFT JOIN t_tag_relation ON t_tag_relation.`game_id`=t_game.`id`\n' +
-            'LEFT JOIN t_tag ON t_tag_relation.`tag_id`=t_tag.`id`\n' +
-            'WHERE t_game.`id`=?';
+        var sql = 'SELECT a.game_download_ios, a.game_download_ios2, a.game_packagename, a.game_download_andriod, ' +
+            'a.`game_name`, a.game_size, a.game_download_num, a.game_version,FROM_UNIXTIME(a.game_update_date,"%Y-%m-%d") as game_update_date, ' +
+            'a.game_detail, a.`game_title_img`, a.`game_company`, a.`icon`,a.`grade`,' +
+            'GROUP_CONCAT(c.name) AS tagList, GROUP_CONCAT(c.id) AS tagId ' +
+            'FROM t_game a ' +
+            'LEFT JOIN t_tag_relation b ON b.`game_id`=a.`id` ' +
+            'LEFT JOIN t_tag c ON b.`tag_id`=c.`id` ' +
+            'WHERE a.`id`=?';
         query(sql, [gameId], function (result) {
             return callback(result)
         })
@@ -57,7 +57,7 @@ var game = {
     },
     //10位以上的推荐
     getActiveLenOfTen: function (obj, callback) {
-        var sql = "SELECT GROUP_CONCAT(c.`id`) AS tagIdList,GROUP_CONCAT(c.`name`) AS tagList," +
+        var sql = "SELECT GROUP_CONCAT(c.`id`) AS tagIdList, GROUP_CONCAT(c.`name`) AS tagList, " +
             "t_activity.type AS activeType, a.id, a.game_name, a.icon, a.grade, a.game_packagename, " +
             "a.game_download_andriod, a.game_download_ios, a.game_download_ios2 " +
             "FROM t_activity  " +
@@ -80,13 +80,13 @@ var game = {
         // var sql = "SELECT tag_ids,id FROM t_game " +
         //     "WHERE tag_ids LIKE'%," + tagId + ",%' AND sys=? " +
         //     "ORDER BY id DESC LIMIT ?,20"
-        var sql = 'SELECT a.id,a.icon,a.game_name,a.grade,a.game_title_img,a.game_packagename,' +
+        var sql = 'SELECT a.id,a.icon, a.game_name, a.grade, a.game_title_img, a.game_packagename, ' +
             'a.game_download_andriod, a.game_download_ios, a.game_download_ios2, ' +
-            'GROUP_CONCAT(t_tag.`name`) as tagList,' +
-            'GROUP_CONCAT(t_tag.`id`) as tagId ' +
-            'FROM t_game AS a ' +
-            'LEFT JOIN t_tag_relation ON a.id = t_tag_relation.`game_id` ' +
-            'LEFT JOIN t_tag ON t_tag.`id`=t_tag_relation.`tag_id` ' +
+            'GROUP_CONCAT(c.`name`) as tagList, ' +
+            'GROUP_CONCAT(c.`id`) as tagId ' +
+            'FROM t_game a ' +
+            'LEFT JOIN t_tag_relation b ON a.id = b.`game_id` ' +
+            'LEFT JOIN t_tag c ON c.`id`=b.`tag_id` ' +
             'WHERE a.id IN(SELECT t_tag_relation.`game_id` FROM t_tag_relation WHERE tag_id=?) ' +
             'AND a.sys=? GROUP BY a.`id` ORDER BY a.id DESC limit ?,20';
         query(sql, [tagId, sys, (page - 1) * 20], function (result) {
@@ -106,29 +106,39 @@ var game = {
     // 获取游戏排行
     getGameByMsg: function (sys, type, sort, page, callback) {
         var whereType = type !== "" ? " AND type = " + type : "";
-
+        var sortWhere = "";
+        switch (sort) {
+            case "sort":
+                sortWhere = "b.sort";
+                break;
+            case "sort2":
+                sortWhere = "b.sort2";
+                break;
+            case "sort3":
+                sortWhere = "b.sort3";
+                break;
+            default:
+                sortWhere = "b.sort";
+                break;
+        }
         var sql = "SELECT b.*,GROUP_CONCAT(c.name) AS tagList,GROUP_CONCAT(c.id) AS tagI " +
             "FROM t_tag_relation a  " +
             "LEFT JOIN t_game b ON a.game_id = b.id " +
             "LEFT JOIN t_tag c ON c.id=a.tag_id " +
-            "WHERE sys=? " + whereType + " GROUP BY b.id ORDER BY " + sort + " DESC limit ?,20";
+            "WHERE sys=? " + whereType + " GROUP BY b.id ORDER BY " + sortWhere + " DESC limit ?,20";
         query(sql, [sys, (page - 1) * 20], function (result) {
             return callback(result)
         })
     },
     // 根据关键词搜索游戏
     searchGameByMsg: function (uid, sys, msg, sort, page, callback) {
-        var sql = 'SELECT GROUP_CONCAT(t_tag.`id`) AS tagIdList,GROUP_CONCAT(t_tag.`name`) AS tagList,' +
-            't_game.id,t_game.game_name,t_game.icon,t_game.grade,t_game.game_packagename ' +
-            'FROM t_game ' +
-            'LEFT JOIN t_tag_relation ON t_tag_relation.`game_id`=t_game.`id` ' +
-            'LEFT JOIN t_tag ON t_tag_relation.`tag_id`=t_tag.`id` ' +
-            'WHERE t_game.game_name LIKE "%' + msg + '%" AND t_game.sys = ? GROUP BY t_game.id ' +
-            'ORDER BY t_game.id DESC LIMIT ?,20';
-
-        // var sql = 'SELECT * ' +
-        //     'FROM t_game WHERE sys=? AND game_name LIKE "%' + msg + '%"  ' +
-        //     'ORDER BY "' + sort + '" DESC LIMIT ?,20';
+        var sql = 'SELECT GROUP_CONCAT(c.`id`) AS tagIdList, GROUP_CONCAT(c.`name`) AS tagList, ' +
+            'a.id, a.game_name, a.icon, a.grade, a.game_packagename ' +
+            'FROM t_game a ' +
+            'LEFT JOIN t_tag_relation b ON b.`game_id`=a.`id` ' +
+            'LEFT JOIN t_tag c ON b.`tag_id`=c.`id` ' +
+            'WHERE a.game_name LIKE "%' + msg + '%" AND a.sys = ? GROUP BY a.id ' +
+            'ORDER BY a.id DESC LIMIT ?,20';
         query(sql, [sys, (page - 1) * 20], function (result) {
             return callback(result)
         })
@@ -142,13 +152,13 @@ var game = {
         })
     },
     getGameCommentById: function (game_id, userId, page, callback) {
-        var sql = "SELECT t_game_comment.`id`,t_game_comment.`user_id`,t_game_comment.`content`,FROM_UNIXTIME(t_game_comment.add_time,'%Y-%m-%d') as add_time," +
-            "t_game_comment.`comment_num`,t_game_comment.`score`,t_game_comment.`agree`,t_user.id as uid,t_user.`nick_name`,t_user.`portrait`,t_game_comment_like.state " +
-            "FROM t_game_comment \n" +
-            "LEFT JOIN t_game_comment_like on t_game_comment_like.user_id = ? and t_game_comment.id = t_game_comment_like.comment_id\n" +
-            "LEFT JOIN t_user ON t_game_comment.`user_id`=t_user.id " +
-            "WHERE t_game_comment.`game_id`=? and t_game_comment.series=1 " +
-            "ORDER BY t_game_comment.`id` DESC LIMIT ?,10";
+        var sql = "SELECT a.`id`, a.`user_id`, a.`content`, FROM_UNIXTIME(a.add_time,'%Y-%m-%d') as add_time, " +
+            "a.`comment_num`, a.`score`, a.`agree`, c.id as uid, c.`nick_name`, c.`portrait`, b.state " +
+            "FROM t_game_comment a " +
+            "LEFT JOIN t_game_comment_like b ON b.user_id = ? and a.id = b.comment_id " +
+            "LEFT JOIN t_user c ON a.`user_id`=c.id " +
+            "WHERE a.`game_id`=? and a.series=1 " +
+            "ORDER BY a.`id` DESC LIMIT ?,10";
         query(sql, [userId, game_id, (page - 1) * 10], function (result) {
             return callback(result)
         })
@@ -161,26 +171,26 @@ var game = {
         })
     },
     getGameHotComment: function (gameId, userId, callback) {
-        var sql = "SELECT t_game_comment.`id`,t_game_comment.`user_id`,t_game_comment.`user_id`,t_game_comment.`content`,FROM_UNIXTIME(t_game_comment.add_time,'%Y-%m-%d') as add_time," +
-            "t_game_comment.`comment_num`,t_game_comment.`score`,t_game_comment.`agree`,t_user.id as uid,t_user.`nick_name`," +
-            "t_user.`portrait`,t_game_comment_like.state " +
-            "FROM t_game_comment \n" +
-            "LEFT JOIN t_game_comment_like on t_game_comment_like.user_id=? and t_game_comment.id = t_game_comment_like.comment_id\n" +
-            "LEFT JOIN t_user\n" +
-            "ON t_game_comment.`user_id`=t_user.id WHERE t_game_comment.`game_id`=? and t_game_comment.series=1 ORDER BY t_game_comment.`comment_num` DESC LIMIT 0,3";
+        var sql = "SELECT a.`id`, a.`user_id`, a.`user_id`, a.`content`, FROM_UNIXTIME(a.add_time,'%Y-%m-%d') as add_time, " +
+            "a.`comment_num`, a.`score`, a.`agree`, c.id as uid, c.`nick_name`, " +
+            "t_user.`portrait`, t_game_comment_like.state " +
+            "FROM t_game_comment a" +
+            "LEFT JOIN t_game_comment_like b ON b.user_id=? AND a.id = b.comment_id " +
+            "LEFT JOIN t_user c ON a.`user_id`=c.id " +
+            "WHERE a.`game_id`=? AND a.series=1 ORDER BY a.`comment_num` DESC LIMIT 0,3";
         query(sql, [userId, gameId], function (result) {
             return callback(result)
         })
     },
     getGameTowComment: function (parentId, page, callback) {
-        var sql = "SELECT t_game_comment.`id`,t_game_comment.`user_id`,t_game_comment.`content`,FROM_UNIXTIME(t_game_comment.add_time,'%Y-%m-%d') as add_time," +
-            "t_game_comment.`comment_num`,t_game_comment.`score`,t_game_comment.`agree`,a.id as uid," +
-            "a.`nick_name` as selfNickName,a.`portrait`,b.nick_name as targetNickName " +
-            "FROM t_game_comment \n" +
-            "LEFT JOIN t_user as b on t_game_comment.target_user_id = b.id\n" +
-            "LEFT JOIN t_user as a ON t_game_comment.`user_id`=a.id " +
-            "WHERE t_game_comment.`parent_id`=? and t_game_comment.series=2 " +
-            "ORDER BY t_game_comment.`add_time` DESC LIMIT ?,10";
+        var sql = "SELECT gc.`id`, gc.`user_id`, gc.`content`, FROM_UNIXTIME(gc.add_time,'%Y-%m-%d') as add_time, " +
+            "gc.`comment_num`, gc.`score`, gc.`agree`, a.id as uid, " +
+            "a.`nick_name` as selfNickName, a.`portrait`, b.nick_name as targetNickName " +
+            "FROM t_game_comment gc " +
+            "LEFT JOIN t_user as b ON gc.target_user_id = b.id\n" +
+            "LEFT JOIN t_user as a ON gc.`user_id`=a.id " +
+            "WHERE gc.`parent_id`=? and gc.series=2 " +
+            "ORDER BY gc.`add_time` DESC LIMIT ?,10";
         query(sql, [parentId, (page - 1) * 10], function (result) {
             return callback(result)
         })
@@ -228,12 +238,12 @@ var game = {
         })
     },
     getGameLikeTag: function (gameId, sys, callback) {
-        var sql = "SELECT t_game.id,t_game.`icon`,t_game.`grade`,t_game.game_name,GROUP_CONCAT(t_tag.`name`) AS tagList, t_game.sys " +
-            "FROM t_tag_relation " +
-            "LEFT JOIN t_game ON t_tag_relation.`game_id`=t_game.`id` " +
-            "LEFT JOIN t_tag ON t_tag.`id`=t_tag_relation.`tag_id` " +
-            "WHERE t_tag_relation.`tag_id`=(SELECT t_tag.`id` FROM t_tag_relation LEFT JOIN t_tag ON t_tag.id=t_tag_relation.`tag_id` WHERE t_tag_relation.`game_id`=? ORDER BY RAND() LIMIT 1) " +
-            "AND t_game.sys =? GROUP BY t_game.id ORDER BY RAND() LIMIT 5";
+        var sql = "SELECT b.id, b.`icon`, b.`grade`, b.game_name, GROUP_CONCAT(c.`name`) AS tagList, b.sys " +
+            "FROM t_tag_relation a " +
+            "LEFT JOIN t_game b ON a.`game_id`=b.`id` " +
+            "LEFT JOIN t_tag c ON c.`id`=a.`tag_id` " +
+            "WHERE a.`tag_id`=(SELECT t_tag.`id` FROM t_tag_relation LEFT JOIN t_tag ON t_tag.id=t_tag_relation.`tag_id` WHERE t_tag_relation.`game_id`=? ORDER BY RAND() LIMIT 1) " +
+            "AND b.sys =? GROUP BY b.id ORDER BY RAND() LIMIT 5";
         query(sql, [gameId, sys], function (result) {
             return callback(result)
         })
@@ -248,9 +258,9 @@ var game = {
         var sql = "SELECT t_game_comment.`id`,t_game_comment.`content`,FROM_UNIXTIME(t_game_comment.add_time,'%Y-%m-%d') as add_time," +
             "t_game_comment.`comment_num`,t_game_comment.`score`,t_game_comment.`agree`,t_user.id as uid," +
             "t_user.`nick_name`,t_user.`portrait`,t_game.id as game_id,t_game.game_name " +
-            "FROM t_game_comment \n" +
-            "LEFT JOIN t_user  ON t_game_comment.`user_id`=t_user.id " +
-            "LEFT JOIN t_game  ON t_game_comment.`game_id`=t_game.id " +
+            "FROM t_game_comment a " +
+            "LEFT JOIN t_user b ON t_game_comment.`user_id`=t_user.id " +
+            "LEFT JOIN t_game c ON t_game_comment.`game_id`=t_game.id " +
             "WHERE t_game_comment.`id`=?";
         query(sql, [commentId], function (result) {
             return callback(result)
@@ -386,8 +396,8 @@ var game = {
             'GROUP_CONCAT(t_tag.`id`) as tagIdList ' +
             'FROM (t_game_cls_relation LEFT JOIN t_game AS a ON a.id = t_game_cls_relation.game_id) ' +
             'LEFT JOIN t_tag_relation ON a.id = t_tag_relation.`game_id` ' +
-            'LEFT JOIN t_tag ON t_tag.`id`=t_tag_relation.`tag_id`\n' +
-            ' WHERE t_game_cls_relation.cls_id=? AND a.sys=? GROUP BY a.`id` ORDER BY a.id DESC limit ?,20';
+            'LEFT JOIN t_tag ON t_tag.`id`=t_tag_relation.`tag_id` ' +
+            'WHERE t_game_cls_relation.cls_id=? AND a.sys=? GROUP BY a.`id` ORDER BY a.id DESC limit ?,20';
         //var sql = "SELECT id,icon,game_name,sort,sort2,cls_ids,tag_ids FROM t_game " +
         //    "WHERE cls_ids LIKE '%," + clsId + ",%' ORDER BY game_download_num,sort,sort2 DESC LIMIT ?,20"
         query(sql, [clsId, sys, (page - 1) * 20], function (result) {

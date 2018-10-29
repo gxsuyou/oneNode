@@ -202,6 +202,7 @@ router.get('/unLikeComment', function (req, res) {
         res.json({state: 0})
     }
 });
+
 router.get('/getGameLikeTag', function (req, res) {
     var data = req.query;
     data.sys = data.sys > 0 ? data.sys : 2;
@@ -219,6 +220,7 @@ router.get('/getGameLikeTag', function (req, res) {
         res.json({state: 0})
     }
 });
+
 router.get('/getNewsByGameId', function (req, res) {
     var data = req.query;
     if (data.gameId) {
