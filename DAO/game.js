@@ -174,7 +174,7 @@ var game = {
         var sql = "SELECT a.`id`, a.`user_id`, a.`user_id`, a.`content`, FROM_UNIXTIME(a.add_time,'%Y-%m-%d') as add_time, " +
             "a.`comment_num`, a.`score`, a.`agree`, c.id as uid, c.`nick_name`, " +
             "t_user.`portrait`, t_game_comment_like.state " +
-            "FROM t_game_comment a" +
+            "FROM t_game_comment a " +
             "LEFT JOIN t_game_comment_like b ON b.user_id=? AND a.id = b.comment_id " +
             "LEFT JOIN t_user c ON a.`user_id`=c.id " +
             "WHERE a.`game_id`=? AND a.series=1 ORDER BY a.`comment_num` DESC LIMIT 0,3";
