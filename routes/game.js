@@ -102,7 +102,6 @@ router.get("/carousel", function (req, res, next) {
 });
 router.get("/active", function (req, res, next) {
     var data = req.query;
-
     game.getActive(data, function (result) {
         result.length ? res.json({state: 1, active: result}) : res.json({state: 0})
     })

@@ -34,18 +34,19 @@ var game = {
         })
     },
     getCarousel: function (sys, callback) {
-        var sql = "select * from t_activity where type=1 and active=1 AND sys=? ORDER BY sort DESC";
+        var sql = "SELECT * FROM t_activity WHERE type=1 AND active=1 AND sys=? ORDER BY sort DESC";
         query(sql, [sys], function (result) {
             return callback(result)
         })
     },
+    //三位推荐
     getActive: function (obj, callback) {
         var sql = "select * from t_activity where type=4 and active=1 and sys = ? ORDER BY RAND() LIMIT 3";
         query(sql, [obj.sys], function (result) {
             return callback(result)
         })
     },
-    // 获取推荐位(2个)
+    // 两位推荐
     getActiveLenOfTow: function (obj, callback) {
         var sql = "SELECT a.type as activeType, b.id, b.game_name, b.game_packagename, b.game_title_img " +
             "FROM t_activity a " +
@@ -318,7 +319,7 @@ var game = {
     },
     // 获取专题
     getSubject: function (sys, callback) {
-        var sql = 'select id,img,title,detail from t_subject where active = 1 and sys = ? limit 0,2';
+        var sql = 'SELECT id,img,title,detail FROM t_subject WHERE active = 1 AND sys = ? LIMIT 0,2';
         query(sql, [sys], function (result) {
             return callback(result)
         })
@@ -357,13 +358,12 @@ var game = {
         })
     },
     getGameBySubject: function (subjectId, sys, page, callback) {
-        var sql = 'SELECT t_game.id,t_game.game_name,t_game.icon,t_game.game_title_img,t_game.grade,t_game.game_recommend,GROUP_CONCAT(t_tag.name) AS tagList,GROUP_CONCAT(t_tag.id) AS tagId \n' +
-            '\tFROM ((t_subject_relation \n' +
-            '\tLEFT JOIN t_game \n' +
-            '\tON t_subject_relation.game_id=t_game.id)\n' +
-            '\tLEFT JOIN t_tag_relation ON t_tag_relation.`game_id`=t_game.id) \n' +
-            '\tLEFT JOIN t_tag ON t_tag_relation.`tag_id`=t_tag.`id`\n' +
-            '\tWHERE t_subject_relation.subject_id = ? AND t_game.sys=? GROUP BY t_game.id ORDER BY t_subject_relation.id ASC  limit ?,20';
+        var sql = 'SELECT t_game.id,t_game.game_name,t_game.icon,t_game.game_title_img,t_game.grade,t_game.game_recommend,GROUP_CONCAT(t_tag.name) AS tagList,GROUP_CONCAT(t_tag.id) AS tagId ' +
+            'FROM ((t_subject_relation LEFT JOIN t_game ON t_subject_relation.game_id=t_game.id) ' +
+            'LEFT JOIN t_tag_relation ON t_tag_relation.`game_id`=t_game.id) ' +
+            'LEFT JOIN t_tag ON t_tag_relation.`tag_id`=t_tag.`id` ' +
+            'WHERE t_subject_relation.subject_id = ? AND t_game.sys=? ' +
+            'GROUP BY t_game.id ORDER BY t_subject_relation.id ASC  limit ?,20';
         query(sql, [subjectId, sys, (page - 1) * 20], function (result) {
             return callback(result)
         })
@@ -441,18 +441,18 @@ var game = {
         })
     },
     addUserTip: function (targetId, userId, callback) {
-        var sql = 'insert into t_tip(tip_id,user_id,type) values (?,?,3)';
+        var sql = 'INSET INTO t_tip(tip_id,user_id,type) VALUES (?,?,3)';
         query(sql, [targetId, userId], function () {
         })
     },
     // 根据游戏名字获取相关攻略
     getStrategyByGameName: function (gameName, userId, page, callback) {
         var sql = "SELECT a.*,FROM_UNIXTIME(a.add_time,'%Y-%m-%d %H:%i') as add_time,b.nike_name,c.`nick_name`,c.portrait,t_strategy_like.strategy_id " +
-            "FROM t_strategy as a \n " +
-            " LEFT JOIN t_admin AS b ON b.id = a.`user_id`\n " +
-            " LEFT JOIN t_user AS c ON c.id=a.`user_id` " +
-            " LEFT JOIN t_strategy_like ON t_strategy_like.`strategy_id`=a.`id` AND t_strategy_like.`user_id`=? " +
-            " WHERE a.game_name  =? GROUP BY a.id  ORDER BY a.essence DESC, a.browse_num DESC LIMIT ?,6";
+            "FROM t_strategy as a " +
+            "LEFT JOIN t_admin AS b ON b.id = a.`user_id` " +
+            "LEFT JOIN t_user AS c ON c.id=a.`user_id` " +
+            "LEFT JOIN t_strategy_like ON t_strategy_like.`strategy_id`=a.`id` AND t_strategy_like.`user_id`=? " +
+            "WHERE a.game_name = ? GROUP BY a.id  ORDER BY a.essence DESC, a.browse_num DESC LIMIT ?,6";
         query(sql, [userId, gameName, (page - 1) * 6], function (result) {
             return callback(result)
         })
@@ -469,7 +469,10 @@ var game = {
         if (obj.type == "choose") {
             where = "a.id > 0";
         }
-        var sql = "SELECT a.*, b.game_packagename, b.game_download_ios, b.game_download_andriod FROM t_ticket_game a LEFT JOIN t_game b ON a.game_id = b.id WHERE " + where + " AND a.sys = ? ORDER BY a.id DESC LIMIT ?,20";
+        var sql = "SELECT a.*, b.game_packagename, b.game_download_ios, b.game_download_andriod " +
+            "FROM t_ticket_game a " +
+            "LEFT JOIN t_game b ON a.game_id = b.id " +
+            "WHERE " + where + " AND a.sys = ? ORDER BY a.id DESC LIMIT ?,20";
         query(sql, [obj.sys, (page - 1) * 20], function (result) {
             return callback(result);
         })
@@ -496,17 +499,17 @@ var game = {
                         }
                     })
 
-                    var delsql2 = "DELETE FROM   t_game_comment_like WHERE comment_id=? "
-                    query(delsql2, [obj.id], function (result) {
+                    var delsql1 = "DELETE FROM t_game_comment_like WHERE comment_id=? "
+                    query(delsql1, [obj.id], function (result) {
 
                     })
 
-                    var delsql2 = "DELETE FROM   t_game_comment WHERE id=? AND series=1"
+                    var delsql2 = "DELETE FROM t_game_comment WHERE id=? AND series=1"
                     query(delsql2, [obj.id], function (result) {
                         return callback(result)
                     })
                 } else {
-                    var deltip1 = "DELETE FROM   t_tip WHERE tip_id=? AND type=3"
+                    var deltip1 = "DELETE FROM t_tip WHERE tip_id=? AND type=3"
                     query(deltip1, [obj.id], function () {
 
                     })
